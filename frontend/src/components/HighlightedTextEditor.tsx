@@ -3,6 +3,7 @@ import React, { useRef, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "@/store";
 import { setText } from "@/store/textSlice";
+import { Suggestion } from "@/lib/api";
 
 interface HighlightedTextEditorProps {
   onSelectSuggestion?: (suggestionId: string) => void;
@@ -11,7 +12,7 @@ interface HighlightedTextEditorProps {
 export const HighlightedTextEditor: React.FC<HighlightedTextEditorProps> = ({ onSelectSuggestion }) => {
   const dispatch = useDispatch();
   const text = useSelector((state: RootState) => state.text.value);
-  const suggestions = useSelector((state: RootState) => state.suggestions.items);
+  const suggestions = useSelector((state: RootState) => state.suggestions.items) as Suggestion[];
   const editorRef = useRef<HTMLDivElement>(null);
 
   // Build HTML with underlines for mistake ranges
@@ -19,14 +20,19 @@ export const HighlightedTextEditor: React.FC<HighlightedTextEditorProps> = ({ on
     if (!suggestions.length) return text;
     let html = "";
     let lastIndex = 0;
-    // Sort by start index
-    const sorted = [...suggestions].sort((a, b) => a.start - b.start);
-    sorted.forEach((s, idx) => {
-      html += escapeHTML(text.slice(lastIndex, s.start));
+    // Sort by tokenId to maintain consistent order
+    const sorted: Suggestion[] = [...suggestions].sort((a, b) => a.tokenId.localeCompare(b.tokenId));
+    sorted.forEach((s: Suggestion) => {
+      // Find the token's position in the text
+      const tokenStart = text.indexOf(s.suggestedText, lastIndex);
+      if (tokenStart === -1) return; // Skip if token not found
+      const tokenEnd = tokenStart + s.suggestedText.length;
+
+      html += escapeHTML(text.slice(lastIndex, tokenStart));
       html += `<span class='underline text-red-600 bg-red-100 cursor-pointer' data-suggestion-id='${s.id}'>`;
-      html += escapeHTML(text.slice(s.start, s.end));
+      html += escapeHTML(text.slice(tokenStart, tokenEnd));
       html += "</span>";
-      lastIndex = s.end;
+      lastIndex = tokenEnd;
     });
     html += escapeHTML(text.slice(lastIndex));
     return html;
@@ -35,7 +41,7 @@ export const HighlightedTextEditor: React.FC<HighlightedTextEditorProps> = ({ on
   // Escape HTML to prevent XSS
   function escapeHTML(str: string) {
     return str.replace(/[&<>"']/g, function (tag) {
-      const chars: any = {
+      const chars: Record<string, string> = {
         "&": "&amp;",
         "<": "&lt;",
         ">": "&gt;",

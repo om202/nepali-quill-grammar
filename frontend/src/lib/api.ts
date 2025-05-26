@@ -22,11 +22,16 @@ export interface DiffModel {
   pendingSuggestions: Suggestion[];
 }
 
+interface ErrorResponse {
+  message?: string;
+  [key: string]: unknown;
+}
+
 export class APIError extends Error {
   constructor(
     message: string,
     public statusCode?: number,
-    public details?: any
+    public details?: unknown
   ) {
     super(message);
     this.name = 'APIError';
@@ -43,7 +48,7 @@ const api = axios.create({
 // Error interceptor to format error responses
 api.interceptors.response.use(
   (response) => response,
-  (error: AxiosError) => {
+  (error: AxiosError<ErrorResponse>) => {
     if (error.response) {
       // The request was made and the server responded with a status code
       // that falls out of the range of 2xx
