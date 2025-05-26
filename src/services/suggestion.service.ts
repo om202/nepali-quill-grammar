@@ -96,15 +96,37 @@ export const suggestionService = {
         });
       });
 
-      // Create diff model
+      // Create diff model (this will update token positions in the database)
       const diffModel = await diffEngineService.createDiffModel(
         session.original_text,
         allSuggestions
       );
 
+      // Refresh token information after diff model creation to get updated positions
+      const tokenIds = Array.from(tokenMap.keys());
+      const { data: updatedTokens, error: updatedTokensError } = await supabase
+        .from('tokens')
+        .select('id, text_segment, start_index, end_index')
+        .in('id', tokenIds);
+
+      if (updatedTokensError) {
+        logger.error('Error fetching updated token positions:', updatedTokensError);
+        throw new HttpError(500, 'Failed to fetch updated token positions');
+      }
+
+      // Update the token map with fresh data
+      const updatedTokenMap = new Map<string, { textSegment: string; startIndex: number; endIndex: number }>();
+      updatedTokens.forEach(token => {
+        updatedTokenMap.set(token.id, {
+          textSegment: token.text_segment,
+          startIndex: token.start_index,
+          endIndex: token.end_index
+        });
+      });
+
       // Add token information to both applied and pending suggestions for frontend
       const enhancedAppliedSuggestions = diffModel.appliedSuggestions.map(suggestion => {
-        const tokenInfo = tokenMap.get(suggestion.tokenId);
+        const tokenInfo = updatedTokenMap.get(suggestion.tokenId);
         if (!tokenInfo) {
           logger.error(`Missing token info for applied suggestion ${suggestion.id}`);
           throw new HttpError(500, 'Missing token information');
@@ -119,7 +141,7 @@ export const suggestionService = {
       });
 
       const enhancedPendingSuggestions = diffModel.pendingSuggestions.map(suggestion => {
-        const tokenInfo = tokenMap.get(suggestion.tokenId);
+        const tokenInfo = updatedTokenMap.get(suggestion.tokenId);
         if (!tokenInfo) {
           logger.error(`Missing token info for pending suggestion ${suggestion.id}`);
           throw new HttpError(500, 'Missing token information');

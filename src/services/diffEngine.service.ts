@@ -24,12 +24,12 @@ export const diffEngineService = {
       };
     }
     
-    // Get token information for accepted suggestions
-    const tokenIds = acceptedSuggestions.map(s => s.tokenId);
+    // Get token information for all suggestions (accepted and pending)
+    const allTokenIds = suggestions.map(s => s.tokenId);
     const { data: tokens, error } = await supabase
       .from('tokens')
       .select('id, text_segment, start_index, end_index')
-      .in('id', tokenIds);
+      .in('id', allTokenIds);
 
     if (error) {
       logger.error('Error fetching token positions for diff:', error);
@@ -45,7 +45,7 @@ export const diffEngineService = {
       }])
     );
     
-    // Create array of changes with position information
+    // Create array of changes with position information for accepted suggestions
     const changes = acceptedSuggestions.map(suggestion => {
       const token = tokenMap.get(suggestion.tokenId);
       if (!token) {
@@ -57,15 +57,17 @@ export const diffEngineService = {
         startIndex: token.startIndex,
         endIndex: token.endIndex,
         originalText: token.textSegment,
-        suggestedText: suggestion.suggestedText
+        suggestedText: suggestion.suggestedText,
+        suggestionId: suggestion.id
       };
     });
     
-    // Sort changes by start index in descending order to avoid index shifting
+    // Sort changes by start index in descending order to avoid index shifting during application
     changes.sort((a, b) => b.startIndex - a.startIndex);
     
-    // Apply changes to create enhanced text
+    // Apply changes to create enhanced text and track position adjustments
     let enhancedText = originalText;
+    const positionAdjustments: Array<{ position: number; offset: number }> = [];
     
     for (const change of changes) {
       // Verify that the original text matches what we expect
@@ -75,18 +77,139 @@ export const diffEngineService = {
         // Continue anyway, but log the issue
       }
       
+      // Calculate the length difference
+      const lengthDifference = change.suggestedText.length - change.originalText.length;
+      
       // Replace the text
       enhancedText = enhancedText.slice(0, change.startIndex) + 
                    change.suggestedText + 
                    enhancedText.slice(change.endIndex);
+      
+      // Record position adjustment for positions after this change
+      // We record at the start position because any position after this will be affected
+      if (lengthDifference !== 0) {
+        positionAdjustments.push({
+          position: change.startIndex,
+          offset: lengthDifference
+        });
+      }
     }
+    
+    // Sort position adjustments by position (ascending order for proper calculation)
+    positionAdjustments.sort((a, b) => a.position - b.position);
+    
+    // Adjust positions of pending suggestions based on applied changes
+    const adjustedPendingSuggestions = await this.adjustPendingSuggestionPositions(
+      pendingSuggestions,
+      tokenMap,
+      positionAdjustments
+    );
     
     return {
       originalText,
       enhancedText,
       appliedSuggestions: acceptedSuggestions,
-      pendingSuggestions
+      pendingSuggestions: adjustedPendingSuggestions
     };
+  },
+
+  /**
+   * Adjust positions of pending suggestions based on applied changes
+   * @param pendingSuggestions The pending suggestions to adjust
+   * @param tokenMap Map of token information
+   * @param positionAdjustments Array of position adjustments from applied changes
+   * @returns Pending suggestions with adjusted positions
+   */
+  async adjustPendingSuggestionPositions(
+    pendingSuggestions: SuggestionModel[],
+    tokenMap: Map<string, { textSegment: string; startIndex: number; endIndex: number }>,
+    positionAdjustments: Array<{ position: number; offset: number }>
+  ): Promise<SuggestionModel[]> {
+    if (pendingSuggestions.length === 0 || positionAdjustments.length === 0) {
+      return pendingSuggestions;
+    }
+
+    // Calculate cumulative offset for each position
+    const calculateAdjustedPosition = (originalPosition: number): number => {
+      let totalOffset = 0;
+      
+      for (const adjustment of positionAdjustments) {
+        // Only apply adjustments that occurred before this position
+        // A change at position X affects all positions > X
+        if (adjustment.position < originalPosition) {
+          totalOffset += adjustment.offset;
+        }
+      }
+      
+      return Math.max(0, originalPosition + totalOffset); // Ensure position is never negative
+    };
+
+    // Update token positions in the database for pending suggestions
+    const tokenUpdates: Array<{
+      id: string;
+      start_index: number;
+      end_index: number;
+    }> = [];
+
+    for (const suggestion of pendingSuggestions) {
+      const token = tokenMap.get(suggestion.tokenId);
+      if (!token) {
+        logger.warn(`Missing token data for pending suggestion ${suggestion.id}`);
+        continue;
+      }
+
+      const adjustedStartIndex = calculateAdjustedPosition(token.startIndex);
+      const adjustedEndIndex = calculateAdjustedPosition(token.endIndex);
+
+      // Validate adjusted positions
+      if (adjustedStartIndex >= adjustedEndIndex) {
+        logger.warn(`Invalid adjusted positions for token ${suggestion.tokenId}: start=${adjustedStartIndex}, end=${adjustedEndIndex}. Skipping adjustment.`);
+        continue;
+      }
+
+      // Only update if positions actually changed
+      if (adjustedStartIndex !== token.startIndex || adjustedEndIndex !== token.endIndex) {
+        tokenUpdates.push({
+          id: suggestion.tokenId,
+          start_index: adjustedStartIndex,
+          end_index: adjustedEndIndex
+        });
+
+        // Update the token map for consistency
+        tokenMap.set(suggestion.tokenId, {
+          ...token,
+          startIndex: adjustedStartIndex,
+          endIndex: adjustedEndIndex
+        });
+
+        logger.info(`Adjusted token ${suggestion.tokenId} positions: ${token.startIndex}-${token.endIndex} → ${adjustedStartIndex}-${adjustedEndIndex}`);
+      }
+    }
+
+    // Batch update token positions in the database
+    if (tokenUpdates.length > 0) {
+      try {
+        for (const update of tokenUpdates) {
+          const { error } = await supabase
+            .from('tokens')
+            .update({
+              start_index: update.start_index,
+              end_index: update.end_index
+            })
+            .eq('id', update.id);
+
+          if (error) {
+            logger.error(`Error updating token ${update.id} positions:`, error);
+          }
+        }
+        
+        logger.info(`Updated positions for ${tokenUpdates.length} tokens`);
+      } catch (error) {
+        logger.error('Error batch updating token positions:', error);
+      }
+    }
+
+    return pendingSuggestions;
   },
   
   /**
