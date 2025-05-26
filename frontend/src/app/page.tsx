@@ -8,7 +8,7 @@ import { SuggestionCard } from "@/components/suggestion-card";
 import { History } from "@/components/History";
 import { analyzeText, updateSuggestion, APIError } from "@/lib/api";
 import { toast } from "sonner";
-import { HighlightedTextEditor } from "@/components/HighlightedTextEditor";
+import { NepaliTextEditor } from "@/components/NepaliTextEditor";
 import { RootState } from "@/store";
 import { setSuggestions, removeSuggestion } from "@/store/suggestionsSlice";
 import { setText } from "@/store/textSlice";
@@ -247,7 +247,7 @@ export default function Home() {
                 </div>
                 <div className="flex-1 flex flex-col min-h-[400px] p-4">
                   <div className="flex-1 min-h-[300px] mb-4">
-                    <HighlightedTextEditor
+                    <NepaliTextEditor
                       onSelectSuggestion={setSelectedSuggestionId}
                     />
                   </div>

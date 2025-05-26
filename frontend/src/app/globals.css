@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@300;400;500;600;700&display=swap');
+
 @import "tailwindcss";
 
 :root {
@@ -281,4 +283,32 @@ body {
 
 .grammarly-body-small {
   @apply text-xs leading-relaxed;
+}
+
+/* Nepali Font Support */
+.nepali-text {
+  font-family: 'Noto Sans Devanagari', 'Mangal', 'Devanagari MT', sans-serif;
+  font-feature-settings: "kern" 1, "liga" 1;
+  text-rendering: optimizeLegibility;
+  line-height: 1.6;
+}
+
+/* Enhanced text editor for Nepali */
+.nepali-editor {
+  font-family: 'Noto Sans Devanagari', 'Mangal', 'Devanagari MT', sans-serif;
+  font-size: 1.125rem;
+  line-height: 1.7;
+  letter-spacing: 0.01em;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Language toggle button styles */
+.language-toggle-active {
+  @apply bg-green-50 border-green-300 text-green-700;
+}
+
+.language-toggle-inactive {
+  @apply bg-gray-50 border-gray-300 text-gray-600;
 } 
