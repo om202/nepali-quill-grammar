@@ -155,7 +155,7 @@ export default function Home() {
           <div className="grammarly-status-info mb-8 max-w-2xl mx-auto relative">
             <button
               onClick={dismissFreeTrialMessage}
-              className="absolute top-2 right-2 text-blue-600 hover:text-blue-800"
+              className="absolute top-2 right-2 text-blue-600 hover:text-blue-800 cursor-pointer"
               aria-label="Dismiss message"
             >
               <X className="h-4 w-4" />

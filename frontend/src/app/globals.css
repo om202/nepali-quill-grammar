@@ -85,11 +85,11 @@ body {
 }
 
 .grammarly-button-primary {
-  @apply bg-blue-600 hover:bg-blue-700 text-white font-medium px-6 py-3;
+  @apply bg-blue-600 hover:bg-blue-700 text-white font-medium px-6 py-3 cursor-pointer;
 }
 
 .grammarly-button-secondary {
-  @apply bg-white border border-gray-300 hover:border-gray-400 text-gray-700 font-medium px-6 py-3;
+  @apply bg-white border border-gray-300 hover:border-gray-400 text-gray-700 font-medium px-6 py-3 cursor-pointer;
 }
 
 .grammarly-input {
@@ -109,11 +109,11 @@ body {
 }
 
 .grammarly-suggestion-accept {
-  @apply bg-green-600 hover:bg-green-700 text-white font-medium px-4 py-2;
+  @apply bg-green-600 hover:bg-green-700 text-white font-medium px-4 py-2 cursor-pointer;
 }
 
 .grammarly-suggestion-reject {
-  @apply bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium px-4 py-2;
+  @apply bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium px-4 py-2 cursor-pointer;
 }
 
 .grammarly-header {
