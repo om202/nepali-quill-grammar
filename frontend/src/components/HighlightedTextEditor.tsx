@@ -37,7 +37,7 @@ export const HighlightedTextEditor: React.FC<HighlightedTextEditorProps> = ({
   // Build HTML with underlines for mistake ranges
   const getHighlightedHTML = useCallback(() => {
     if (!text && !suggestions.length) {
-      return '<span class="text-gray-400">Enter Nepali text here...</span>';
+      return '<span class="text-gray-500">Enter Nepali text here...</span>';
     }
     if (!suggestions.length) return escapeHTML(text);
     let html = "";
@@ -144,7 +144,7 @@ export const HighlightedTextEditor: React.FC<HighlightedTextEditorProps> = ({
   return (
     <div
       ref={editorRef}
-      className="w-full h-full p-4 border rounded bg-white focus:outline-none text-base"
+      className="w-full h-full p-4 border border-gray-300 rounded bg-white focus:outline-none focus:border-blue-400 focus:ring-1 focus:ring-blue-100 text-lg text-gray-800 leading-relaxed overflow-y-auto resize-none text-editor-scroll transition-colors"
       contentEditable
       suppressContentEditableWarning
       spellCheck={false}
@@ -152,7 +152,7 @@ export const HighlightedTextEditor: React.FC<HighlightedTextEditorProps> = ({
       onClick={handleClick}
       onFocus={handleFocus}
       aria-label="Nepali text editor"
-      style={{ whiteSpace: "pre-wrap", outline: "none" }}
+      style={{ whiteSpace: "pre-wrap", outline: "none", minHeight: "200px" }}
     />
   );
 };

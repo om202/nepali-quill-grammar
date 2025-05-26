@@ -138,7 +138,7 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
-      <div className="px-6 py-8 flex-shrink-0">
+      <div className="px-6 py-6 flex-shrink-0">
         {/* Status Messages */}
         {isAuthenticated && user && showWelcomeMessage && (
           <div className="grammarly-status-success mb-8 max-w-2xl mx-auto">
@@ -192,19 +192,19 @@ export default function Home() {
       </div>
 
       {/* Full width content area */}
-      <div className="flex-1 w-full px-4 pb-16 min-h-0">
+      <div className="flex-1 w-full px-4 pb-8 min-h-0">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full h-full">
           <TabsContent value="enhance" className="h-full">
             {/* Main Editor Section */}
-            <div className="flex flex-col lg:flex-row w-full gap-4 h-[calc(100vh-280px)]">
+            <div className="flex flex-col lg:flex-row w-full gap-4 h-[calc(100vh-240px)]">
               {/* Text Input - 70% width */}
               <div className="w-full lg:w-[70%] grammarly-card flex flex-col min-h-0">
                 <div className="p-6 flex flex-col h-full min-h-0">
                   <div className="flex items-center space-x-2 mb-4 flex-shrink-0">
                     <Edit3 className="h-5 w-5 text-blue-600" />
-                    <span className="text-gray-500 font-medium">Text</span>
+                    <span className="text-gray-700 font-medium">Text</span>
                   </div>
-                  <div className="flex-1 mb-4 min-h-0">
+                  <div className="flex-1 mb-4 min-h-0 min-h-[300px]">
                     <HighlightedTextEditor
                       onSelectSuggestion={setSelectedSuggestionId}
                     />
@@ -240,7 +240,7 @@ export default function Home() {
                 <div className="p-6 flex flex-col h-full min-h-0">
                   <div className="flex items-center space-x-2 mb-4 flex-shrink-0">
                     <Bot className="h-5 w-5 text-green-600" />
-                    <span className="text-gray-500 font-medium">
+                    <span className="text-gray-700 font-medium">
                       Suggestions
                     </span>
                     {suggestions.length > 0 && (
@@ -257,7 +257,7 @@ export default function Home() {
                         {isLoading ? (
                           <>
                             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mb-4"></div>
-                            <p className="text-gray-500">
+                            <p className="text-gray-600">
                               Analyzing your text...
                             </p>
                           </>
@@ -266,7 +266,7 @@ export default function Home() {
                             <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mb-4">
                               <span className="text-red-500 text-lg">!</span>
                             </div>
-                            <p className="text-gray-500">
+                            <p className="text-gray-600">
                               Analysis failed. Please try again.
                             </p>
                           </>
@@ -275,10 +275,10 @@ export default function Home() {
                             <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mb-4">
                               <Sparkles className="h-6 w-6 text-gray-400" />
                             </div>
-                            <p className="text-gray-500 mb-2">
+                            <p className="text-gray-600 mb-2">
                               No suggestions yet
                             </p>
-                            <p className="text-sm text-gray-400">
+                            <p className="text-sm text-gray-500">
                               Enter some Nepali text to get started
                             </p>
                           </>
