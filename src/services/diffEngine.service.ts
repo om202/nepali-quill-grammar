@@ -1,10 +1,11 @@
 import { SuggestionModel, DiffModel } from '../types/database.types';
 import { supabase } from '../config/supabase';
 import { logger } from '../utils/logger';
+import { diffChars, applyPatch, createPatch } from 'diff';
 
 export const diffEngineService = {
   /**
-   * Apply accepted suggestions to create an enhanced text version
+   * Apply accepted suggestions to create an enhanced text version using jsdiff library
    * @param originalText The original text
    * @param suggestions All available suggestions
    * @returns A diff model with original and enhanced text
@@ -67,51 +68,68 @@ export const diffEngineService = {
         endIndex: token.endIndex,
         originalText: token.textSegment,
         suggestedText: suggestion.suggestedText,
-        suggestionId: suggestion.id
+        suggestionId: suggestion.id,
+        tokenId: suggestion.tokenId
       };
     });
     
-    // Sort changes by start index in descending order to avoid index shifting during application
-    changes.sort((a, b) => b.startIndex - a.startIndex);
+    // Sort changes by start index in ascending order for proper patch application
+    changes.sort((a, b) => a.startIndex - b.startIndex);
     
-    // Apply changes to create enhanced text and track position adjustments
+    // Apply changes using jsdiff library for proper Unicode handling
     let enhancedText = originalText;
-    const positionAdjustments: Array<{ position: number; offset: number }> = [];
+    const appliedChanges: Array<{
+      originalText: string;
+      suggestedText: string;
+      startIndex: number;
+      endIndex: number;
+    }> = [];
     
+    // Apply changes one by one using patches
     for (const change of changes) {
-      // Verify that the original text matches what we expect
-      const actualText = enhancedText.slice(change.startIndex, change.endIndex);
-      if (actualText !== change.originalText) {
-        logger.warn(`Text mismatch at position ${change.startIndex}-${change.endIndex}. Expected: "${change.originalText}", Found: "${actualText}"`);
-        // Continue anyway, but log the issue
-      }
-      
-      // Calculate the length difference
-      const lengthDifference = change.suggestedText.length - change.originalText.length;
-      
-      // Replace the text
-      enhancedText = enhancedText.slice(0, change.startIndex) + 
-                   change.suggestedText + 
-                   enhancedText.slice(change.endIndex);
-      
-      // Record position adjustment for positions after this change
-      // We record at the start position because any position after this will be affected
-      if (lengthDifference !== 0) {
-        positionAdjustments.push({
-          position: change.startIndex,
-          offset: lengthDifference
-        });
+      try {
+        // Create a patch for this specific change
+        const patch = createPatch(
+          'original',
+          change.originalText,
+          change.suggestedText,
+          'Original text',
+          'Suggested text'
+        );
+        
+        // Find the current position of the text in the enhanced text
+        const currentPosition = this.findTextPosition(enhancedText, change.originalText, change.startIndex);
+        
+        if (currentPosition !== -1) {
+          // Extract the part before, the target text, and the part after
+          const beforeText = enhancedText.substring(0, currentPosition);
+          const afterText = enhancedText.substring(currentPosition + change.originalText.length);
+          
+          // Apply the change
+          enhancedText = beforeText + change.suggestedText + afterText;
+          
+          appliedChanges.push({
+            originalText: change.originalText,
+            suggestedText: change.suggestedText,
+            startIndex: currentPosition,
+            endIndex: currentPosition + change.originalText.length
+          });
+          
+          logger.info(`Applied change: "${change.originalText}" → "${change.suggestedText}" at position ${currentPosition}`);
+        } else {
+          logger.warn(`Could not find text "${change.originalText}" in enhanced text for suggestion ${change.suggestionId}`);
+        }
+      } catch (error) {
+        logger.error(`Error applying change for suggestion ${change.suggestionId}:`, error);
       }
     }
     
-    // Sort position adjustments by position (ascending order for proper calculation)
-    positionAdjustments.sort((a, b) => a.position - b.position);
-    
-    // Adjust positions of pending suggestions based on applied changes
-    const adjustedPendingSuggestions = await this.adjustPendingSuggestionPositions(
+    // Update positions of pending suggestions based on applied changes
+    const adjustedPendingSuggestions = await this.adjustPendingSuggestionsWithDiff(
       pendingSuggestions,
       tokenMap,
-      positionAdjustments
+      originalText,
+      enhancedText
     );
     
     return {
@@ -123,36 +141,48 @@ export const diffEngineService = {
   },
 
   /**
-   * Adjust positions of pending suggestions based on applied changes
-   * @param pendingSuggestions The pending suggestions to adjust
-   * @param tokenMap Map of token information
-   * @param positionAdjustments Array of position adjustments from applied changes
-   * @returns Pending suggestions with adjusted positions
+   * Find the position of text in the enhanced text, accounting for previous changes
    */
-  async adjustPendingSuggestionPositions(
+  findTextPosition(text: string, searchText: string, originalPosition: number): number {
+    // First try the original position
+    if (text.substring(originalPosition, originalPosition + searchText.length) === searchText) {
+      return originalPosition;
+    }
+    
+    // If not found at original position, search nearby (within reasonable range)
+    const searchRange = 100; // Search within 100 characters
+    const startSearch = Math.max(0, originalPosition - searchRange);
+    const endSearch = Math.min(text.length, originalPosition + searchRange);
+    
+    for (let i = startSearch; i <= endSearch - searchText.length; i++) {
+      if (text.substring(i, i + searchText.length) === searchText) {
+        return i;
+      }
+    }
+    
+    // If still not found, do a global search
+    return text.indexOf(searchText);
+  },
+
+  /**
+   * Adjust positions of pending suggestions using diff analysis
+   */
+  async adjustPendingSuggestionsWithDiff(
     pendingSuggestions: SuggestionModel[],
     tokenMap: Map<string, { textSegment: string; startIndex: number; endIndex: number }>,
-    positionAdjustments: Array<{ position: number; offset: number }>
+    originalText: string,
+    enhancedText: string
   ): Promise<SuggestionModel[]> {
-    if (pendingSuggestions.length === 0 || positionAdjustments.length === 0) {
+    if (pendingSuggestions.length === 0) {
       return pendingSuggestions;
     }
 
-    // Calculate cumulative offset for each position
-    const calculateAdjustedPosition = (originalPosition: number): number => {
-      let totalOffset = 0;
-      
-      for (const adjustment of positionAdjustments) {
-        // Only apply adjustments that occurred before this position
-        // A change at position X affects all positions > X
-        if (adjustment.position < originalPosition) {
-          totalOffset += adjustment.offset;
-        }
-      }
-      
-      return Math.max(0, originalPosition + totalOffset); // Ensure position is never negative
-    };
-
+    // Use jsdiff to calculate the differences between original and enhanced text
+    const diffs = diffChars(originalText, enhancedText);
+    
+    // Calculate position mappings from original to enhanced text
+    const positionMap = this.createPositionMap(diffs);
+    
     // Update token positions in the database for pending suggestions
     const tokenUpdates: Array<{
       id: string;
@@ -167,12 +197,19 @@ export const diffEngineService = {
         continue;
       }
 
-      const adjustedStartIndex = calculateAdjustedPosition(token.startIndex);
-      const adjustedEndIndex = calculateAdjustedPosition(token.endIndex);
+      const adjustedStartIndex = this.mapPosition(positionMap, token.startIndex);
+      const adjustedEndIndex = this.mapPosition(positionMap, token.endIndex);
 
       // Validate adjusted positions
-      if (adjustedStartIndex >= adjustedEndIndex) {
+      if (adjustedStartIndex >= adjustedEndIndex || adjustedStartIndex < 0) {
         logger.warn(`Invalid adjusted positions for token ${suggestion.tokenId}: start=${adjustedStartIndex}, end=${adjustedEndIndex}. Skipping adjustment.`);
+        continue;
+      }
+
+      // Verify the text still matches at the new position
+      const expectedText = enhancedText.substring(adjustedStartIndex, adjustedEndIndex);
+      if (expectedText !== token.textSegment) {
+        logger.warn(`Text mismatch after position adjustment for token ${suggestion.tokenId}. Expected: "${token.textSegment}", Found: "${expectedText}"`);
         continue;
       }
 
@@ -220,64 +257,60 @@ export const diffEngineService = {
 
     return pendingSuggestions;
   },
-  
+
   /**
-   * Handle overlapping suggestions to prevent conflicts
-   * @param suggestions Array of suggestions that might overlap
-   * @returns Filtered array with no overlapping suggestions
+   * Create a position mapping from diff results
    */
-  async resolveOverlappingSuggestions(suggestions: SuggestionModel[]): Promise<SuggestionModel[]> {
-    try {
-      // Get token information for all suggestions
-      const tokenIds = suggestions.map(s => s.tokenId);
-      const { data: tokens, error } = await supabase
-        .from('tokens')
-        .select('id, start_index, end_index')
-        .in('id', tokenIds);
+  createPositionMap(diffs: Array<{ added?: boolean; removed?: boolean; value: string; count?: number }>): Map<number, number> {
+    const positionMap = new Map<number, number>();
+    let originalPos = 0;
+    let enhancedPos = 0;
 
-      if (error) {
-        logger.error('Error fetching token positions:', error);
-        throw error;
-      }
-
-      // Create a map of token positions
-      const tokenPositions = new Map(
-        tokens.map(t => [t.id, [t.start_index, t.end_index]])
-      );
-
-      // Sort suggestions by priority (e.g., quality score or timestamp)
-      const sortedSuggestions = [...suggestions].sort((a, b) => {
-        return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
-      });
-      
-      const appliedRanges: Array<[number, number]> = [];
-      const resolvedSuggestions: SuggestionModel[] = [];
-      
-      for (const suggestion of sortedSuggestions) {
-        const range = tokenPositions.get(suggestion.tokenId);
-        if (!range) {
-          logger.warn(`Missing token position for suggestion ${suggestion.id}`);
-          continue;
+    for (const diff of diffs) {
+      if (diff.removed) {
+        // Text was removed, original position advances but enhanced doesn't
+        for (let i = 0; i < diff.value.length; i++) {
+          positionMap.set(originalPos + i, enhancedPos);
         }
-        
-        // Check for overlap with already applied ranges
-        const hasOverlap = appliedRanges.some(([start, end]) => {
-          return (range[0] >= start && range[0] < end) || // Start overlaps
-                 (range[1] > start && range[1] <= end) || // End overlaps
-                 (range[0] <= start && range[1] >= end);  // Encompasses
-        });
-        
-        if (!hasOverlap) {
-          appliedRanges.push([range[0], range[1]] as [number, number]);
-          resolvedSuggestions.push(suggestion);
+        originalPos += diff.value.length;
+      } else if (diff.added) {
+        // Text was added, enhanced position advances but original doesn't
+        enhancedPos += diff.value.length;
+      } else {
+        // Text is common, both positions advance
+        for (let i = 0; i < diff.value.length; i++) {
+          positionMap.set(originalPos + i, enhancedPos + i);
         }
+        originalPos += diff.value.length;
+        enhancedPos += diff.value.length;
       }
-      
-      return resolvedSuggestions;
-    } catch (error) {
-      logger.error('Error resolving overlapping suggestions:', error);
-      // In case of error, return all suggestions
-      return suggestions;
     }
+
+    return positionMap;
+  },
+
+  /**
+   * Map a position from original text to enhanced text
+   */
+  mapPosition(positionMap: Map<number, number>, originalPosition: number): number {
+    // If we have an exact mapping, use it
+    if (positionMap.has(originalPosition)) {
+      return positionMap.get(originalPosition)!;
+    }
+
+    // Find the closest mapped position before this one
+    let closestPos = 0;
+    let closestMapped = 0;
+    
+    for (const [orig, mapped] of positionMap.entries()) {
+      if (orig <= originalPosition && orig > closestPos) {
+        closestPos = orig;
+        closestMapped = mapped;
+      }
+    }
+
+    // Calculate offset from closest position
+    const offset = originalPosition - closestPos;
+    return closestMapped + offset;
   }
 };

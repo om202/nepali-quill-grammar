@@ -1,35 +1,60 @@
 import { Request, Response, NextFunction } from 'express';
-import { HttpError } from '../utils/httpError';
 import { logger } from '../utils/logger';
 
 export const errorHandler = (
-  err: Error,
+  error: any,
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
-  logger.error('Error handler caught:', err);
+  logger.error('Error occurred:', {
+    message: error.message,
+    stack: error.stack,
+    url: req.url,
+    method: req.method,
+    body: req.body
+  });
 
-  if (err instanceof HttpError) {
-    return res.status(err.statusCode).json({
+  // Handle specific error types
+  if (error.name === 'ValidationError') {
+    return res.status(400).json({
       error: {
-        message: err.message,
-        details: err.details
+        message: 'Validation failed',
+        details: error.details
       }
     });
   }
 
-  // Handle unexpected errors
-  const statusCode = 500;
-  const message = 'Internal Server Error';
-  
-  // Don't expose stack traces in production
-  const details = process.env.NODE_ENV === 'development' ? err.stack : undefined;
+  if (error.name === 'UnauthorizedError') {
+    return res.status(401).json({
+      error: {
+        message: 'Unauthorized access'
+      }
+    });
+  }
 
-  return res.status(statusCode).json({
+  // Handle custom HTTP errors
+  if (error.statusCode) {
+    return res.status(error.statusCode).json({
+      error: {
+        message: error.message
+      }
+    });
+  }
+
+  // Handle Unicode/encoding errors
+  if (error.message && error.message.includes('Invalid UTF-8')) {
+    return res.status(500).json({
+      error: {
+        message: 'Text encoding error occurred'
+      }
+    });
+  }
+
+  // Default server error
+  res.status(500).json({
     error: {
-      message,
-      details
+      message: 'Internal server error'
     }
   });
 };

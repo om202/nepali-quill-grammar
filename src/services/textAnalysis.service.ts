@@ -158,27 +158,8 @@ export const textAnalysisService = {
         };
       });
       
-      // Resolve any overlapping suggestions
-      const resolvedSuggestions = await diffEngineService.resolveOverlappingSuggestions(suggestions);
-      
-      // Add the missing properties to resolved suggestions
-      const extendedResolvedSuggestions: ExtendedSuggestionModel[] = resolvedSuggestions.map(suggestion => {
-        const tokenData = tokenDataMap.get(suggestion.tokenId);
-        if (!tokenData) {
-          logger.error(`Missing token data for resolved suggestion ${suggestion.id}`);
-          throw new HttpError(500, 'Missing token data for resolved suggestion');
-        }
-        
-        return {
-          ...suggestion,
-          originalText: tokenData.textSegment,
-          startIndex: tokenData.startIndex,
-          endIndex: tokenData.endIndex
-        };
-      });
-      
       return {
-        suggestions: extendedResolvedSuggestions
+        suggestions
       };
     } catch (error) {
       logger.error('Error in textAnalysis service:', error);
