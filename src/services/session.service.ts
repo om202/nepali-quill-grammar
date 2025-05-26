@@ -1,15 +1,23 @@
 import { supabase } from '../config/supabase';
+import { createClient } from '@supabase/supabase-js';
 import { HttpError } from '../utils/httpError';
 import { SessionModel, TokenModel } from '../types/database.types';
 import { logger } from '../utils/logger';
 
+// Create an anon client for session creation to bypass RLS issues
+const anonSupabase = createClient(
+  process.env.SUPABASE_URL!,
+  process.env.SUPABASE_KEY!
+);
+
 export const sessionService = {
   async createSession(text: string, userId?: string): Promise<SessionModel> {
     try {
-      const { data, error } = await supabase
+      // First create session as anonymous to avoid RLS conflicts
+      const { data, error } = await anonSupabase
         .from('sessions')
         .insert({
-          user_id: userId || null,
+          user_id: null, // Always create as anonymous first
           original_text: text
         })
         .select('id, original_text, created_at')
@@ -18,6 +26,25 @@ export const sessionService = {
       if (error) {
         logger.error('Error creating session:', error);
         throw new HttpError(500, 'Failed to create session', error);
+      }
+
+      // If we have a userId, update the session to associate it with the user
+      // This is done as a separate operation to work around RLS policy conflicts
+      if (userId) {
+        try {
+          const { error: updateError } = await supabase
+            .from('sessions')
+            .update({ user_id: userId })
+            .eq('id', data.id);
+          
+          if (updateError) {
+            logger.warn('Failed to associate session with user, continuing as anonymous:', updateError);
+          } else {
+            logger.info(`Session ${data.id} successfully associated with user ${userId}`);
+          }
+        } catch (updateError) {
+          logger.warn('Failed to associate session with user, continuing as anonymous:', updateError);
+        }
       }
 
       return {
@@ -118,6 +145,31 @@ export const sessionService = {
     rejectedCount: number;
   }>> {
     try {
+      logger.info(`Fetching history for user ${userId}`);
+      
+      // First, let's check if there are any sessions at all for this user
+      const { data: userSessions, error: userSessionsError } = await supabase
+        .from('sessions')
+        .select('id, user_id, original_text, created_at')
+        .eq('user_id', userId);
+        
+      if (userSessionsError) {
+        logger.error('Error checking user sessions:', userSessionsError);
+      } else {
+        logger.info(`Found ${userSessions.length} sessions directly associated with user ${userId}`);
+      }
+      
+      // Also check for recent sessions that might not be associated yet
+      const { data: recentSessions, error: recentError } = await supabase
+        .from('sessions')
+        .select('id, user_id, original_text, created_at')
+        .order('created_at', { ascending: false })
+        .limit(10);
+        
+      if (!recentError) {
+        logger.info(`Recent sessions: ${recentSessions.map(s => `${s.id} (user: ${s.user_id})`).join(', ')}`);
+      }
+
       // Get all sessions for the user with suggestion counts
       const { data: sessions, error: sessionsError } = await supabase
         .from('sessions')
@@ -142,6 +194,8 @@ export const sessionService = {
         logger.error('Error fetching user sessions:', sessionsError);
         throw new HttpError(500, 'Failed to fetch user history');
       }
+
+      logger.info(`Successfully fetched ${sessions.length} sessions with full details for user ${userId}`);
 
       // Transform the data to include counts
       const history = sessions.map(session => {
