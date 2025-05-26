@@ -97,7 +97,7 @@ export function AuthModal({ isOpen, onClose, defaultTab = 'login' }: AuthModalPr
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="sm:max-w-[480px] p-0 overflow-hidden">
+      <DialogContent className="sm:max-w-[480px] p-0 overflow-hidden bg-white">
         <div className="bg-gradient-to-br from-blue-50 to-purple-50 p-6">
           <DialogHeader className="text-center">
             <div className="flex items-center justify-center space-x-2 mb-2">
@@ -112,7 +112,7 @@ export function AuthModal({ isOpen, onClose, defaultTab = 'login' }: AuthModalPr
           </DialogHeader>
         </div>
         
-        <div className="p-6">
+        <div className="p-6 bg-white">
           <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as 'login' | 'signup')}>
             <TabsList className="grid w-full grid-cols-2 mb-6 bg-gray-100 p-1 rounded-xl">
               <TabsTrigger 
@@ -144,7 +144,7 @@ export function AuthModal({ isOpen, onClose, defaultTab = 'login' }: AuthModalPr
                       value={loginForm.email}
                       onChange={(e) => setLoginForm({ ...loginForm, email: e.target.value })}
                       disabled={isLoading}
-                      className="grammarly-input pl-10"
+                      className="grammarly-input-with-icon"
                     />
                   </div>
                 </div>
@@ -161,7 +161,7 @@ export function AuthModal({ isOpen, onClose, defaultTab = 'login' }: AuthModalPr
                       value={loginForm.password}
                       onChange={(e) => setLoginForm({ ...loginForm, password: e.target.value })}
                       disabled={isLoading}
-                      className="grammarly-input pl-10"
+                      className="grammarly-input-with-icon"
                     />
                   </div>
                 </div>
@@ -198,7 +198,7 @@ export function AuthModal({ isOpen, onClose, defaultTab = 'login' }: AuthModalPr
                       value={signupForm.name}
                       onChange={(e) => setSignupForm({ ...signupForm, name: e.target.value })}
                       disabled={isLoading}
-                      className="grammarly-input pl-10"
+                      className="grammarly-input-with-icon"
                     />
                   </div>
                 </div>
@@ -215,7 +215,7 @@ export function AuthModal({ isOpen, onClose, defaultTab = 'login' }: AuthModalPr
                       value={signupForm.email}
                       onChange={(e) => setSignupForm({ ...signupForm, email: e.target.value })}
                       disabled={isLoading}
-                      className="grammarly-input pl-10"
+                      className="grammarly-input-with-icon"
                     />
                   </div>
                 </div>
@@ -232,7 +232,7 @@ export function AuthModal({ isOpen, onClose, defaultTab = 'login' }: AuthModalPr
                       value={signupForm.password}
                       onChange={(e) => setSignupForm({ ...signupForm, password: e.target.value })}
                       disabled={isLoading}
-                      className="grammarly-input pl-10"
+                      className="grammarly-input-with-icon"
                     />
                   </div>
                 </div>
@@ -249,7 +249,7 @@ export function AuthModal({ isOpen, onClose, defaultTab = 'login' }: AuthModalPr
                       value={signupForm.confirmPassword}
                       onChange={(e) => setSignupForm({ ...signupForm, confirmPassword: e.target.value })}
                       disabled={isLoading}
-                      className="grammarly-input pl-10"
+                      className="grammarly-input-with-icon"
                     />
                   </div>
                 </div>

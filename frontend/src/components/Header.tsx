@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { AuthModal } from '@/components/auth/AuthModal';
 import { UserProfile } from '@/components/auth/UserProfile';
 import { RootState } from '@/store';
-import { Sparkles, PenTool } from 'lucide-react';
+import { Sparkles, PenTool, LogIn } from 'lucide-react';
 
 export function Header() {
   const { isAuthenticated, user } = useSelector((state: RootState) => state.auth);
@@ -60,15 +60,10 @@ export function Header() {
                 <Button 
                   variant="ghost" 
                   onClick={handleOpenLogin}
-                  className="font-semibold text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-xl px-4 py-2 transition-all duration-200"
+                  className="font-semibold text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-xl px-6 py-2.5 transition-all duration-200 border border-gray-200 hover:border-blue-200 shadow-sm hover:shadow-md"
                 >
+                  <LogIn className="h-4 w-4 mr-2" />
                   Log in
-                </Button>
-                <Button 
-                  onClick={handleOpenSignup}
-                  className="grammarly-button-primary"
-                >
-                  Get started
                 </Button>
               </div>
             )}
