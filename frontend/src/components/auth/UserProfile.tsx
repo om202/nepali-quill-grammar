@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'sonner';
-import { LogOut } from 'lucide-react';
+import { LogOut, Lock } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -25,10 +25,13 @@ import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { RootState, AppDispatch } from '@/store';
 import { logoutAsync } from '@/store/authSlice';
 
+import { ChangePasswordModal } from './ChangePasswordModal';
+
 export function UserProfile() {
   const dispatch = useDispatch<AppDispatch>();
   const { user } = useSelector((state: RootState) => state.auth);
   const [showLogoutDialog, setShowLogoutDialog] = useState(false);
+  const [showChangePassword, setShowChangePassword] = useState(false);
 
   const handleLogout = async () => {
     try {
@@ -41,6 +44,10 @@ export function UserProfile() {
 
   const handleLogoutClick = () => {
     setShowLogoutDialog(true);
+  };
+
+  const handleChangePasswordClick = () => {
+    setShowChangePassword(true);
   };
 
   const confirmLogout = () => {
@@ -84,6 +91,17 @@ export function UserProfile() {
           </div>
         </div>
         <DropdownMenuSeparator />
+        
+        <DropdownMenuItem
+          onClick={handleChangePasswordClick}
+          className='flex items-center space-x-2 p-3 rounded-lg hover:bg-indigo-50 cursor-pointer transition-smooth hover:scale-[1.02] active:scale-[0.98]'
+        >
+          <Lock className='h-4 w-4 transition-transform-smooth' />
+          <span className='font-medium'>Change Password</span>
+        </DropdownMenuItem>
+        
+        <DropdownMenuSeparator />
+        
         <DropdownMenuItem
           onClick={handleLogoutClick}
           className='flex items-center space-x-2 p-3 rounded-lg hover:bg-red-50 cursor-pointer text-red-600 transition-smooth hover:scale-[1.02] active:scale-[0.98]'
@@ -98,7 +116,7 @@ export function UserProfile() {
           <DialogHeader>
             <DialogTitle>Confirm Sign Out</DialogTitle>
             <DialogDescription>
-                You’ll need to log back in to continue.
+                You&apos;ll need to log back in to continue.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
@@ -118,6 +136,11 @@ export function UserProfile() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      <ChangePasswordModal
+        isOpen={showChangePassword}
+        onClose={() => setShowChangePassword(false)}
+      />
     </DropdownMenu>
   );
 }

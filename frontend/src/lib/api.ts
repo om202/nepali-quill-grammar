@@ -81,6 +81,38 @@ export interface UserHistoryResponse {
   history: UserHistoryItem[];
 }
 
+// Password reset interfaces
+export interface ForgotPasswordRequest {
+  email: string;
+}
+
+export interface ForgotPasswordResponse {
+  message: string;
+}
+
+export interface VerifyResetTokenResponse {
+  message: string;
+  email: string;
+}
+
+export interface ResetPasswordRequest {
+  token: string;
+  password: string;
+}
+
+export interface ResetPasswordResponse {
+  message: string;
+}
+
+export interface ChangePasswordRequest {
+  currentPassword: string;
+  newPassword: string;
+}
+
+export interface ChangePasswordResponse {
+  message: string;
+}
+
 interface ErrorResponse {
   message?: string;
   error?: string;
@@ -320,6 +352,81 @@ export const getUserHistory = async (): Promise<UserHistoryResponse> => {
     }
     throw new APIError(
       'Failed to get user history',
+      500,
+      error instanceof Error ? error.message : 'Unknown error'
+    );
+  }
+};
+
+// Password reset API functions
+export const forgotPassword = async (
+  data: ForgotPasswordRequest
+): Promise<ForgotPasswordResponse> => {
+  try {
+    const response = await api.post<ForgotPasswordResponse>('/auth/forgot-password', data);
+    return response.data;
+  } catch (error) {
+    if (error instanceof APIError) {
+      throw error;
+    }
+    throw new APIError(
+      'Failed to send password reset email',
+      500,
+      error instanceof Error ? error.message : 'Unknown error'
+    );
+  }
+};
+
+export const verifyResetToken = async (
+  token: string
+): Promise<VerifyResetTokenResponse> => {
+  try {
+    const response = await api.get<VerifyResetTokenResponse>(
+      `/auth/verify-reset-token?token=${encodeURIComponent(token)}`
+    );
+    return response.data;
+  } catch (error) {
+    if (error instanceof APIError) {
+      throw error;
+    }
+    throw new APIError(
+      'Failed to verify reset token',
+      500,
+      error instanceof Error ? error.message : 'Unknown error'
+    );
+  }
+};
+
+export const resetPassword = async (
+  data: ResetPasswordRequest
+): Promise<ResetPasswordResponse> => {
+  try {
+    const response = await api.post<ResetPasswordResponse>('/auth/reset-password', data);
+    return response.data;
+  } catch (error) {
+    if (error instanceof APIError) {
+      throw error;
+    }
+    throw new APIError(
+      'Failed to reset password',
+      500,
+      error instanceof Error ? error.message : 'Unknown error'
+    );
+  }
+};
+
+export const changePassword = async (
+  data: ChangePasswordRequest
+): Promise<ChangePasswordResponse> => {
+  try {
+    const response = await api.post<ChangePasswordResponse>('/auth/change-password', data);
+    return response.data;
+  } catch (error) {
+    if (error instanceof APIError) {
+      throw error;
+    }
+    throw new APIError(
+      'Failed to change password',
       500,
       error instanceof Error ? error.message : 'Unknown error'
     );

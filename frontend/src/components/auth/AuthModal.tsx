@@ -18,6 +18,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { RootState, AppDispatch } from '@/store';
 import { signupAsync, loginAsync, clearError } from '@/store/authSlice';
 
+import { ForgotPasswordModal } from './ForgotPasswordModal';
+
 interface AuthModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -33,6 +35,7 @@ export function AuthModal({
   const { isLoading, error } = useSelector((state: RootState) => state.auth);
 
   const [activeTab, setActiveTab] = useState(defaultTab);
+  const [showForgotPassword, setShowForgotPassword] = useState(false);
   const [loginForm, setLoginForm] = useState({
     email: '',
     password: '',
@@ -105,7 +108,16 @@ export function AuthModal({
 
   const handleClose = () => {
     dispatch(clearError());
+    setShowForgotPassword(false);
     onClose();
+  };
+
+  const handleForgotPassword = () => {
+    setShowForgotPassword(true);
+  };
+
+  const handleBackToLogin = () => {
+    setShowForgotPassword(false);
   };
 
   return (
@@ -196,6 +208,19 @@ export function AuthModal({
                     <p className='text-sm font-medium'>{error}</p>
                   </div>
                 )}
+                
+                <div className='flex items-center justify-between'>
+                  <div></div>
+                  <button
+                    type='button'
+                    onClick={handleForgotPassword}
+                    className='text-sm text-indigo-600 hover:text-indigo-500 font-medium'
+                    disabled={isLoading}
+                  >
+                    Forgot password?
+                  </button>
+                </div>
+                
                 <Button
                   type='submit'
                   className='grammarly-button-primary w-full'
@@ -359,6 +384,12 @@ export function AuthModal({
           </p>
         </div>
       </DialogContent>
+      
+      <ForgotPasswordModal
+        isOpen={showForgotPassword}
+        onClose={() => setShowForgotPassword(false)}
+        onBackToLogin={handleBackToLogin}
+      />
     </Dialog>
   );
 }
