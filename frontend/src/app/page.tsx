@@ -4,14 +4,16 @@ import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { SuggestionCard } from '@/components/suggestion-card';
+import { History } from '@/components/History';
 import { analyzeText, updateSuggestion, APIError } from '@/lib/api';
 import { toast } from 'sonner';
 import { HighlightedTextEditor } from '@/components/HighlightedTextEditor';
 import { RootState } from '@/store';
 import { setSuggestions, removeSuggestion } from '@/store/suggestionsSlice';
 import { setText } from '@/store/textSlice';
-import { CheckCircle, Zap, Sparkles } from 'lucide-react';
+import { CheckCircle, Zap, Sparkles, FileText, History as HistoryIcon } from 'lucide-react';
 
 export default function Home() {
   const dispatch = useDispatch();
@@ -22,6 +24,7 @@ export default function Home() {
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [selectedSuggestionId, setSelectedSuggestionId] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState('enhance');
 
   const handleAnalyze = async () => {
     if (!text.trim()) {
@@ -109,7 +112,7 @@ export default function Home() {
           <div className="grammarly-status-success mb-8 max-w-2xl mx-auto animate-slide-in-right">
             <div className="flex items-center justify-center space-x-2">
               <CheckCircle className="h-5 w-5" />
-              <span className="font-semibold">Welcome back, {user.name}!</span>
+              <span className="font-semibold">Welcome back, {user.name.split(' ')[0]}!</span>
             </div>
             <p className="mt-2 text-sm">Your text analysis sessions are automatically saved to your account.</p>
           </div>
@@ -125,104 +128,130 @@ export default function Home() {
           </div>
         )}
 
-        {/* Main Editor Section */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* Text Input */}
-          <div className="grammarly-card animate-fade-in-up">
-            <div className="p-6">
-              <div className="flex items-center space-x-2 mb-4">
-                <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
-                <h2 className="grammarly-heading-3">Enter Your Nepali Text</h2>
-              </div>
-              <HighlightedTextEditor
-                onSelectSuggestion={setSelectedSuggestionId}
-              />
-              {error && (
-                <div className="grammarly-status-error mt-4">
-                  <p className="font-medium">Analysis Failed</p>
-                  <p className="text-sm mt-1">{error}</p>
-                </div>
-              )}
-              <Button
-                onClick={handleAnalyze}
-                disabled={isLoading}
-                className="grammarly-button-primary w-full mt-6"
-              >
-                {isLoading ? (
-                  <>
-                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                    Analyzing...
-                  </>
-                ) : (
-                  <>
-                    <Zap className="h-4 w-4 mr-2" />
-                    Enhance Text
-                  </>
-                )}
-              </Button>
-            </div>
-          </div>
+        {/* Main Content with Tabs */}
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+          <TabsList className="grid w-full grid-cols-2 mb-8 bg-white p-1 rounded-xl shadow-sm">
+            <TabsTrigger 
+              value="enhance" 
+              className="flex items-center space-x-2 rounded-lg font-semibold data-[state=active]:bg-blue-50 data-[state=active]:text-blue-700 data-[state=active]:shadow-sm"
+            >
+              <Zap className="h-4 w-4" />
+              <span>Enhance Text</span>
+            </TabsTrigger>
+            <TabsTrigger 
+              value="history" 
+              className="flex items-center space-x-2 rounded-lg font-semibold data-[state=active]:bg-blue-50 data-[state=active]:text-blue-700 data-[state=active]:shadow-sm"
+            >
+              <HistoryIcon className="h-4 w-4" />
+              <span>History</span>
+            </TabsTrigger>
+          </TabsList>
 
-          {/* Suggestions Panel */}
-          <div className="grammarly-card animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
-            <div className="p-6">
-              <div className="flex items-center space-x-2 mb-4">
-                <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-                <h2 className="grammarly-heading-3">AI Suggestions</h2>
-                {suggestions.length > 0 && (
-                  <span className="bg-green-100 text-green-800 text-xs font-medium px-2 py-1 rounded-full">
-                    {suggestions.length} suggestion{suggestions.length !== 1 ? 's' : ''}
-                  </span>
-                )}
-              </div>
-              
-              <div className="min-h-[400px]">
-                {suggestions.length === 0 ? (
-                  <div className="flex flex-col items-center justify-center h-full text-center py-12">
+          <TabsContent value="enhance" className="space-y-0">
+            {/* Main Editor Section */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              {/* Text Input */}
+              <div className="grammarly-card animate-fade-in-up">
+                <div className="p-6">
+                  <div className="flex items-center space-x-2 mb-4">
+                    <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
+                    <h2 className="grammarly-heading-3">Enter Your Nepali Text</h2>
+                  </div>
+                  <HighlightedTextEditor
+                    onSelectSuggestion={setSelectedSuggestionId}
+                  />
+                  {error && (
+                    <div className="grammarly-status-error mt-4">
+                      <p className="font-medium">Analysis Failed</p>
+                      <p className="text-sm mt-1">{error}</p>
+                    </div>
+                  )}
+                  <Button
+                    onClick={handleAnalyze}
+                    disabled={isLoading}
+                    className="grammarly-button-primary w-full mt-6"
+                  >
                     {isLoading ? (
                       <>
-                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mb-4"></div>
-                        <p className="text-gray-500">Analyzing your text...</p>
-                      </>
-                    ) : error ? (
-                      <>
-                        <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mb-4">
-                          <span className="text-red-500 text-xl">!</span>
-                        </div>
-                        <p className="text-gray-500">Analysis failed. Please try again.</p>
+                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                        Analyzing...
                       </>
                     ) : (
                       <>
-                        <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mb-4">
-                          <Sparkles className="h-6 w-6 text-gray-400" />
-                        </div>
-                        <p className="text-gray-500 mb-2">No suggestions yet</p>
-                        <p className="text-sm text-gray-400">Enter some Nepali text to get started</p>
+                        <Zap className="h-4 w-4 mr-2" />
+                        Enhance Text
                       </>
                     )}
+                  </Button>
+                </div>
+              </div>
+
+              {/* Suggestions Panel */}
+              <div className="grammarly-card animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
+                <div className="p-6">
+                  <div className="flex items-center space-x-2 mb-4">
+                    <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                    <h2 className="grammarly-heading-3">AI Suggestions</h2>
+                    {suggestions.length > 0 && (
+                      <span className="bg-green-100 text-green-800 text-xs font-medium px-2 py-1 rounded-full">
+                        {suggestions.length} suggestion{suggestions.length !== 1 ? 's' : ''}
+                      </span>
+                    )}
                   </div>
-                ) : (
-                  <div className="space-y-4">
-                    {suggestions.map((suggestion, index) => (
-                      <div 
-                        key={suggestion.id}
-                        className="animate-fade-in"
-                        style={{ animationDelay: `${index * 0.1}s` }}
-                      >
-                        <SuggestionCard
-                          suggestion={suggestion}
-                          sessionId={sessionId!}
-                          onUpdate={handleSuggestionUpdate}
-                          className={selectedSuggestionId === suggestion.id ? 'ring-2 ring-blue-500' : ''}
-                        />
+                  
+                  <div className="min-h-[400px]">
+                    {suggestions.length === 0 ? (
+                      <div className="flex flex-col items-center justify-center h-full text-center py-12">
+                        {isLoading ? (
+                          <>
+                            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mb-4"></div>
+                            <p className="text-gray-500">Analyzing your text...</p>
+                          </>
+                        ) : error ? (
+                          <>
+                            <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mb-4">
+                              <span className="text-red-500 text-xl">!</span>
+                            </div>
+                            <p className="text-gray-500">Analysis failed. Please try again.</p>
+                          </>
+                        ) : (
+                          <>
+                            <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mb-4">
+                              <Sparkles className="h-6 w-6 text-gray-400" />
+                            </div>
+                            <p className="text-gray-500 mb-2">No suggestions yet</p>
+                            <p className="text-sm text-gray-400">Enter some Nepali text to get started</p>
+                          </>
+                        )}
                       </div>
-                    ))}
+                    ) : (
+                      <div className="space-y-4">
+                        {suggestions.map((suggestion, index) => (
+                          <div 
+                            key={suggestion.id}
+                            className="animate-fade-in"
+                            style={{ animationDelay: `${index * 0.1}s` }}
+                          >
+                            <SuggestionCard
+                              suggestion={suggestion}
+                              sessionId={sessionId!}
+                              onUpdate={handleSuggestionUpdate}
+                              className={selectedSuggestionId === suggestion.id ? 'ring-2 ring-blue-500' : ''}
+                            />
+                          </div>
+                        ))}
+                      </div>
+                    )}
                   </div>
-                )}
+                </div>
               </div>
             </div>
-          </div>
-        </div>
+          </TabsContent>
+
+          <TabsContent value="history" className="space-y-0">
+            <History />
+          </TabsContent>
+        </Tabs>
       </div>
     </div>
   );

@@ -67,6 +67,19 @@ export interface UpdateProfileRequest {
   name: string;
 }
 
+export interface UserHistoryItem {
+  id: string;
+  originalText: string;
+  createdAt: string;
+  suggestionsCount: number;
+  acceptedCount: number;
+  rejectedCount: number;
+}
+
+export interface UserHistoryResponse {
+  history: UserHistoryItem[];
+}
+
 interface ErrorResponse {
   message?: string;
   error?: string;
@@ -290,6 +303,22 @@ export const getSession = async (sessionId: string): Promise<DiffModel> => {
     }
     throw new APIError(
       'Failed to get session',
+      500,
+      error instanceof Error ? error.message : 'Unknown error'
+    );
+  }
+};
+
+export const getUserHistory = async (): Promise<UserHistoryResponse> => {
+  try {
+    const response = await api.get<UserHistoryResponse>('/auth/history');
+    return response.data;
+  } catch (error) {
+    if (error instanceof APIError) {
+      throw error;
+    }
+    throw new APIError(
+      'Failed to get user history',
       500,
       error instanceof Error ? error.message : 'Unknown error'
     );

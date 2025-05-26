@@ -107,5 +107,79 @@ export const sessionService = {
       }
       throw new HttpError(500, 'Failed to get session details');
     }
+  },
+
+  async getUserHistory(userId: string): Promise<Array<{
+    id: string;
+    originalText: string;
+    createdAt: string;
+    suggestionsCount: number;
+    acceptedCount: number;
+    rejectedCount: number;
+  }>> {
+    try {
+      // Get all sessions for the user with suggestion counts
+      const { data: sessions, error: sessionsError } = await supabase
+        .from('sessions')
+        .select(`
+          id,
+          original_text,
+          created_at,
+          tokens:tokens(
+            id,
+            suggestions:suggestions(
+              id,
+              actions:actions(
+                action
+              )
+            )
+          )
+        `)
+        .eq('user_id', userId)
+        .order('created_at', { ascending: false });
+
+      if (sessionsError) {
+        logger.error('Error fetching user sessions:', sessionsError);
+        throw new HttpError(500, 'Failed to fetch user history');
+      }
+
+      // Transform the data to include counts
+      const history = sessions.map(session => {
+        let suggestionsCount = 0;
+        let acceptedCount = 0;
+        let rejectedCount = 0;
+
+        session.tokens.forEach(token => {
+          token.suggestions.forEach(suggestion => {
+            suggestionsCount++;
+            if (suggestion.actions.length > 0) {
+              const action = suggestion.actions[0].action;
+              if (action === 'accept') {
+                acceptedCount++;
+              } else if (action === 'reject') {
+                rejectedCount++;
+              }
+            }
+          });
+        });
+
+        return {
+          id: session.id,
+          originalText: session.original_text,
+          createdAt: session.created_at,
+          suggestionsCount,
+          acceptedCount,
+          rejectedCount
+        };
+      });
+
+      return history;
+    } catch (error) {
+      logger.error('Error in getUserHistory:', error);
+      if (error instanceof HttpError) {
+        throw error;
+      }
+      throw new HttpError(500, 'Failed to fetch user history');
+    }
   }
 };

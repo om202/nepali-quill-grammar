@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import { AuthService } from '../services/auth.service';
+import { sessionService } from '../services/session.service';
 import { SignupRequestBody, LoginRequestBody } from '../schemas/auth.schema';
 import { UserModel } from '../types/database.types';
 import { supabase } from '../config/supabase';
@@ -147,6 +148,27 @@ export class AuthController {
       });
     } catch (error) {
       logger.error('Logout controller error:', error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  }
+
+  /**
+   * Get user's text enhancement history
+   */
+  static async getUserHistory(req: Request, res: Response): Promise<void> {
+    try {
+      if (!req.user) {
+        res.status(401).json({ error: 'User not authenticated' });
+        return;
+      }
+
+      const history = await sessionService.getUserHistory(req.user.id);
+
+      res.status(200).json({
+        history,
+      });
+    } catch (error) {
+      logger.error('Get user history controller error:', error);
       res.status(500).json({ error: 'Internal server error' });
     }
   }

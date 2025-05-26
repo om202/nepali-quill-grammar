@@ -14,5 +14,6 @@ authRouter.post('/login', validateRequest(loginSchema), AuthController.login);
 authRouter.get('/profile', authenticateToken, AuthController.getProfile);
 authRouter.put('/profile', authenticateToken, AuthController.updateProfile);
 authRouter.post('/logout', authenticateToken, AuthController.logout);
+authRouter.get('/history', authenticateToken, AuthController.getUserHistory);
 
 export { authRouter }; 

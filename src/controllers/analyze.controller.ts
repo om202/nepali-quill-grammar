@@ -8,10 +8,12 @@ export const analyzeController = {
   async analyzeText(req: Request<{}, {}, AnalyzeRequestBody>, res: Response) {
     try {
       const { text } = req.body;
-      logger.info('Analyzing text');
+      const userId = req.user?.id; // Get user ID if authenticated
       
-      // Create a new session
-      const session = await sessionService.createSession(text);
+      logger.info('Analyzing text', { userId: userId || 'anonymous' });
+      
+      // Create a new session with user ID if available
+      const session = await sessionService.createSession(text, userId);
       
       // Analyze the text and get suggestions
       const result = await textAnalysisService.analyzeText(text, session.id);

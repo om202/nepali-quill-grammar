@@ -46,15 +46,7 @@ export function Header() {
           
           <div className="flex items-center space-x-4">
             {isAuthenticated && user ? (
-              <div className="flex items-center space-x-4">
-                <div className="hidden md:flex items-center space-x-2 bg-blue-50 px-4 py-2 rounded-full">
-                  <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                  <span className="text-sm font-medium text-blue-700">
-                    {user.name}
-                  </span>
-                </div>
-                <UserProfile />
-              </div>
+              <UserProfile />
             ) : (
               <div className="flex items-center space-x-3">
                 <Button 
