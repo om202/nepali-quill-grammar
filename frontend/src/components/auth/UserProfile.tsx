@@ -1,6 +1,5 @@
 'use client';
 
-import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Button } from '@/components/ui/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
@@ -18,7 +17,7 @@ export function UserProfile() {
     try {
       await dispatch(logoutAsync()).unwrap();
       toast.success('Logged out successfully');
-    } catch (error) {
+    } catch {
       toast.error('Failed to logout');
     }
   };

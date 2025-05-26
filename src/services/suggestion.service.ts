@@ -102,11 +102,26 @@ export const suggestionService = {
         allSuggestions
       );
 
-      // Add token information to pending suggestions for frontend
+      // Add token information to both applied and pending suggestions for frontend
+      const enhancedAppliedSuggestions = diffModel.appliedSuggestions.map(suggestion => {
+        const tokenInfo = tokenMap.get(suggestion.tokenId);
+        if (!tokenInfo) {
+          logger.error(`Missing token info for applied suggestion ${suggestion.id}`);
+          throw new HttpError(500, 'Missing token information');
+        }
+        
+        return {
+          ...suggestion,
+          originalText: tokenInfo.textSegment,
+          startIndex: tokenInfo.startIndex,
+          endIndex: tokenInfo.endIndex
+        };
+      });
+
       const enhancedPendingSuggestions = diffModel.pendingSuggestions.map(suggestion => {
         const tokenInfo = tokenMap.get(suggestion.tokenId);
         if (!tokenInfo) {
-          logger.error(`Missing token info for suggestion ${suggestion.id}`);
+          logger.error(`Missing token info for pending suggestion ${suggestion.id}`);
           throw new HttpError(500, 'Missing token information');
         }
         
@@ -120,6 +135,7 @@ export const suggestionService = {
 
       return {
         ...diffModel,
+        appliedSuggestions: enhancedAppliedSuggestions,
         pendingSuggestions: enhancedPendingSuggestions
       };
     } catch (error) {

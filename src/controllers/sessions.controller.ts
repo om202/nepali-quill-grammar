@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { sessionService } from '../services/session.service';
+import { suggestionService } from '../services/suggestion.service';
 import { logger } from '../utils/logger';
 
 export const sessionsController = {
@@ -9,8 +9,8 @@ export const sessionsController = {
       
       logger.info(`Getting session data for ${sessionId}`);
       
-      // Get session data with tokens and actions
-      const sessionData = await sessionService.getSessionWithDetails(sessionId);
+      // Get session data as DiffModel with applied and pending suggestions
+      const sessionData = await suggestionService.getUpdatedDiffModel(sessionId);
       
       return res.status(200).json(sessionData);
     } catch (error) {

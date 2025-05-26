@@ -4,15 +4,17 @@ import { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { Button } from '@/components/ui/button';
 import { getUserHistory, UserHistoryItem } from '@/lib/api';
+import { SessionDetail } from '@/components/SessionDetail';
 import { RootState } from '@/store';
 import { toast } from 'sonner';
-import { Calendar, FileText, CheckCircle, XCircle, Clock, TrendingUp } from 'lucide-react';
+import { Calendar, FileText, CheckCircle, XCircle, Clock, TrendingUp, ChevronRight, Eye } from 'lucide-react';
 
 export function History() {
   const { isAuthenticated, user } = useSelector((state: RootState) => state.auth);
   const [history, setHistory] = useState<UserHistoryItem[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [selectedSessionId, setSelectedSessionId] = useState<string | null>(null);
 
   useEffect(() => {
     if (isAuthenticated && user) {
@@ -49,6 +51,24 @@ export function History() {
     if (text.length <= maxLength) return text;
     return text.substring(0, maxLength) + '...';
   };
+
+  const handleSessionClick = (sessionId: string) => {
+    setSelectedSessionId(sessionId);
+  };
+
+  const handleBackToHistory = () => {
+    setSelectedSessionId(null);
+  };
+
+  // If a session is selected, show the session detail view
+  if (selectedSessionId) {
+    return (
+      <SessionDetail 
+        sessionId={selectedSessionId} 
+        onBack={handleBackToHistory} 
+      />
+    );
+  }
 
   if (!isAuthenticated || !user) {
     return (
@@ -129,7 +149,12 @@ export function History() {
       <div className="space-y-4">
         <h3 className="text-lg font-medium text-gray-900">Recent Sessions</h3>
         {history.map((item, index) => (
-          <div key={item.id} className="grammarly-card p-6" style={{ animationDelay: `${0.5 + index * 0.1}s` }}>
+          <div 
+            key={item.id} 
+            className="grammarly-card p-6 cursor-pointer hover:shadow-md hover:border-blue-200 transition-all duration-200 group" 
+            style={{ animationDelay: `${0.5 + index * 0.1}s` }}
+            onClick={() => handleSessionClick(item.id)}
+          >
             <div className="flex items-start justify-between mb-4">
               <div className="flex items-center space-x-2 text-sm text-gray-500">
                 <Calendar className="h-4 w-4" />
@@ -147,6 +172,11 @@ export function History() {
                 <div className="flex items-center space-x-1">
                   <XCircle className="h-4 w-4 text-red-600" />
                   <span className="text-gray-600">{item.rejectedCount} rejected</span>
+                </div>
+                <div className="flex items-center space-x-1 text-blue-600 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <Eye className="h-4 w-4" />
+                  <span className="text-sm font-medium">View Details</span>
+                  <ChevronRight className="h-4 w-4" />
                 </div>
               </div>
             </div>
