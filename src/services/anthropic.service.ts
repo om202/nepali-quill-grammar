@@ -65,7 +65,7 @@ export const anthropicService = {
       logger.debug('Input text:', text);
 
       const messageRequest = {
-        model: 'claude-3-opus-20240229',
+        model: 'claude-sonnet-4-20250514',
         max_tokens: 4000,
         system: SYSTEM_PROMPT,
         messages: [

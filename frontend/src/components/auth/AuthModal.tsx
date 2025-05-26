@@ -63,7 +63,7 @@ export function AuthModal({
         })
       ).unwrap();
 
-      toast.success('Welcome back!');
+      toast.success('Welcome!');
       onClose();
       setLoginForm({ email: '', password: '' });
     } catch (error) {

@@ -172,7 +172,7 @@ export default function Home() {
             <div className='flex items-center justify-center space-x-2'>
               <CheckCircle className='h-5 w-5' />
               <span className='font-semibold'>
-                Welcome back, {user.name.split(' ')[0]}!
+                Welcome, {user.name.split(' ')[0]}!
               </span>
             </div>
           </div>
