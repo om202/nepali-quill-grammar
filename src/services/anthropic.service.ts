@@ -1,15 +1,17 @@
-import Anthropic from '@anthropic-ai/sdk';
-import { logger } from '../utils/logger';
-import { HttpError } from '../utils/httpError';
-import dotenv from 'dotenv';
+import Anthropic from "@anthropic-ai/sdk";
+import { logger } from "../utils/logger";
+import { HttpError } from "../utils/httpError";
+import dotenv from "dotenv";
 
 dotenv.config();
 
 const apiKey = process.env.ANTHROPIC_API_KEY;
 
 if (!apiKey) {
-  logger.error('ANTHROPIC_API_KEY is not set in environment variables.');
-  throw new Error('ANTHROPIC_API_KEY is not set. Please check your .env file or environment configuration.');
+  logger.error("ANTHROPIC_API_KEY is not set in environment variables.");
+  throw new Error(
+    "ANTHROPIC_API_KEY is not set. Please check your .env file or environment configuration."
+  );
 }
 
 const anthropic = new Anthropic({
@@ -18,19 +20,9 @@ const anthropic = new Anthropic({
 
 // Enhanced system prompt with better instructions for chunked processing
 const SYSTEM_PROMPT = `
-You are an expert Nepali language editor and text enhancement system.
-Your task is to analyze Nepali text and provide suggestions for improvements in:
-1. Grammar
-2. Spelling
-3. Punctuation
-4. Word choice
-5. Style and clarity
+You are an expert Nepali language editor. When given a block of Nepali text in Devnagari Script, you must find every error or weak phrasing related to:
 
-IMPORTANT GUIDELINES:
-- Focus on clear, actionable improvements
-- Prioritize grammatical errors and spelling mistakes
-- Be conservative with style suggestions to avoid overwhelming the user
-- Ensure suggestions maintain the original meaning and tone
+Grammar, Spelling, Punctuation, Word choice, Style & clarity
 
 Format your response strictly as a JSON array of objects:
 [
@@ -41,8 +33,6 @@ Format your response strictly as a JSON array of objects:
     "suggestions": ["suggestion1", "suggestion2"]
   }
 ]
-
-Handle Devanagari script carefully and ensure accurate character positioning.
 `;
 
 interface TextSuggestion {
@@ -72,9 +62,13 @@ class NepaliTextProcessor {
   /**
    * Split text into chunks while trying to preserve sentence boundaries
    */
-  private static chunkText(text: string): Array<{ chunk: string; offset: number }> {
-    logger.info(`Chunking text: ${text.length} characters into chunks of max ${this.MAX_CHUNK_SIZE}`);
-    
+  private static chunkText(
+    text: string
+  ): Array<{ chunk: string; offset: number }> {
+    logger.info(
+      `Chunking text: ${text.length} characters into chunks of max ${this.MAX_CHUNK_SIZE}`
+    );
+
     if (text.length <= this.MAX_CHUNK_SIZE) {
       return [{ chunk: text, offset: 0 }];
     }
@@ -84,23 +78,29 @@ class NepaliTextProcessor {
 
     while (currentOffset < text.length) {
       let chunkEnd = Math.min(currentOffset + this.MAX_CHUNK_SIZE, text.length);
-      
+
       // Try to find a good breaking point (sentence end or paragraph break)
       if (chunkEnd < text.length) {
-        const searchStart = Math.max(currentOffset + this.MAX_CHUNK_SIZE - 200, currentOffset);
-        
+        const searchStart = Math.max(
+          currentOffset + this.MAX_CHUNK_SIZE - 200,
+          currentOffset
+        );
+
         // Look for sentence endings (।, ?, !, or double newlines)
         const sentenceEndRegex = /[।?!][\s\n]*|[\n]{2,}/g;
         let lastGoodBreak = -1;
-        
+
         let match;
         sentenceEndRegex.lastIndex = searchStart;
-        while ((match = sentenceEndRegex.exec(text.slice(0, chunkEnd + 100))) !== null) {
+        while (
+          (match = sentenceEndRegex.exec(text.slice(0, chunkEnd + 100))) !==
+          null
+        ) {
           if (match.index > searchStart && match.index <= chunkEnd) {
             lastGoodBreak = match.index + match[0].length;
           }
         }
-        
+
         if (lastGoodBreak > searchStart) {
           chunkEnd = lastGoodBreak;
         }
@@ -112,7 +112,7 @@ class NepaliTextProcessor {
       }
 
       if (chunkEnd >= text.length) break;
-      
+
       currentOffset = Math.max(chunkEnd - this.OVERLAP_SIZE, currentOffset + 1);
     }
 
@@ -147,15 +147,19 @@ class NepaliTextProcessor {
           start: adjustedStart,
           end: adjustedEnd,
           originalText: suggestion.originalText,
-          suggestions: suggestion.suggestions
+          suggestions: suggestion.suggestions,
         });
       }
     }
 
-    const sortedSuggestions = mergedSuggestions.sort((a, b) => a.start - b.start);
-    
-    logger.info(`Merged suggestions: ${sortedSuggestions.length} final suggestions (removed ${duplicatesRemoved} duplicates)`);
-    
+    const sortedSuggestions = mergedSuggestions.sort(
+      (a, b) => a.start - b.start
+    );
+
+    logger.info(
+      `Merged suggestions: ${sortedSuggestions.length} final suggestions (removed ${duplicatesRemoved} duplicates)`
+    );
+
     return sortedSuggestions;
   }
 
@@ -169,15 +173,15 @@ class NepaliTextProcessor {
   ): Promise<any[]> {
     try {
       const messageRequest = {
-        model: 'claude-sonnet-4-20250514',
+        model: "claude-sonnet-4-20250514",
         max_tokens: 3000,
         system: SYSTEM_PROMPT,
         messages: [
           {
-            role: 'user' as const,
-            content: `Analyze and suggest improvements for this Nepali text (chunk ${chunkIndex + 1}/${totalChunks}): ${chunk}`
-          }
-        ]
+            role: "user" as const,
+            content: `Analyze and suggest improvements for this Nepali text (chunk ${chunkIndex + 1}/${totalChunks}): ${chunk}`,
+          },
+        ],
       };
 
       const message = await anthropic.messages.create(messageRequest);
@@ -188,41 +192,46 @@ class NepaliTextProcessor {
       }
 
       const contentBlock = message.content[0];
-      
-      if (contentBlock.type !== 'text') {
+
+      if (contentBlock.type !== "text") {
         logger.warn(`Unexpected content type for chunk ${chunkIndex + 1}`);
         return [];
       }
-      
+
       const responseText = contentBlock.text.trim();
-      
+
       try {
         const cleanedResponse = this.extractJsonFromResponse(responseText);
         const suggestions = JSON.parse(cleanedResponse);
-        
+
         if (!Array.isArray(suggestions)) {
           logger.warn(`Response is not an array for chunk ${chunkIndex + 1}`);
           return [];
         }
 
         // Validate suggestions
-        const validSuggestions = suggestions.filter(suggestion => {
-          return suggestion.originalText && 
-                 Array.isArray(suggestion.suggestions) &&
-                 typeof suggestion.start === 'number' &&
-                 typeof suggestion.end === 'number' &&
-                 suggestion.suggestions.length > 0;
+        const validSuggestions = suggestions.filter((suggestion) => {
+          return (
+            suggestion.originalText &&
+            Array.isArray(suggestion.suggestions) &&
+            typeof suggestion.start === "number" &&
+            typeof suggestion.end === "number" &&
+            suggestion.suggestions.length > 0
+          );
         });
 
-        logger.info(`Chunk ${chunkIndex + 1}/${totalChunks} processed: ${validSuggestions.length} suggestions`);
+        logger.info(
+          `Chunk ${chunkIndex + 1}/${totalChunks} processed: ${validSuggestions.length} suggestions`
+        );
         return validSuggestions;
-
       } catch (parseError) {
-        logger.warn(`JSON parsing failed for chunk ${chunkIndex + 1}:`, parseError);
+        logger.warn(
+          `JSON parsing failed for chunk ${chunkIndex + 1}:`,
+          parseError
+        );
         logger.warn(`Raw response: ${responseText.substring(0, 200)}...`);
         return [];
       }
-
     } catch (error) {
       logger.error(`Error processing chunk ${chunkIndex + 1}:`, error);
       return [];
@@ -234,23 +243,22 @@ class NepaliTextProcessor {
    */
   static async processLargeText(text: string): Promise<TextSuggestion[]> {
     logger.info(`Processing large text: ${text.length} characters`);
-    
+
     const chunks = this.chunkText(text);
     const allSuggestions: Array<{ suggestions: any[]; offset: number }> = [];
 
     // Process chunks with delay to avoid rate limiting
     for (let i = 0; i < chunks.length; i++) {
       const { chunk, offset } = chunks[i];
-      
+
       try {
         const suggestions = await this.processChunk(chunk, i, chunks.length);
         allSuggestions.push({ suggestions, offset });
-        
+
         // Add small delay between chunks
         if (i < chunks.length - 1) {
-          await new Promise(resolve => setTimeout(resolve, 500));
+          await new Promise((resolve) => setTimeout(resolve, 500));
         }
-        
       } catch (error) {
         logger.error(`Failed to process chunk ${i + 1}:`, error);
         continue;
@@ -258,9 +266,11 @@ class NepaliTextProcessor {
     }
 
     const mergedSuggestions = this.mergeSuggestions(allSuggestions);
-    
-    logger.info(`Large text processing complete: ${mergedSuggestions.length} total suggestions from ${allSuggestions.length}/${chunks.length} chunks`);
-    
+
+    logger.info(
+      `Large text processing complete: ${mergedSuggestions.length} total suggestions from ${allSuggestions.length}/${chunks.length} chunks`
+    );
+
     return mergedSuggestions;
   }
 }
@@ -272,78 +282,89 @@ export const anthropicService = {
 
       // Use chunking for large texts
       if (text.length > 1500) {
-        logger.info('Using chunking strategy for large text');
+        logger.info("Using chunking strategy for large text");
         return await NepaliTextProcessor.processLargeText(text);
       }
 
-      logger.info('Using direct processing for small text');
+      logger.info("Using direct processing for small text");
 
       // Process small texts directly
       const messageRequest = {
-        model: 'claude-sonnet-4-20250514',
+        model: "claude-sonnet-4-20250514",
         max_tokens: 4000,
         system: SYSTEM_PROMPT,
         messages: [
           {
-            role: 'user' as const,
-            content: `Analyze and suggest improvements for this Nepali text: ${text}`
-          }
-        ]
+            role: "user" as const,
+            content: `Analyze and suggest improvements for this Nepali text: ${text}`,
+          },
+        ],
       };
 
       const message = await anthropic.messages.create(messageRequest);
 
       if (!message.content || message.content.length === 0) {
-        logger.error('Anthropic response content is empty');
-        throw new HttpError(500, 'Received an empty response from AI');
+        logger.error("Anthropic response content is empty");
+        throw new HttpError(500, "Received an empty response from AI");
       }
 
       const contentBlock = message.content[0];
-      
-      if (contentBlock.type !== 'text') {
+
+      if (contentBlock.type !== "text") {
         logger.error(`Unexpected content block type: ${contentBlock.type}`);
-        throw new HttpError(500, 'Invalid response format from Anthropic');
+        throw new HttpError(500, "Invalid response format from Anthropic");
       }
-      
+
       const responseText = contentBlock.text.trim();
-      
+
       try {
-        const cleanedResponse = NepaliTextProcessor.extractJsonFromResponse(responseText);
+        const cleanedResponse =
+          NepaliTextProcessor.extractJsonFromResponse(responseText);
         const suggestions = JSON.parse(cleanedResponse);
-        
+
         if (!Array.isArray(suggestions)) {
-          logger.error('Parsed response is not an array');
-          throw new HttpError(500, 'AI response was not in the expected array format');
+          logger.error("Parsed response is not an array");
+          throw new HttpError(
+            500,
+            "AI response was not in the expected array format"
+          );
         }
 
         // Validate and return suggestions
-        const validSuggestions = suggestions.filter(suggestion => {
-          const isValid = suggestion.originalText && 
-                         Array.isArray(suggestion.suggestions) &&
-                         typeof suggestion.start === 'number' &&
-                         typeof suggestion.end === 'number' &&
-                         suggestion.suggestions.length > 0 &&
-                         suggestion.suggestions.every((s: any) => typeof s === 'string');
-          
+        const validSuggestions = suggestions.filter((suggestion) => {
+          const isValid =
+            suggestion.originalText &&
+            Array.isArray(suggestion.suggestions) &&
+            typeof suggestion.start === "number" &&
+            typeof suggestion.end === "number" &&
+            suggestion.suggestions.length > 0 &&
+            suggestion.suggestions.every((s: any) => typeof s === "string");
+
           if (!isValid) {
-            logger.warn('Invalid suggestion filtered out');
+            logger.warn("Invalid suggestion filtered out");
           }
-          
+
           return isValid;
         });
 
-        logger.info(`Successfully parsed ${validSuggestions.length} suggestions`);
+        logger.info(
+          `Successfully parsed ${validSuggestions.length} suggestions`
+        );
         return validSuggestions;
-
       } catch (parseError) {
-        logger.error('Failed to parse JSON from Anthropic response:', parseError);
+        logger.error(
+          "Failed to parse JSON from Anthropic response:",
+          parseError
+        );
         logger.error(`Raw response: ${responseText.substring(0, 200)}...`);
-        throw new HttpError(500, 'Failed to parse suggestions from AI response');
+        throw new HttpError(
+          500,
+          "Failed to parse suggestions from AI response"
+        );
       }
-
     } catch (error) {
-      logger.error('Error in Anthropic service:', error);
-      
+      logger.error("Error in Anthropic service:", error);
+
       if (error instanceof Anthropic.APIError) {
         throw new HttpError(
           error.status || 500,
@@ -351,12 +372,12 @@ export const anthropicService = {
           error.error
         );
       }
-      
+
       if (error instanceof HttpError) {
         throw error;
       }
-      
-      throw new HttpError(500, 'Failed to get suggestions from AI');
+
+      throw new HttpError(500, "Failed to get suggestions from AI");
     }
-  }
+  },
 };
