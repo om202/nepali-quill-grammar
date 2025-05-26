@@ -54,7 +54,7 @@ export function History() {
     return (
       <div className="grammarly-card p-8 text-center">
         <FileText className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-        <h3 className="text-lg font-semibold text-gray-900 mb-2">Sign in to view history</h3>
+        <h3 className="text-base font-medium text-gray-900 mb-2">Sign in to view history</h3>
         <p className="text-gray-600">Your text enhancement history will appear here once you're logged in.</p>
       </div>
     );
@@ -73,7 +73,7 @@ export function History() {
     return (
       <div className="grammarly-card p-8 text-center">
         <XCircle className="h-12 w-12 text-red-400 mx-auto mb-4" />
-        <h3 className="text-lg font-semibold text-gray-900 mb-2">Failed to load history</h3>
+        <h3 className="text-base font-medium text-gray-900 mb-2">Failed to load history</h3>
         <p className="text-gray-600 mb-4">{error}</p>
         <Button onClick={fetchHistory} className="grammarly-button-primary">
           Try again
@@ -86,7 +86,7 @@ export function History() {
     return (
       <div className="grammarly-card p-8 text-center">
         <FileText className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-        <h3 className="text-lg font-semibold text-gray-900 mb-2">No history yet</h3>
+        <h3 className="text-base font-medium text-gray-900 mb-2">No history yet</h3>
         <p className="text-gray-600">Start enhancing your Nepali text to see your history here.</p>
       </div>
     );
@@ -103,29 +103,29 @@ export function History() {
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <div className="grammarly-card p-4 text-center">
           <FileText className="h-8 w-8 text-blue-600 mx-auto mb-2" />
-          <div className="text-2xl font-bold text-gray-900">{totalSessions}</div>
+          <div className="text-xl font-semibold text-gray-900">{totalSessions}</div>
           <div className="text-sm text-gray-600">Sessions</div>
         </div>
         <div className="grammarly-card p-4 text-center">
           <TrendingUp className="h-8 w-8 text-purple-600 mx-auto mb-2" />
-          <div className="text-2xl font-bold text-gray-900">{totalSuggestions}</div>
+          <div className="text-xl font-semibold text-gray-900">{totalSuggestions}</div>
           <div className="text-sm text-gray-600">Suggestions</div>
         </div>
         <div className="grammarly-card p-4 text-center">
           <CheckCircle className="h-8 w-8 text-green-600 mx-auto mb-2" />
-          <div className="text-2xl font-bold text-gray-900">{totalAccepted}</div>
+          <div className="text-xl font-semibold text-gray-900">{totalAccepted}</div>
           <div className="text-sm text-gray-600">Accepted</div>
         </div>
         <div className="grammarly-card p-4 text-center">
           <Clock className="h-8 w-8 text-orange-600 mx-auto mb-2" />
-          <div className="text-2xl font-bold text-gray-900">{acceptanceRate}%</div>
+          <div className="text-xl font-semibold text-gray-900">{acceptanceRate}%</div>
           <div className="text-sm text-gray-600">Acceptance Rate</div>
         </div>
       </div>
 
       {/* History List */}
       <div className="space-y-4">
-        <h3 className="text-xl font-semibold text-gray-900">Recent Sessions</h3>
+        <h3 className="text-lg font-medium text-gray-900">Recent Sessions</h3>
         {history.map((item) => (
           <div key={item.id} className="grammarly-card p-6">
             <div className="flex items-start justify-between mb-4">

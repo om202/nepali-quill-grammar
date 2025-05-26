@@ -119,7 +119,7 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-gray-50 py-8">
-      <div className="container mx-auto max-w-6xl px-6">
+      <div className="container mx-auto px-6">
         {/* Status Messages */}
         {isAuthenticated && user && showWelcomeMessage && (
           <div className="grammarly-status-success mb-8 max-w-2xl mx-auto animate-slide-in-right">
@@ -134,7 +134,7 @@ export default function Home() {
           <div className="grammarly-status-info mb-8 max-w-2xl mx-auto animate-slide-in-right">
             <div className="flex items-center justify-center space-x-2">
               <Sparkles className="h-5 w-5" />
-              <span className="font-semibold">Try NepaliQuill for free</span>
+              <span className="font-semibold">Try Vyakaranly for free</span>
             </div>
             <p className="mt-2 text-sm">Sign up to save your sessions and unlock additional features.</p>
           </div>
@@ -142,7 +142,7 @@ export default function Home() {
 
         {/* Main Content with Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-2 mb-8 bg-white p-1 rounded-xl shadow-sm">
+          <TabsList className="grid w-full grid-cols-2 mb-8 bg-white p-1 rounded-xl shadow-sm max-w-md mx-auto">
             <TabsTrigger 
               value="enhance" 
               className="flex items-center space-x-2 rounded-lg font-semibold data-[state=active]:bg-blue-50 data-[state=active]:text-blue-700 data-[state=active]:shadow-sm"
@@ -161,9 +161,9 @@ export default function Home() {
 
           <TabsContent value="enhance" className="space-y-0">
             {/* Main Editor Section */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-              {/* Text Input */}
-              <div className="grammarly-card animate-fade-in-up">
+            <div className="flex flex-col lg:flex-row gap-6 w-full">
+              {/* Text Input - 70% width */}
+              <div className="w-full lg:w-[70%] grammarly-card animate-fade-in-up">
                 <div className="p-6">
                   <div className="flex items-center space-x-2 mb-4">
                     <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
@@ -198,8 +198,8 @@ export default function Home() {
                 </div>
               </div>
 
-              {/* Suggestions Panel */}
-              <div className="grammarly-card animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
+              {/* Suggestions Panel - 30% width */}
+              <div className="w-full lg:w-[30%] grammarly-card animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
                 <div className="p-6">
                   <div className="flex items-center space-x-2 mb-4">
                     <div className="w-3 h-3 bg-green-500 rounded-full"></div>
@@ -222,7 +222,7 @@ export default function Home() {
                         ) : error ? (
                           <>
                             <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mb-4">
-                              <span className="text-red-500 text-xl">!</span>
+                              <span className="text-red-500 text-lg">!</span>
                             </div>
                             <p className="text-gray-500">Analysis failed. Please try again.</p>
                           </>

@@ -9,8 +9,8 @@ import { AuthProvider } from "@/components/auth/AuthProvider";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "NepaliQuill - Nepali Text Enhancement",
-  description: "Enhance your Nepali text with AI-powered suggestions",
+  title: "Vyakaranly - Nepali Text Enhancement",
+  description: "AI-powered Nepali text enhancement and grammar checking",
 };
 
 export default function RootLayout({

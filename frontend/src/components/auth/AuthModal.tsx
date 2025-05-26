@@ -102,8 +102,8 @@ export function AuthModal({ isOpen, onClose, defaultTab = 'login' }: AuthModalPr
           <DialogHeader className="text-center">
             <div className="flex items-center justify-center space-x-2 mb-2">
               <Sparkles className="h-6 w-6 text-blue-600" />
-              <DialogTitle className="text-2xl font-bold grammarly-gradient-text">
-                Welcome to NepaliQuill
+              <DialogTitle className="text-xl font-semibold grammarly-gradient-text">
+                Welcome to Vyakaranly
               </DialogTitle>
             </div>
             <p className="text-gray-600">
@@ -177,7 +177,7 @@ export function AuthModal({ isOpen, onClose, defaultTab = 'login' }: AuthModalPr
                       Signing in...
                     </>
                   ) : (
-                    'Sign in to NepaliQuill'
+                    'Sign in to Vyakaranly'
                   )}
                 </Button>
               </form>

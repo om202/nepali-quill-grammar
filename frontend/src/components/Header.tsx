@@ -34,12 +34,9 @@ export function Header() {
                 <Sparkles className="h-4 w-4 text-purple-500 absolute -top-1 -right-1" />
               </div>
               <div>
-                <h1 className="text-2xl font-bold grammarly-gradient-text">
-                  NepaliQuill
+                <h1 className="text-xl font-semibold grammarly-gradient-text">
+                  Vyakaranly
                 </h1>
-                <p className="text-xs text-gray-500 -mt-1">
-                  AI-powered Nepali text enhancement
-                </p>
               </div>
             </div>
           </div>
