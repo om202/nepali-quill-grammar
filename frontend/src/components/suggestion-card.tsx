@@ -34,7 +34,7 @@ export function SuggestionCard({ suggestion, sessionId, onUpdate, className }: S
       <CardContent className="p-4">
         <p className="mb-2">
           <span className="font-semibold">Original:</span>{' '}
-          {suggestion.suggestedText}
+          {suggestion.originalText}
         </p>
         <div className="flex gap-2">
           <Button

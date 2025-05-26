@@ -1,17 +1,20 @@
 'use client';
 
 import { useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { SuggestionCard } from '@/components/suggestion-card';
-import { analyzeText, updateSuggestion, Suggestion, APIError } from '@/lib/api';
+import { analyzeText, updateSuggestion, APIError } from '@/lib/api';
 import { toast } from 'sonner';
 import { HighlightedTextEditor } from '@/components/HighlightedTextEditor';
 import { Provider } from 'react-redux';
-import { store } from '@/store';
+import { store, RootState } from '@/store';
+import { setSuggestions, removeSuggestion } from '@/store/suggestionsSlice';
 
 export default function Home() {
-  const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
+  const dispatch = useDispatch();
+  const suggestions = useSelector((state: RootState) => state.suggestions.items);
   const [isLoading, setIsLoading] = useState(false);
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -28,7 +31,9 @@ export default function Home() {
     setError(null);
     try {
       const response = await analyzeText(text);
-      setSuggestions(response.suggestions);
+      console.log('API Response:', response);
+      console.log('Suggestions:', response.suggestions);
+      dispatch(setSuggestions(response.suggestions));
       setSessionId(response.sessionId);
       if (response.suggestions.length === 0) {
         toast.info('No suggestions found for the given text');
@@ -61,7 +66,7 @@ export default function Home() {
 
     try {
       await updateSuggestion(sessionId, suggestionId, action);
-      setSuggestions(prev => prev.filter(s => s.id !== suggestionId));
+      dispatch(removeSuggestion(suggestionId));
       setSelectedSuggestionId(null);
       if (suggestions.length === 1) {
         setSessionId(null);

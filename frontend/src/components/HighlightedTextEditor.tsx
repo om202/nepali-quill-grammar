@@ -20,20 +20,27 @@ export const HighlightedTextEditor: React.FC<HighlightedTextEditorProps> = ({ on
     if (!suggestions.length) return text;
     let html = "";
     let lastIndex = 0;
-    // Sort by tokenId to maintain consistent order
-    const sorted: Suggestion[] = [...suggestions].sort((a, b) => a.tokenId.localeCompare(b.tokenId));
-    sorted.forEach((s: Suggestion) => {
-      // Find the token's position in the text
-      const tokenStart = text.indexOf(s.suggestedText, lastIndex);
-      if (tokenStart === -1) return; // Skip if token not found
-      const tokenEnd = tokenStart + s.suggestedText.length;
+    // Sort by startIndex to process in order of appearance
+    const sortedSuggestions: Suggestion[] = [...suggestions].sort((a, b) => a.startIndex - b.startIndex);
 
-      html += escapeHTML(text.slice(lastIndex, tokenStart));
+    sortedSuggestions.forEach((s: Suggestion) => {
+      // Ensure startIndex and endIndex are valid and in order
+      if (s.startIndex === undefined || s.endIndex === undefined || s.startIndex < lastIndex || s.startIndex >= s.endIndex) {
+        console.warn("Skipping invalid or overlapping suggestion:", s);
+        return; // Skip this suggestion
+      }
+
+      // Add text before the current suggestion
+      html += escapeHTML(text.slice(lastIndex, s.startIndex));
+      
+      // Add the highlighted suggestion
       html += `<span class='underline text-red-600 bg-red-100 cursor-pointer' data-suggestion-id='${s.id}'>`;
-      html += escapeHTML(text.slice(tokenStart, tokenEnd));
+      html += escapeHTML(text.slice(s.startIndex, s.endIndex));
       html += "</span>";
-      lastIndex = tokenEnd;
+      
+      lastIndex = s.endIndex;
     });
+    // Add any remaining text after the last suggestion
     html += escapeHTML(text.slice(lastIndex));
     return html;
   };

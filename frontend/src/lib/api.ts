@@ -6,6 +6,9 @@ export interface Suggestion {
   id: string;
   tokenId: string;
   suggestedText: string;
+  originalText: string;
+  startIndex: number;
+  endIndex: number;
   createdAt: string;
   action?: 'accept' | 'reject';
 }
