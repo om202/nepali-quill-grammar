@@ -74,11 +74,6 @@ export function UserProfile() {
         forceMount
       >
         <div className='flex bg-white items-center space-x-3 p-3 bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg mb-2 transition-colors-smooth'>
-          <Avatar className='h-12 w-12 border-2 border-white shadow-sm transition-shadow-smooth'>
-            <AvatarFallback className='bg-gradient-to-br from-blue-500 to-purple-600 text-white transition-colors-smooth'>
-              <User className='h-6 w-6 transition-transform-smooth' />
-            </AvatarFallback>
-          </Avatar>
           <div className='flex-1 min-w-0'>
             <p className='font-semibold text-gray-900 truncate transition-colors-smooth'>
               {firstName}

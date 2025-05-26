@@ -31,7 +31,7 @@ export function Header() {
                 <Sparkles className='h-4 w-4 text-purple-500 absolute -top-1 -right-1' />
               </div>
               <h1 className='text-xl font-semibold grammarly-gradient-text'>
-                Nepali Grammarly
+                Vyakaranly
               </h1>
             </div>
           </div>
