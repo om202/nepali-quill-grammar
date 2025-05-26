@@ -18,11 +18,6 @@ export function Header() {
     setIsAuthModalOpen(true);
   };
 
-  const handleOpenSignup = () => {
-    setAuthModalTab('signup');
-    setIsAuthModalOpen(true);
-  };
-
   return (
     <>
       <header className="grammarly-header">
@@ -49,7 +44,7 @@ export function Header() {
                 <Button 
                   variant="ghost" 
                   onClick={handleOpenLogin}
-                  className="font-semibold text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-xl px-6 py-2.5 transition-all duration-200 border border-gray-200 hover:border-blue-200 shadow-sm hover:shadow-md"
+                  className="font-semibold text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-sm px-6 py-2.5 transition-all duration-200 border border-gray-200 hover:border-blue-200 shadow-sm hover:shadow-md"
                 >
                   <LogIn className="h-4 w-4 mr-2" />
                   Log in

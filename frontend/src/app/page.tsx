@@ -1,30 +1,42 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { SuggestionCard } from '@/components/suggestion-card';
-import { History } from '@/components/History';
-import { analyzeText, updateSuggestion, APIError } from '@/lib/api';
-import { toast } from 'sonner';
-import { HighlightedTextEditor } from '@/components/HighlightedTextEditor';
-import { RootState } from '@/store';
-import { setSuggestions, removeSuggestion } from '@/store/suggestionsSlice';
-import { setText } from '@/store/textSlice';
-import { CheckCircle, Zap, Sparkles, FileText, History as HistoryIcon, Edit3, Bot } from 'lucide-react';
+import { useState, useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { Button } from "@/components/ui/button";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { SuggestionCard } from "@/components/suggestion-card";
+import { History } from "@/components/History";
+import { analyzeText, updateSuggestion, APIError } from "@/lib/api";
+import { toast } from "sonner";
+import { HighlightedTextEditor } from "@/components/HighlightedTextEditor";
+import { RootState } from "@/store";
+import { setSuggestions, removeSuggestion } from "@/store/suggestionsSlice";
+import { setText } from "@/store/textSlice";
+import {
+  CheckCircle,
+  Zap,
+  Sparkles,
+  History as HistoryIcon,
+  Edit3,
+  Bot,
+} from "lucide-react";
 
 export default function Home() {
   const dispatch = useDispatch();
-  const suggestions = useSelector((state: RootState) => state.suggestions.items);
+  const suggestions = useSelector(
+    (state: RootState) => state.suggestions.items
+  );
   const text = useSelector((state: RootState) => state.text.value);
-  const { isAuthenticated, user } = useSelector((state: RootState) => state.auth);
+  const { isAuthenticated, user } = useSelector(
+    (state: RootState) => state.auth
+  );
   const [isLoading, setIsLoading] = useState(false);
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [selectedSuggestionId, setSelectedSuggestionId] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState('enhance');
+  const [selectedSuggestionId, setSelectedSuggestionId] = useState<
+    string | null
+  >(null);
+  const [activeTab, setActiveTab] = useState("enhance");
   const [showWelcomeMessage, setShowWelcomeMessage] = useState(false);
 
   // Show welcome message for 5 seconds when user is authenticated
@@ -41,7 +53,7 @@ export default function Home() {
 
   const handleAnalyze = async () => {
     if (!text.trim()) {
-      toast.error('Please enter some text to analyze');
+      toast.error("Please enter some text to analyze");
       return;
     }
 
@@ -49,44 +61,48 @@ export default function Home() {
     setError(null);
     try {
       const response = await analyzeText(text);
-      console.log('API Response:', response);
-      console.log('Suggestions:', response.suggestions);
+      console.log("API Response:", response);
+      console.log("Suggestions:", response.suggestions);
       dispatch(setSuggestions(response.suggestions));
       setSessionId(response.sessionId);
       if (response.suggestions.length === 0) {
-        toast.info('No suggestions found for the given text');
+        toast.info("No suggestions found for the given text");
       } else {
-        toast.success('Text analyzed successfully');
+        toast.success("Text analyzed successfully");
       }
     } catch (error) {
-      let errorMessage = 'Failed to analyze text';
+      let errorMessage = "Failed to analyze text";
       if (error instanceof APIError) {
         errorMessage = error.message;
         if (error.statusCode === 500) {
-          errorMessage = 'Server error: ' + error.message;
+          errorMessage = "Server error: " + error.message;
         } else if (error.statusCode === 0) {
-          errorMessage = 'Connection error: ' + error.message;
+          errorMessage = "Connection error: " + error.message;
         }
       }
       setError(errorMessage);
       toast.error(errorMessage);
-      console.error('Analysis error:', error);
+      console.error("Analysis error:", error);
     } finally {
       setIsLoading(false);
     }
   };
 
-  const handleSuggestionUpdate = async (sessionId: string, suggestionId: string, action: 'accept' | 'reject') => {
+  const handleSuggestionUpdate = async (
+    sessionId: string,
+    suggestionId: string,
+    action: "accept" | "reject"
+  ) => {
     if (!sessionId) {
-      toast.error('No active session');
+      toast.error("No active session");
       return;
     }
 
     try {
       const result = await updateSuggestion(sessionId, suggestionId, action);
-      
+
       // If suggestion was accepted, update the text with the enhanced version
-      if (action === 'accept') {
+      if (action === "accept") {
         dispatch(setText(result.enhancedText));
         // Update suggestions to show remaining pending suggestions
         dispatch(setSuggestions(result.pendingSuggestions));
@@ -94,25 +110,25 @@ export default function Home() {
         // If rejected, just remove this suggestion
         dispatch(removeSuggestion(suggestionId));
       }
-      
+
       setSelectedSuggestionId(null);
-      
+
       // If no more suggestions, clear session
       if (result.pendingSuggestions.length === 0) {
         setSessionId(null);
       }
     } catch (error) {
-      let errorMessage = 'Failed to update suggestion';
+      let errorMessage = "Failed to update suggestion";
       if (error instanceof APIError) {
         errorMessage = error.message;
         if (error.statusCode === 500) {
-          errorMessage = 'Server error: ' + error.message;
+          errorMessage = "Server error: " + error.message;
         } else if (error.statusCode === 0) {
-          errorMessage = 'Connection error: ' + error.message;
+          errorMessage = "Connection error: " + error.message;
         }
       }
       toast.error(errorMessage);
-      console.error('Update error:', error);
+      console.error("Update error:", error);
       throw error;
     }
   };
@@ -125,7 +141,9 @@ export default function Home() {
           <div className="grammarly-status-success mb-8 max-w-2xl mx-auto">
             <div className="flex items-center justify-center space-x-2">
               <CheckCircle className="h-5 w-5" />
-              <span className="font-semibold">Welcome back, {user.name.split(' ')[0]}!</span>
+              <span className="font-semibold">
+                Welcome back, {user.name.split(" ")[0]}!
+              </span>
             </div>
           </div>
         )}
@@ -136,22 +154,24 @@ export default function Home() {
               <Sparkles className="h-5 w-5" />
               <span className="font-semibold">Try Vyakaranly for free</span>
             </div>
-            <p className="mt-2 text-sm">Sign up to save your sessions and unlock additional features.</p>
+            <p className="mt-2 text-sm text-center">
+              Sign up to save your sessions and unlock additional features.
+            </p>
           </div>
         )}
 
         {/* Main Content with Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-2 mb-8 bg-white p-1 border border-gray-200 max-w-md mx-auto">
-            <TabsTrigger 
-              value="enhance" 
+          <TabsList className="grid w-full grid-cols-2 gap-2 mb-8 max-w-md mx-auto">
+            <TabsTrigger
+              value="enhance"
               className="flex items-center space-x-2 font-medium data-[state=active]:bg-blue-50 data-[state=active]:text-blue-700"
             >
               <Zap className="h-4 w-4" />
               <span>Enhance Text</span>
             </TabsTrigger>
-            <TabsTrigger 
-              value="history" 
+            <TabsTrigger
+              value="history"
               className="flex items-center space-x-2 font-medium data-[state=active]:bg-blue-50 data-[state=active]:text-blue-700"
             >
               <HistoryIcon className="h-4 w-4" />
@@ -208,50 +228,63 @@ export default function Home() {
                 <div className="p-6">
                   <div className="flex items-center space-x-2 mb-4">
                     <Bot className="h-5 w-5 text-green-600" />
-                    <span className="text-gray-500 font-medium">Suggestions</span>
+                    <span className="text-gray-500 font-medium">
+                      Suggestions
+                    </span>
                     {suggestions.length > 0 && (
                       <span className="bg-green-100 text-green-800 text-xs font-medium px-2 py-1 rounded-full">
-                        {suggestions.length} suggestion{suggestions.length !== 1 ? 's' : ''}
+                        {suggestions.length} suggestion
+                        {suggestions.length !== 1 ? "s" : ""}
                       </span>
                     )}
                   </div>
-                  
+
                   <div className="min-h-[400px]">
                     {suggestions.length === 0 ? (
                       <div className="flex flex-col items-center justify-center h-full text-center py-12">
                         {isLoading ? (
                           <>
                             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mb-4"></div>
-                            <p className="text-gray-500">Analyzing your text...</p>
+                            <p className="text-gray-500">
+                              Analyzing your text...
+                            </p>
                           </>
                         ) : error ? (
                           <>
                             <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mb-4">
                               <span className="text-red-500 text-lg">!</span>
                             </div>
-                            <p className="text-gray-500">Analysis failed. Please try again.</p>
+                            <p className="text-gray-500">
+                              Analysis failed. Please try again.
+                            </p>
                           </>
                         ) : (
                           <>
                             <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mb-4">
                               <Sparkles className="h-6 w-6 text-gray-400" />
                             </div>
-                            <p className="text-gray-500 mb-2">No suggestions yet</p>
-                            <p className="text-sm text-gray-400">Enter some Nepali text to get started</p>
+                            <p className="text-gray-500 mb-2">
+                              No suggestions yet
+                            </p>
+                            <p className="text-sm text-gray-400">
+                              Enter some Nepali text to get started
+                            </p>
                           </>
                         )}
                       </div>
                     ) : (
                       <div className="space-y-4">
-                        {suggestions.map((suggestion, index) => (
-                          <div 
-                            key={suggestion.id}
-                          >
+                        {suggestions.map((suggestion) => (
+                          <div key={suggestion.id}>
                             <SuggestionCard
                               suggestion={suggestion}
                               sessionId={sessionId!}
                               onUpdate={handleSuggestionUpdate}
-                              className={selectedSuggestionId === suggestion.id ? 'ring-2 ring-blue-500' : ''}
+                              className={
+                                selectedSuggestionId === suggestion.id
+                                  ? "ring-2 ring-blue-500"
+                                  : ""
+                              }
                             />
                           </div>
                         ))}
