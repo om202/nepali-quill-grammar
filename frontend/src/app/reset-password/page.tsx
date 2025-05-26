@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useSearchParams, useRouter } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import { Loader2, Lock, Eye, EyeOff, CheckCircle, AlertCircle, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
@@ -9,13 +9,10 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { verifyResetToken, resetPassword } from '@/lib/api';
+import { supabase } from '@/lib/supabase';
 
 export default function ResetPasswordPage() {
-  const searchParams = useSearchParams();
   const router = useRouter();
-  const token = searchParams.get('token');
-
   const [formData, setFormData] = useState({
     password: '',
     confirmPassword: '',
@@ -26,32 +23,40 @@ export default function ResetPasswordPage() {
   });
   const [isLoading, setIsLoading] = useState(false);
   const [isVerifying, setIsVerifying] = useState(true);
-  const [isValidToken, setIsValidToken] = useState(false);
+  const [isValidSession, setIsValidSession] = useState(false);
   const [userEmail, setUserEmail] = useState('');
   const [isSuccess, setIsSuccess] = useState(false);
   const [error, setError] = useState('');
 
   useEffect(() => {
-    const verifyToken = async () => {
-      if (!token) {
-        setError('No reset token provided');
-        setIsVerifying(false);
-        return;
-      }
-
+    const checkSession = async () => {
       try {
-        const response = await verifyResetToken(token);
-        setIsValidToken(true);
-        setUserEmail(response.email);
-      } catch (error) {
-        setError(error instanceof Error ? error.message : 'Invalid or expired reset token');
+        // Get the current session
+        const { data: { session }, error } = await supabase.auth.getSession();
+        
+        if (error) {
+          console.error('Session error:', error);
+          setError('Invalid or expired reset link');
+          setIsVerifying(false);
+          return;
+        }
+
+        if (session && session.user) {
+          setIsValidSession(true);
+          setUserEmail(session.user.email || '');
+        } else {
+          setError('No valid session found. Please request a new password reset link.');
+        }
+      } catch (err) {
+        console.error('Error checking session:', err);
+        setError('Failed to verify reset link');
       } finally {
         setIsVerifying(false);
       }
     };
 
-    verifyToken();
-  }, [token]);
+    checkSession();
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -76,23 +81,25 @@ export default function ResetPasswordPage() {
       return;
     }
 
-    if (!token) {
-      toast.error('Invalid reset token');
-      return;
-    }
-
     setIsLoading(true);
 
     try {
-      await resetPassword({
-        token,
-        password: formData.password,
+      const { error } = await supabase.auth.updateUser({
+        password: formData.password
       });
+
+      if (error) {
+        throw error;
+      }
       
       setIsSuccess(true);
       toast.success('Password reset successfully');
-    } catch (error) {
-      toast.error(error instanceof Error ? error.message : 'Failed to reset password');
+      
+      // Sign out the user after successful password reset
+      await supabase.auth.signOut();
+    } catch (error: any) {
+      console.error('Password reset error:', error);
+      toast.error(error.message || 'Failed to reset password');
     } finally {
       setIsLoading(false);
     }
@@ -121,7 +128,7 @@ export default function ResetPasswordPage() {
     );
   }
 
-  if (error || !isValidToken) {
+  if (error || !isValidSession) {
     return (
       <div className='min-h-screen bg-gradient-to-br from-blue-50 to-purple-50 flex items-center justify-center p-4'>
         <div className='bg-white rounded-lg shadow-lg p-8 w-full max-w-md text-center'>

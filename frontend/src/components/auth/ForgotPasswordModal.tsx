@@ -13,7 +13,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { forgotPassword } from '@/lib/api';
+import { supabase } from '@/lib/supabase';
 
 interface ForgotPasswordModalProps {
   isOpen: boolean;
@@ -46,11 +46,19 @@ export function ForgotPasswordModal({
     setIsLoading(true);
 
     try {
-      await forgotPassword({ email });
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/reset-password`,
+      });
+
+      if (error) {
+        throw error;
+      }
+
       setIsEmailSent(true);
       toast.success('Password reset link sent to your email');
-    } catch (error) {
-      toast.error(error instanceof Error ? error.message : 'Failed to send reset email');
+    } catch (error: any) {
+      console.error('Forgot password error:', error);
+      toast.error(error.message || 'Failed to send reset email');
     } finally {
       setIsLoading(false);
     }
