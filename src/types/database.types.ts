@@ -1,6 +1,26 @@
 export interface Database {
   public: {
     Tables: {
+      profiles: {
+        Row: {
+          id: string;
+          name: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id: string;
+          name?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          name?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+      };
       sessions: {
         Row: {
           id: string;
@@ -88,6 +108,21 @@ export interface Database {
     Views: {};
     Functions: {};
   };
+}
+
+export interface UserModel {
+  id: string;
+  email: string;
+  name?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface ProfileModel {
+  id: string;
+  name?: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface SessionModel {
