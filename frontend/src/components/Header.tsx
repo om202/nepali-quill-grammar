@@ -43,7 +43,7 @@ export function Header() {
               <div className='flex items-center space-x-3'>
                 <button
                   onClick={handleOpenLogin}
-                  className='font-semibold text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-sm px-6 py-2.5 transition-colors-smooth border border-gray-200 hover:border-blue-200'
+                  className='font-semibold flex justify-center items-center text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-sm px-6 py-2.5 transition-colors-smooth border border-gray-200 hover:border-blue-200'
                 >
                   <LogIn className='h-4 w-4 mr-2' />
                   Sign In

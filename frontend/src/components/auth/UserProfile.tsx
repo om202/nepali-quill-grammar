@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'sonner';
 import { LogOut, User } from 'lucide-react';
@@ -12,6 +13,14 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { RootState, AppDispatch } from '@/store';
 import { logoutAsync } from '@/store/authSlice';
@@ -19,6 +28,7 @@ import { logoutAsync } from '@/store/authSlice';
 export function UserProfile() {
   const dispatch = useDispatch<AppDispatch>();
   const { user } = useSelector((state: RootState) => state.auth);
+  const [showLogoutDialog, setShowLogoutDialog] = useState(false);
 
   const handleLogout = async () => {
     try {
@@ -29,9 +39,18 @@ export function UserProfile() {
     }
   };
 
+  const handleLogoutClick = () => {
+    setShowLogoutDialog(true);
+  };
+
+  const confirmLogout = () => {
+    setShowLogoutDialog(false);
+    handleLogout();
+  };
+
   if (!user) {
-return null;
-}
+    return null;
+  }
 
   const firstName = user.name.split(' ')[0];
 
@@ -71,13 +90,39 @@ return null;
         </div>
         <DropdownMenuSeparator />
         <DropdownMenuItem
-          onClick={handleLogout}
+          onClick={handleLogoutClick}
           className='flex items-center space-x-2 p-3 rounded-lg hover:bg-red-50 cursor-pointer text-red-600 transition-smooth hover:scale-[1.02] active:scale-[0.98]'
         >
           <LogOut className='h-4 w-4 transition-transform-smooth' />
           <span className='font-medium'>Sign out</span>
         </DropdownMenuItem>
       </DropdownMenuContent>
+
+      <Dialog open={showLogoutDialog} onOpenChange={setShowLogoutDialog}>
+        <DialogContent className="bg-white">
+          <DialogHeader>
+            <DialogTitle>Confirm Sign Out</DialogTitle>
+            <DialogDescription>
+                You’ll need to log back in to continue.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setShowLogoutDialog(false)}
+            >
+              Cancel
+            </Button>
+            <Button
+              className='bg-blue-50'
+              variant="outline"
+              onClick={confirmLogout}
+            >
+              Sign out
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </DropdownMenu>
   );
 }
