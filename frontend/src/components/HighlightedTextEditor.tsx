@@ -37,7 +37,7 @@ export const HighlightedTextEditor: React.FC<HighlightedTextEditorProps> = ({
   // Build HTML with underlines for mistake ranges
   const getHighlightedHTML = useCallback(() => {
     if (!text && !suggestions.length) {
-      return '<span class="text-gray-500">Enter Nepali text here...</span>';
+      return '<span class="text-gray-500">यहाँ नेपाली पाठ लेख्नुहोस्...</span>';
     }
     if (!suggestions.length) return escapeHTML(text);
     let html = "";
@@ -80,7 +80,7 @@ export const HighlightedTextEditor: React.FC<HighlightedTextEditorProps> = ({
 
     const newText = e.currentTarget.innerText;
     // Clear placeholder text when user starts typing
-    if (newText === "Enter Nepali text here...") {
+    if (newText === "यहाँ नेपाली पाठ लेख्नुहोस्...") {
       dispatch(setText(""));
       return;
     }
@@ -99,7 +99,7 @@ export const HighlightedTextEditor: React.FC<HighlightedTextEditorProps> = ({
   const handleFocus = (e: React.FocusEvent<HTMLDivElement>) => {
     if (
       !text &&
-      e.currentTarget.innerHTML.includes("Enter Nepali text here...")
+      e.currentTarget.innerHTML.includes("यहाँ नेपाली पाठ लेख्नुहोस्...")
     ) {
       e.currentTarget.innerHTML = "";
     }
