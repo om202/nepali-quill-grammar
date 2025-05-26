@@ -31,14 +31,14 @@ export function SuggestionCard({ suggestion, sessionId, onUpdate, className }: S
   };
 
   return (
-    <div className={`bg-white rounded-lg border border-gray-200 p-4 hover:border-gray-300 transition-all duration-200 ${className}`}>
+    <div className={`bg-white border border-gray-200 p-4 hover:border-gray-300 ${className}`}>
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center space-x-3">
-          <span className="text-red-600 bg-red-50 px-2 py-1 rounded text-sm font-medium">
+          <span className="text-red-700 bg-red-100 px-2 py-1 text-sm font-medium">
             {suggestion.originalText}
           </span>
           <ArrowRight className="h-4 w-4 text-gray-400" />
-          <span className="text-green-700 bg-green-50 px-2 py-1 rounded text-sm font-medium">
+          <span className="text-green-700 bg-green-100 px-2 py-1 text-sm font-medium">
             {suggestion.suggestedText}
           </span>
         </div>
@@ -49,7 +49,7 @@ export function SuggestionCard({ suggestion, sessionId, onUpdate, className }: S
           onClick={() => handleAction('accept')}
           disabled={isLoading}
           size="sm"
-          className="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded text-xs font-medium transition-colors"
+          className="bg-green-600 hover:bg-green-700 text-white px-3 py-1 text-xs font-medium"
         >
           <Check className="h-3 w-3 mr-1" />
           Accept
@@ -59,7 +59,7 @@ export function SuggestionCard({ suggestion, sessionId, onUpdate, className }: S
           disabled={isLoading}
           size="sm"
           variant="outline"
-          className="border-gray-300 text-gray-600 hover:bg-gray-50 px-3 py-1 rounded text-xs font-medium transition-colors"
+          className="border-gray-300 text-gray-600 hover:bg-gray-100 px-3 py-1 text-xs font-medium"
         >
           <X className="h-3 w-3 mr-1" />
           Ignore

@@ -13,7 +13,7 @@ import { HighlightedTextEditor } from '@/components/HighlightedTextEditor';
 import { RootState } from '@/store';
 import { setSuggestions, removeSuggestion } from '@/store/suggestionsSlice';
 import { setText } from '@/store/textSlice';
-import { CheckCircle, Zap, Sparkles, FileText, History as HistoryIcon } from 'lucide-react';
+import { CheckCircle, Zap, Sparkles, FileText, History as HistoryIcon, Edit3, Bot } from 'lucide-react';
 
 export default function Home() {
   const dispatch = useDispatch();
@@ -119,10 +119,10 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-gray-50 py-8">
-      <div className="container mx-auto px-6">
+      <div className="px-6">
         {/* Status Messages */}
         {isAuthenticated && user && showWelcomeMessage && (
-          <div className="grammarly-status-success mb-8 max-w-2xl mx-auto animate-slide-in-right">
+          <div className="grammarly-status-success mb-8 max-w-2xl mx-auto">
             <div className="flex items-center justify-center space-x-2">
               <CheckCircle className="h-5 w-5" />
               <span className="font-semibold">Welcome back, {user.name.split(' ')[0]}!</span>
@@ -131,7 +131,7 @@ export default function Home() {
         )}
 
         {!isAuthenticated && (
-          <div className="grammarly-status-info mb-8 max-w-2xl mx-auto animate-slide-in-right">
+          <div className="grammarly-status-info mb-8 max-w-2xl mx-auto">
             <div className="flex items-center justify-center space-x-2">
               <Sparkles className="h-5 w-5" />
               <span className="font-semibold">Try Vyakaranly for free</span>
@@ -142,32 +142,37 @@ export default function Home() {
 
         {/* Main Content with Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-2 mb-8 bg-white p-1 rounded-xl shadow-sm max-w-md mx-auto">
+          <TabsList className="grid w-full grid-cols-2 mb-8 bg-white p-1 border border-gray-200 max-w-md mx-auto">
             <TabsTrigger 
               value="enhance" 
-              className="flex items-center space-x-2 rounded-lg font-semibold data-[state=active]:bg-blue-50 data-[state=active]:text-blue-700 data-[state=active]:shadow-sm"
+              className="flex items-center space-x-2 font-medium data-[state=active]:bg-blue-50 data-[state=active]:text-blue-700"
             >
               <Zap className="h-4 w-4" />
               <span>Enhance Text</span>
             </TabsTrigger>
             <TabsTrigger 
               value="history" 
-              className="flex items-center space-x-2 rounded-lg font-semibold data-[state=active]:bg-blue-50 data-[state=active]:text-blue-700 data-[state=active]:shadow-sm"
+              className="flex items-center space-x-2 font-medium data-[state=active]:bg-blue-50 data-[state=active]:text-blue-700"
             >
               <HistoryIcon className="h-4 w-4" />
               <span>History</span>
             </TabsTrigger>
           </TabsList>
+        </Tabs>
+      </div>
 
+      {/* Full width content area */}
+      <div className="w-full px-4">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <TabsContent value="enhance" className="space-y-0">
             {/* Main Editor Section */}
-            <div className="flex flex-col lg:flex-row gap-6 w-full">
+            <div className="flex flex-col lg:flex-row w-full gap-4">
               {/* Text Input - 70% width */}
-              <div className="w-full lg:w-[70%] grammarly-card animate-fade-in-up">
+              <div className="w-full lg:w-[70%] grammarly-card">
                 <div className="p-6">
                   <div className="flex items-center space-x-2 mb-4">
-                    <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
-                    <h2 className="grammarly-heading-3">Enter Your Nepali Text</h2>
+                    <Edit3 className="h-5 w-5 text-blue-600" />
+                    <span className="text-gray-500 font-medium">Text</span>
                   </div>
                   <HighlightedTextEditor
                     onSelectSuggestion={setSelectedSuggestionId}
@@ -199,11 +204,11 @@ export default function Home() {
               </div>
 
               {/* Suggestions Panel - 30% width */}
-              <div className="w-full lg:w-[30%] grammarly-card animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
+              <div className="w-full lg:w-[30%] grammarly-card">
                 <div className="p-6">
                   <div className="flex items-center space-x-2 mb-4">
-                    <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-                    <h2 className="grammarly-heading-3">AI Suggestions</h2>
+                    <Bot className="h-5 w-5 text-green-600" />
+                    <span className="text-gray-500 font-medium">Suggestions</span>
                     {suggestions.length > 0 && (
                       <span className="bg-green-100 text-green-800 text-xs font-medium px-2 py-1 rounded-full">
                         {suggestions.length} suggestion{suggestions.length !== 1 ? 's' : ''}
@@ -241,8 +246,6 @@ export default function Home() {
                         {suggestions.map((suggestion, index) => (
                           <div 
                             key={suggestion.id}
-                            className="animate-fade-in"
-                            style={{ animationDelay: `${index * 0.1}s` }}
                           >
                             <SuggestionCard
                               suggestion={suggestion}
@@ -261,7 +264,9 @@ export default function Home() {
           </TabsContent>
 
           <TabsContent value="history" className="space-y-0">
-            <History />
+            <div className="px-6">
+              <History />
+            </div>
           </TabsContent>
         </Tabs>
       </div>
