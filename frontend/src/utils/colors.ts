@@ -44,14 +44,17 @@ export const getSuggestionColorPair = (color: string, opacity: number = 0.1) => 
 
 // Get color for suggestion container
 export const getSuggestionContainerColor = (index: number, total: number) => {
-  const colors = generateSuggestionColors(total);
-  const color = colors[index % colors.length];
-  return getSuggestionColorPair(color);
+  return getSuggestionColorByIndex(index, total, 0.1);
 };
 
 // Generate colors for highlighted text in editor
 export const getHighlightColor = (index: number, total: number) => {
+  return getSuggestionColorByIndex(index, total, 0.15);
+};
+
+// Shared base function for getting suggestion colors by index
+export const getSuggestionColorByIndex = (index: number, total: number, opacity: number = 0.1) => {
   const colors = generateSuggestionColors(total);
   const color = colors[index % colors.length];
-  return getSuggestionColorPair(color, 0.15);
+  return getSuggestionColorPair(color, opacity);
 }; 
