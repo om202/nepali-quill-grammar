@@ -47,11 +47,28 @@ export default function Home() {
       const welcomeKey = `welcome-dismissed-${user.id}`;
       const isDismissed = localStorage.getItem(welcomeKey);
       setShowWelcomeMessage(!isDismissed);
+      
+      // Auto-hide after 5 seconds if not manually dismissed
+      if (!isDismissed) {
+        const timer = setTimeout(() => {
+          setShowWelcomeMessage(false);
+        }, 5000);
+        
+        return () => clearTimeout(timer);
+      }
     }
   }, [isAuthenticated, user]);
 
   const dismissFreeTrialMessage = () => {
     setShowFreeTrialMessage(false);
+  };
+
+  const dismissWelcomeMessage = () => {
+    if (user) {
+      const welcomeKey = `welcome-dismissed-${user.id}`;
+      localStorage.setItem(welcomeKey, 'true');
+    }
+    setShowWelcomeMessage(false);
   };
 
   const handleAnalyze = async () => {
@@ -137,13 +154,20 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
+    <div className="min-h-screen bg-gray-50 flex flex-col transition-colors-smooth">
       <div className="px-6 py-6 flex-shrink-0">
         {/* Status Messages */}
         {isAuthenticated && user && showWelcomeMessage && (
-          <div className="grammarly-status-success mb-8 max-w-2xl mx-auto">
+          <div className="grammarly-status-success mb-8 max-w-2xl mx-auto relative fade-in">
+            <button
+              onClick={dismissWelcomeMessage}
+              className="absolute top-2 right-2 text-green-600 hover:text-green-800 cursor-pointer transition-colors-smooth hover:scale-110 active:scale-95"
+              aria-label="Dismiss welcome message"
+            >
+              <X className="h-4 w-4 transition-transform-smooth" />
+            </button>
             <div className="flex items-center justify-center space-x-2">
-              <CheckCircle className="h-5 w-5" />
+              <CheckCircle className="h-5 w-5 transition-colors-smooth" />
               <span className="font-semibold">
                 Welcome back, {user.name.split(" ")[0]}!
               </span>
@@ -152,19 +176,19 @@ export default function Home() {
         )}
 
         {!isAuthenticated && showFreeTrialMessage && (
-          <div className="grammarly-status-info mb-8 max-w-2xl mx-auto relative">
+          <div className="grammarly-status-info mb-8 max-w-2xl mx-auto relative fade-in">
             <button
               onClick={dismissFreeTrialMessage}
-              className="absolute top-2 right-2 text-blue-600 hover:text-blue-800 cursor-pointer"
+              className="absolute top-2 right-2 text-blue-600 hover:text-blue-800 cursor-pointer transition-colors-smooth hover:scale-110 active:scale-95"
               aria-label="Dismiss message"
             >
-              <X className="h-4 w-4" />
+              <X className="h-4 w-4 transition-transform-smooth" />
             </button>
             <div className="flex items-center justify-center space-x-2">
-              <Sparkles className="h-5 w-5" />
+              <Sparkles className="h-5 w-5 transition-colors-smooth" />
               <span className="font-semibold">Try Vyakaranly for free</span>
             </div>
-            <p className="mt-2 text-sm text-center">
+            <p className="mt-2 text-sm text-center transition-colors-smooth">
               Sign up to save your sessions and unlock additional features.
             </p>
           </div>
@@ -172,19 +196,19 @@ export default function Home() {
 
         {/* Main Content with Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-2 gap-2 mb-0 max-w-md mx-auto">
+          <TabsList className="grid w-full grid-cols-2 gap-2 mb-0 max-w-md mx-auto transition-shadow-smooth">
             <TabsTrigger
               value="enhance"
-              className="flex items-center space-x-2 font-medium data-[state=active]:bg-blue-50 data-[state=active]:text-blue-700"
+              className="flex items-center space-x-2 font-medium data-[state=active]:bg-blue-50 data-[state=active]:text-blue-700 transition-smooth hover:scale-[1.02] active:scale-[0.98]"
             >
-              <Zap className="h-4 w-4" />
+              <Zap className="h-4 w-4 transition-transform-smooth" />
               <span>Enhance Text</span>
             </TabsTrigger>
             <TabsTrigger
               value="history"
-              className="flex items-center space-x-2 font-medium data-[state=active]:bg-blue-50 data-[state=active]:text-blue-700"
+              className="flex items-center space-x-2 font-medium data-[state=active]:bg-blue-50 data-[state=active]:text-blue-700 transition-smooth hover:scale-[1.02] active:scale-[0.98]"
             >
-              <HistoryIcon className="h-4 w-4" />
+              <HistoryIcon className="h-4 w-4 transition-transform-smooth" />
               <span>History</span>
             </TabsTrigger>
           </TabsList>
@@ -194,15 +218,15 @@ export default function Home() {
       {/* Full width content area */}
       <div className="flex-1 w-full px-4 pb-8 min-h-0">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full h-full">
-          <TabsContent value="enhance" className="h-full">
+          <TabsContent value="enhance" className="h-full fade-in">
             {/* Main Editor Section */}
             <div className="flex flex-col lg:flex-row w-full gap-4 h-[calc(100vh-240px)]">
               {/* Text Input - 70% width */}
-              <div className="w-full lg:w-[70%] grammarly-card flex flex-col min-h-0">
+              <div className="w-full lg:w-[70%] grammarly-card flex flex-col min-h-0 fade-in">
                 <div className="p-6 flex flex-col h-full min-h-0">
                   <div className="flex items-center space-x-2 mb-4 flex-shrink-0">
-                    <Edit3 className="h-5 w-5 text-blue-600" />
-                    <span className="text-gray-700 font-medium">Text</span>
+                    <Edit3 className="h-5 w-5 text-blue-600 transition-colors-smooth" />
+                    <span className="text-gray-700 font-medium transition-colors-smooth">Text</span>
                   </div>
                   <div className="flex-1 mb-4 min-h-0 min-h-[300px]">
                     <HighlightedTextEditor
@@ -210,7 +234,7 @@ export default function Home() {
                     />
                   </div>
                   {error && (
-                    <div className="grammarly-status-error mb-4 flex-shrink-0">
+                    <div className="grammarly-status-error mb-4 flex-shrink-0 fade-in">
                       <p className="font-medium">Analysis Failed</p>
                       <p className="text-sm mt-1">{error}</p>
                     </div>
@@ -218,7 +242,7 @@ export default function Home() {
                   <Button
                     onClick={handleAnalyze}
                     disabled={isLoading}
-                    className="grammarly-button-primary w-full flex-shrink-0"
+                    className="grammarly-button-primary w-full flex-shrink-0 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
                   >
                     {isLoading ? (
                       <>
@@ -227,7 +251,7 @@ export default function Home() {
                       </>
                     ) : (
                       <>
-                        <Zap className="h-4 w-4 mr-2" />
+                        <Zap className="h-4 w-4 mr-2 transition-transform-smooth" />
                         Enhance Text
                       </>
                     )}
@@ -236,15 +260,15 @@ export default function Home() {
               </div>
 
               {/* Suggestions Panel - 30% width */}
-              <div className="w-full lg:w-[30%] grammarly-card flex flex-col min-h-0">
+              <div className="w-full lg:w-[30%] grammarly-card flex flex-col min-h-0 fade-in">
                 <div className="p-6 flex flex-col h-full min-h-0">
                   <div className="flex items-center space-x-2 mb-4 flex-shrink-0">
-                    <Bot className="h-5 w-5 text-green-600" />
-                    <span className="text-gray-700 font-medium">
+                    <Bot className="h-5 w-5 text-green-600 transition-colors-smooth" />
+                    <span className="text-gray-700 font-medium transition-colors-smooth">
                       Suggestions
                     </span>
                     {suggestions.length > 0 && (
-                      <span className="bg-green-100 text-green-800 text-xs font-medium px-2 py-1 rounded-full">
+                      <span className="bg-green-100 text-green-800 text-xs font-medium px-2 py-1 rounded-full transition-smooth">
                         {suggestions.length} suggestion
                         {suggestions.length !== 1 ? "s" : ""}
                       </span>
@@ -253,32 +277,32 @@ export default function Home() {
                   
                   <div className="flex-1 overflow-y-auto min-h-0">
                     {suggestions.length === 0 ? (
-                      <div className="flex flex-col items-center justify-center h-full text-center py-12">
+                      <div className="flex flex-col items-center justify-center h-full text-center py-12 fade-in">
                         {isLoading ? (
                           <>
                             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mb-4"></div>
-                            <p className="text-gray-600">
+                            <p className="text-gray-600 transition-colors-smooth">
                               Analyzing your text...
                             </p>
                           </>
                         ) : error ? (
                           <>
-                            <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mb-4">
+                            <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mb-4 transition-colors-smooth">
                               <span className="text-red-500 text-lg">!</span>
                             </div>
-                            <p className="text-gray-600">
+                            <p className="text-gray-600 transition-colors-smooth">
                               Analysis failed. Please try again.
                             </p>
                           </>
                         ) : (
                           <>
-                            <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mb-4">
-                              <Sparkles className="h-6 w-6 text-gray-400" />
+                            <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mb-4 transition-colors-smooth">
+                              <Sparkles className="h-6 w-6 text-gray-400 transition-colors-smooth" />
                             </div>
-                            <p className="text-gray-600 mb-2">
+                            <p className="text-gray-600 mb-2 transition-colors-smooth">
                               No suggestions yet
                             </p>
-                            <p className="text-sm text-gray-500">
+                            <p className="text-sm text-gray-500 transition-colors-smooth">
                               Enter some Nepali text to get started
                             </p>
                           </>
@@ -286,15 +310,15 @@ export default function Home() {
                       </div>
                     ) : (
                       <div className="space-y-4">
-                        {suggestions.map((suggestion) => (
-                          <div key={suggestion.id}>
+                        {suggestions.map((suggestion, index) => (
+                          <div key={suggestion.id} className="fade-in" style={{ animationDelay: `${index * 0.1}s` }}>
                             <SuggestionCard
                               suggestion={suggestion}
                               sessionId={sessionId!}
                               onUpdate={handleSuggestionUpdate}
                               className={
                                 selectedSuggestionId === suggestion.id
-                                  ? "ring-2 ring-blue-500"
+                                  ? "ring-2 ring-blue-500 transition-shadow-smooth"
                                   : ""
                               }
                             />

@@ -31,14 +31,14 @@ export function SuggestionCard({ suggestion, sessionId, onUpdate, className }: S
   };
 
   return (
-    <div className={`bg-white border border-gray-200 p-4 hover:border-gray-300 ${className}`}>
+    <div className={`bg-white border border-gray-200 p-4 hover:border-gray-300 transition-smooth hover:shadow-sm hover:scale-[1.01] ${className}`}>
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center space-x-3">
-          <span className="text-red-700 bg-red-100 px-2 py-1 text-sm font-medium">
+          <span className="text-red-700 bg-red-100 px-2 py-1 text-sm font-medium transition-colors-smooth">
             {suggestion.originalText}
           </span>
-          <ArrowRight className="h-4 w-4 text-gray-400" />
-          <span className="text-green-700 bg-green-100 px-2 py-1 text-sm font-medium">
+          <ArrowRight className="h-4 w-4 text-gray-400 transition-colors-smooth" />
+          <span className="text-green-700 bg-green-100 px-2 py-1 text-sm font-medium transition-colors-smooth">
             {suggestion.suggestedText}
           </span>
         </div>
@@ -49,9 +49,9 @@ export function SuggestionCard({ suggestion, sessionId, onUpdate, className }: S
           onClick={() => handleAction('accept')}
           disabled={isLoading}
           size="sm"
-          className="bg-green-600 hover:bg-green-700 text-white px-3 py-1 text-xs font-medium"
+          className="bg-green-600 hover:bg-green-700 text-white px-3 py-1 text-xs font-medium transition-smooth hover:shadow-md hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
         >
-          <Check className="h-3 w-3 mr-1" />
+          <Check className="h-3 w-3 mr-1 transition-transform-smooth" />
           Accept
         </Button>
         <Button
@@ -59,9 +59,9 @@ export function SuggestionCard({ suggestion, sessionId, onUpdate, className }: S
           disabled={isLoading}
           size="sm"
           variant="outline"
-          className="border-gray-300 text-gray-600 hover:bg-gray-100 px-3 py-1 text-xs font-medium"
+          className="border-gray-300 text-gray-600 hover:bg-gray-100 px-3 py-1 text-xs font-medium transition-smooth hover:shadow-sm hover:scale-[1.01] active:scale-[0.99] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
         >
-          <X className="h-3 w-3 mr-1" />
+          <X className="h-3 w-3 mr-1 transition-transform-smooth" />
           Ignore
         </Button>
       </div>

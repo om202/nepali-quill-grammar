@@ -27,7 +27,6 @@
   --chart-4: 43 74% 66%;
   --chart-5: 27 87% 67%;
 
-  /* Grammarly-inspired custom properties */
   --grammarly-green: 142 71% 45%;
   --grammarly-green-light: 142 71% 95%;
   --grammarly-blue: 221 83% 53%;
@@ -38,6 +37,11 @@
   --grammarly-yellow-light: 45 93% 97%;
   --grammarly-purple: 262 83% 58%;
   --grammarly-purple-light: 262 83% 97%;
+
+  --transition-ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-ease-out: cubic-bezier(0, 0, 0.2, 1);
+  --transition-ease-in: cubic-bezier(0.4, 0, 1, 1);
+  --transition-bounce: cubic-bezier(0.68, -0.55, 0.265, 1.55);
 }
 
 .dark {
@@ -71,6 +75,7 @@
   border-color: hsl(var(--border));
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  transition: border-color 0.2s var(--transition-ease-in-out);
 }
 
 body {
@@ -82,136 +87,212 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
+  transition: background-color 0.3s var(--transition-ease-in-out), color 0.3s var(--transition-ease-in-out);
 }
 
-/* Grammarly-inspired components */
+/* Global transition utilities */
+.transition-smooth {
+  transition: all 0.2s var(--transition-ease-in-out);
+}
+
+.transition-smooth-slow {
+  transition: all 0.3s var(--transition-ease-in-out);
+}
+
+.transition-colors-smooth {
+  transition: color 0.2s var(--transition-ease-in-out), background-color 0.2s var(--transition-ease-in-out), border-color 0.2s var(--transition-ease-in-out);
+}
+
+.transition-transform-smooth {
+  transition: transform 0.2s var(--transition-ease-in-out);
+}
+
+.transition-opacity-smooth {
+  transition: opacity 0.2s var(--transition-ease-in-out);
+}
+
+.transition-shadow-smooth {
+  transition: box-shadow 0.2s var(--transition-ease-in-out);
+}
+
 .grammarly-card {
-  @apply bg-white border border-gray-200 hover:border-gray-300;
+  @apply bg-white border border-gray-200 hover:border-gray-300 transition-all duration-200 ease-in-out hover:shadow-sm;
 }
 
 .grammarly-button-primary {
-  @apply bg-blue-600 hover:bg-blue-700 text-white font-medium px-6 py-3 cursor-pointer;
+  @apply bg-blue-600 hover:bg-blue-700 text-white font-medium px-6 py-3 cursor-pointer transition-all duration-200 ease-in-out hover:shadow-md hover:scale-[1.02] active:scale-[0.98];
 }
 
 .grammarly-button-secondary {
-  @apply bg-white border border-gray-300 hover:border-gray-400 text-gray-700 font-medium px-6 py-3 cursor-pointer;
+  @apply bg-white border border-gray-300 hover:border-gray-400 text-gray-700 font-medium px-6 py-3 cursor-pointer transition-all duration-200 ease-in-out hover:shadow-sm hover:scale-[1.01] active:scale-[0.99];
 }
 
 .grammarly-input {
-  @apply w-full px-4 py-4 border border-gray-300 focus:border-blue-500 bg-white text-base;
+  @apply w-full px-4 py-4 border border-gray-300 focus:border-blue-500 bg-white text-base transition-all duration-200 ease-in-out focus:shadow-sm;
 }
 
 .grammarly-input-with-icon {
-  @apply w-full pl-12 pr-4 py-4 border border-gray-300 focus:border-blue-500 bg-white text-base;
+  @apply w-full pl-12 pr-4 py-4 border border-gray-300 focus:border-blue-500 bg-white text-base transition-all duration-200 ease-in-out focus:shadow-sm;
 }
 
 .grammarly-textarea {
-  @apply w-full px-4 py-4 border border-gray-300 focus:border-blue-500 bg-white resize-none;
+  @apply w-full px-4 py-4 border border-gray-300 focus:border-blue-500 bg-white resize-none transition-all duration-200 ease-in-out focus:shadow-sm;
 }
 
 .grammarly-suggestion {
-  @apply bg-white border border-gray-200 p-4 hover:border-gray-300;
+  @apply bg-white border border-gray-200 p-4 hover:border-gray-300 transition-all duration-200 ease-in-out hover:shadow-sm hover:scale-[1.01];
 }
 
 .grammarly-suggestion-accept {
-  @apply bg-green-600 hover:bg-green-700 text-white font-medium px-4 py-2 cursor-pointer;
+  @apply bg-green-600 hover:bg-green-700 text-white font-medium px-4 py-2 cursor-pointer transition-all duration-200 ease-in-out hover:shadow-md hover:scale-[1.02] active:scale-[0.98];
 }
 
 .grammarly-suggestion-reject {
-  @apply bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium px-4 py-2 cursor-pointer;
+  @apply bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium px-4 py-2 cursor-pointer transition-all duration-200 ease-in-out hover:shadow-sm hover:scale-[1.01] active:scale-[0.99];
 }
 
 .grammarly-header {
-  @apply bg-white border-b border-gray-200 sticky top-0 z-50;
+  @apply bg-white border-b border-gray-200 sticky top-0 z-50 transition-shadow duration-200 ease-in-out;
 }
 
 .grammarly-gradient-text {
-  @apply text-blue-600;
+  @apply text-blue-600 transition-colors duration-200 ease-in-out;
 }
 
 .grammarly-hero-section {
-  @apply bg-gray-50;
+  @apply bg-gray-50 transition-colors duration-200 ease-in-out;
 }
 
 .grammarly-feature-card {
-  @apply bg-white p-6 border border-gray-200 hover:border-gray-300;
+  @apply bg-white p-6 border border-gray-200 hover:border-gray-300 transition-all duration-200 ease-in-out hover:shadow-lg hover:scale-[1.02];
 }
 
 .grammarly-status-success {
-  @apply bg-green-100 border border-green-300 text-green-800 p-4;
+  @apply bg-green-100 border border-green-300 text-green-800 p-4 transition-all duration-200 ease-in-out;
 }
 
 .grammarly-status-warning {
-  @apply bg-yellow-100 border border-yellow-300 text-yellow-800 p-4;
+  @apply bg-yellow-100 border border-yellow-300 text-yellow-800 p-4 transition-all duration-200 ease-in-out;
 }
 
 .grammarly-status-error {
-  @apply bg-red-100 border border-red-300 text-red-800 p-4;
+  @apply bg-red-100 border border-red-300 text-red-800 p-4 transition-all duration-200 ease-in-out;
 }
 
 .grammarly-status-info {
-  @apply bg-blue-100 border border-blue-300 text-blue-800 p-4;
+  @apply bg-blue-100 border border-blue-300 text-blue-800 p-4 transition-all duration-200 ease-in-out;
 }
 
-/* Custom scrollbar */
+.status-message-enter {
+  animation: slideInFromTop 0.3s var(--transition-ease-out) forwards;
+}
+
+.status-message-exit {
+  animation: slideOutToTop 0.2s var(--transition-ease-in) forwards;
+}
+
+@keyframes slideInFromTop {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideOutToTop {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+}
+
+/* Fade in animation for content */
+.fade-in {
+  animation: fadeIn 0.4s cubic-bezier(0, 0, 0.2, 1) forwards;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Custom scrollbar with smooth transitions */
 ::-webkit-scrollbar {
   width: 8px;
+  transition: width 0.2s var(--transition-ease-in-out);
 }
 
 ::-webkit-scrollbar-track {
   background: #f1f5f9;
   border-radius: 4px;
+  transition: background-color 0.2s var(--transition-ease-in-out);
 }
 
 ::-webkit-scrollbar-thumb {
   background: #cbd5e1;
   border-radius: 4px;
+  transition: background-color 0.2s var(--transition-ease-in-out);
 }
 
 ::-webkit-scrollbar-thumb:hover {
   background: #94a3b8;
 }
 
-/* Text editor specific scrollbar */
+/* Text editor specific scrollbar with transitions */
 .text-editor-scroll::-webkit-scrollbar {
   width: 6px;
+  transition: width 0.2s var(--transition-ease-in-out);
 }
 
 .text-editor-scroll::-webkit-scrollbar-track {
   background: #f8fafc;
   border-radius: 3px;
+  transition: background-color 0.2s var(--transition-ease-in-out);
 }
 
 .text-editor-scroll::-webkit-scrollbar-thumb {
   background: #e2e8f0;
   border-radius: 3px;
+  transition: background-color 0.2s var(--transition-ease-in-out);
 }
 
 .text-editor-scroll::-webkit-scrollbar-thumb:hover {
   background: #cbd5e1;
 }
 
-/* Typography improvements */
 .grammarly-heading-1 {
-  @apply text-2xl md:text-3xl font-semibold tracking-tight;
+  @apply text-2xl md:text-3xl font-semibold tracking-tight transition-colors duration-200 ease-in-out;
 }
 
 .grammarly-heading-2 {
-  @apply text-xl md:text-2xl font-semibold tracking-tight;
+  @apply text-xl md:text-2xl font-semibold tracking-tight transition-colors duration-200 ease-in-out;
 }
 
 .grammarly-heading-3 {
-  @apply text-lg md:text-xl font-medium tracking-tight;
+  @apply text-lg md:text-xl font-medium tracking-tight transition-colors duration-200 ease-in-out;
 }
 
 .grammarly-body-large {
-  @apply text-base leading-relaxed;
+  @apply text-base leading-relaxed transition-colors duration-200 ease-in-out;
 }
 
 .grammarly-body {
-  @apply text-sm leading-relaxed;
+  @apply text-sm leading-relaxed transition-colors duration-200 ease-in-out;
 }
 
 .grammarly-body-small {
-  @apply text-xs leading-relaxed;
+  @apply text-xs leading-relaxed transition-colors duration-200 ease-in-out;
 } 
