@@ -160,7 +160,7 @@ return;
   return (
     <div className='flex flex-col h-full'>
       {/* Progress indicator */}
-      <div className='flex items-center justify-between mb-4 text-sm text-gray-600'>
+      <div className='flex items-center justify-between mb-3 text-xs text-gray-600'>
         <span>
           Suggestion {currentIndex + 1} of {suggestions.length}
         </span>
@@ -168,7 +168,7 @@ return;
           {suggestions.map((_, index) => (
             <div
               key={index}
-              className={`w-2 h-2 rounded-full transition-colors ${
+              className={`w-1.5 h-1.5 rounded-full transition-colors ${
                 index === currentIndex ? 'bg-blue-500' : 'bg-gray-300'
               }`}
             />
@@ -178,22 +178,22 @@ return;
 
       {/* Current suggestion */}
       <div
-        className='flex-1 border rounded-lg p-4 mb-4 transition-all duration-200'
+        className='border rounded-lg p-3 mb-3 transition-all duration-200'
         style={{
           backgroundColor: colors.backgroundColor,
           borderColor: colors.borderColor,
         }}
       >
-        <div className='flex items-center space-x-3 mb-4'>
+        <div className='flex items-center space-x-2 mb-3'>
           <span 
-            className='text-base font-medium'
+            className='text-sm font-medium'
             style={{ color: colors.textColor }}
           >
             &quot;{currentSuggestion.originalText}&quot;
           </span>
-          <ArrowRight className='h-4 w-4' style={{ color: colors.textColor }} />
+          <ArrowRight className='h-3.5 w-3.5' style={{ color: colors.textColor }} />
           <span 
-            className='text-base font-medium'
+            className='text-sm font-medium'
             style={{ color: colors.textColor }}
           >
             &quot;{currentSuggestion.suggestedText}&quot;
@@ -201,45 +201,45 @@ return;
         </div>
 
         {/* Action buttons */}
-        <div className='flex space-x-3'>
+        <div className='flex space-x-2'>
           <button
             onClick={() => handleAction('accept')}
             disabled={isLoading}
-            className='flex-1 flex items-center justify-center bg-green-600 hover:bg-green-700 text-white px-4 py-3 rounded-md font-medium transition-colors hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed'
+            className='flex-1 flex items-center justify-center bg-green-600 hover:bg-green-700 text-white px-3 py-2 rounded-md text-sm font-medium transition-colors hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed'
           >
-            <Check className='h-4 w-4 mr-2' />
+            <Check className='h-3.5 w-3.5 mr-1.5' />
             Accept
           </button>
 
           <button
             onClick={() => handleAction('reject')}
             disabled={isLoading}
-            className='flex-1 flex items-center justify-center border border-gray-300 text-gray-600 hover:bg-gray-100 px-4 py-3 rounded-md font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed'
+            className='flex-1 flex items-center justify-center border border-gray-300 text-gray-600 hover:bg-gray-100 px-3 py-2 rounded-md text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed'
           >
-            <X className='h-4 w-4 mr-2' />
+            <X className='h-3.5 w-3.5 mr-1.5' />
             Reject
           </button>
         </div>
       </div>
 
       {/* Navigation controls */}
-      <div className='flex items-center justify-between'>
+      <div className='flex items-center justify-between mb-2'>
         <div className='flex space-x-1'>
           <button
             onClick={goToFirst}
             disabled={currentIndex === 0}
-            className='p-2 rounded-md border border-gray-300 text-gray-600 hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors'
+            className='p-1.5 rounded-md border border-gray-300 text-gray-600 hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors'
             title='First suggestion'
           >
-            <SkipBack className='h-4 w-4' />
+            <SkipBack className='h-3.5 w-3.5' />
           </button>
           <button
             onClick={goToPrevious}
             disabled={currentIndex === 0}
-            className='p-2 rounded-md border border-gray-300 text-gray-600 hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors'
+            className='p-1.5 rounded-md border border-gray-300 text-gray-600 hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors'
             title='Previous suggestion'
           >
-            <ChevronLeft className='h-4 w-4' />
+            <ChevronLeft className='h-3.5 w-3.5' />
           </button>
         </div>
 
@@ -247,25 +247,25 @@ return;
           <button
             onClick={goToNext}
             disabled={currentIndex === suggestions.length - 1}
-            className='p-2 rounded-md border border-gray-300 text-gray-600 hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors'
+            className='p-1.5 rounded-md border border-gray-300 text-gray-600 hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors'
             title='Next suggestion'
           >
-            <ChevronRight className='h-4 w-4' />
+            <ChevronRight className='h-3.5 w-3.5' />
           </button>
           <button
             onClick={goToLast}
             disabled={currentIndex === suggestions.length - 1}
-            className='p-2 rounded-md border border-gray-300 text-gray-600 hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors'
+            className='p-1.5 rounded-md border border-gray-300 text-gray-600 hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors'
             title='Last suggestion'
           >
-            <SkipForward className='h-4 w-4' />
+            <SkipForward className='h-3.5 w-3.5' />
           </button>
         </div>
       </div>
 
       {/* Keyboard shortcuts help */}
-      <div className='mt-4 text-xs text-gray-500 text-center'>
-        <div className='space-y-1'>
+      <div className='text-xs text-gray-500 text-center'>
+        <div className='space-y-0.5'>
           <div>← → or ↑ ↓ to navigate</div>
           <div>Enter to accept • Shift+Enter or Esc to reject</div>
         </div>
