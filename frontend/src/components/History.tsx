@@ -164,7 +164,7 @@ return text;
           className='grammarly-card p-4 text-center'
           style={{ animationDelay: '0.1s' }}
         >
-          <FileText className='h-8 w-8 text-blue-600 mx-auto mb-2' />
+          <FileText className='h-8 w-8 text-indigo-600 mx-auto mb-2' />
           <div className='text-xl font-semibold text-gray-900'>
             {totalSessions}
           </div>
@@ -236,7 +236,7 @@ return text;
                     {item.rejectedCount} rejected
                   </span>
                 </div>
-                <div className='flex items-center space-x-1 text-blue-600 opacity-0 group-hover:opacity-100 transition-opacity'>
+                <div className='flex items-center space-x-1 text-indigo-600 opacity-0 group-hover:opacity-100 transition-opacity'>
                   <Eye className='h-4 w-4' />
                   <span className='text-sm font-medium'>View Details</span>
                   <ChevronRight className='h-4 w-4' />

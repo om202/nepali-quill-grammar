@@ -179,7 +179,7 @@ return escapeHTML(text);
         {suggestions.length > 0 && (
           <div
             ref={overlayRef}
-            className='absolute inset-0 w-full h-full p-6 pointer-events-none text-lg text-gray-800 leading-relaxed z-20 whitespace-pre-wrap'
+            className='absolute inset-0 w-full h-full p-6 pointer-events-none text-lg  text-gray-700 leading-relaxed z-20 whitespace-pre-wrap'
             onClick={handleOverlayClick}
             style={{
               fontFamily: "'Noto Sans Devanagari', 'Mangal', sans-serif",

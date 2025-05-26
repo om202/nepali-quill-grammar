@@ -133,7 +133,7 @@ body {
 }
 
 .grammarly-button-primary {
-  @apply bg-blue-600 hover:bg-blue-700 text-white font-medium px-6 py-3 cursor-pointer hover:shadow-md;
+  @apply bg-indigo-600 hover:bg-indigo-700 text-white font-medium px-6 py-3 cursor-pointer hover:shadow-md;
   transition:
     color 0.15s ease,
     background-color 0.15s ease,
@@ -202,7 +202,7 @@ body {
 }
 
 .grammarly-gradient-text {
-  @apply text-blue-600;
+  @apply text-indigo-600;
 }
 
 .grammarly-hero-section {
@@ -227,7 +227,7 @@ body {
 }
 
 .grammarly-status-info {
-  @apply bg-blue-100 border border-blue-300 text-blue-800 p-4;
+  @apply bg-indigo-100 border border-blue-300 text-indigo-800 p-4;
 }
 
 .status-message-enter {

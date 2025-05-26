@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'sonner';
-import { LogOut, User } from 'lucide-react';
+import { LogOut } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -59,11 +59,11 @@ export function UserProfile() {
       <DropdownMenuTrigger asChild>
         <Button
           variant='ghost'
-          className='relative h-10 w-10 rounded-full hover:bg-blue-50 transition-smooth hover:scale-105 active:scale-95'
+          className='relative h-10 w-10 rounded-full hover:bg-indigo-50 transition-smooth hover:scale-105 active:scale-95'
         >
           <Avatar className='h-10 w-10 border-2 border-blue-200 transition-colors-smooth'>
-            <AvatarFallback className='bg-gradient-to-br from-blue-500 to-purple-600 text-white transition-colors-smooth'>
-              <User className='h-5 w-5 transition-transform-smooth' />
+            <AvatarFallback className='font-bold text-lg bg-gradient-to-br from-blue-500 to-purple-600 text-white transition-colors-smooth'>
+              {firstName[0].toUpperCase()}
             </AvatarFallback>
           </Avatar>
         </Button>
@@ -109,7 +109,7 @@ export function UserProfile() {
               Cancel
             </Button>
             <Button
-              className='bg-blue-50'
+              className='bg-indigo-50'
               variant="outline"
               onClick={confirmLogout}
             >

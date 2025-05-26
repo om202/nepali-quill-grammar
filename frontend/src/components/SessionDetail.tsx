@@ -216,7 +216,7 @@ export function SessionDetail({ sessionId, onBack }: SessionDetailProps) {
       {/* Statistics */}
       <div className='grid grid-cols-1 md:grid-cols-4 gap-4'>
         <div className='grammarly-card p-4 text-center'>
-          <FileText className='h-8 w-8 text-blue-600 mx-auto mb-2' />
+          <FileText className='h-8 w-8 text-indigo-600 mx-auto mb-2' />
           <div className='text-xl font-semibold text-gray-900'>
             {allSuggestions.length}
           </div>

@@ -114,7 +114,7 @@ export function AuthModal({
         <div className='bg-gradient-to-br from-blue-50 to-purple-50 p-6'>
           <DialogHeader className='text-center'>
             <div className='flex items-center justify-center space-x-2 mb-2'>
-              <Sparkles className='h-6 w-6 text-blue-600' />
+              <Sparkles className='h-6 w-6 text-indigo-600' />
               <DialogTitle className='text-xl font-semibold grammarly-gradient-text'>
                 Welcome to Vyakaranly
               </DialogTitle>
@@ -316,20 +316,20 @@ export function AuthModal({
                 )}
 
                 {/* Benefits */}
-                <div className='bg-blue-50 rounded-sm p-4 space-y-2'>
-                  <p className='text-sm font-semibold text-blue-900 mb-2'>
+                <div className='bg-indigo-50 rounded-sm p-4 space-y-2'>
+                  <p className='text-sm font-semibold text-indigo-900 mb-2'>
                     What you&apos;ll get:
                   </p>
                   <div className='space-y-1'>
-                    <div className='flex items-center space-x-2 text-sm text-blue-800'>
+                    <div className='flex items-center space-x-2 text-sm text-indigo-800'>
                       <CheckCircle className='h-4 w-4' />
                       <span>Save your writing sessions</span>
                     </div>
-                    <div className='flex items-center space-x-2 text-sm text-blue-800'>
+                    <div className='flex items-center space-x-2 text-sm text-indigo-800'>
                       <CheckCircle className='h-4 w-4' />
                       <span>Advanced AI suggestions</span>
                     </div>
-                    <div className='flex items-center space-x-2 text-sm text-blue-800'>
+                    <div className='flex items-center space-x-2 text-sm text-indigo-800'>
                       <CheckCircle className='h-4 w-4' />
                       <span>Personal writing insights</span>
                     </div>

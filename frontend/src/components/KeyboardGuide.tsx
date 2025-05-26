@@ -60,7 +60,7 @@ export const KeyboardGuide: React.FC<KeyboardGuideProps> = () => {
             {/* Header */}
             <div className='flex items-center justify-between p-4 border-b border-gray-200 flex-shrink-0'>
               <div className='flex items-center space-x-2'>
-                <Keyboard className='h-5 w-5 text-blue-600' />
+                <Keyboard className='h-5 w-5 text-indigo-600' />
                 <h2 className='text-lg font-semibold text-gray-800'>
                   Nepali Keyboard Layout Guide
                 </h2>
@@ -105,12 +105,12 @@ export const KeyboardGuide: React.FC<KeyboardGuideProps> = () => {
 
                 {/* Instructions */}
                 <div className='grid md:grid-cols-2 gap-4'>
-                  <div className='bg-blue-50 rounded-lg p-4'>
+                  <div className='bg-indigo-50 rounded-lg p-4'>
                     <div className='flex items-center space-x-2 mb-2'>
-                      <Info className='h-4 w-4 text-blue-600' />
-                      <h3 className='font-medium text-blue-800'>How to use:</h3>
+                      <Info className='h-4 w-4 text-indigo-600' />
+                      <h3 className='font-medium text-indigo-800'>How to use:</h3>
                     </div>
-                    <ul className='text-sm text-blue-700 space-y-1'>
+                    <ul className='text-sm text-indigo-700 space-y-1'>
                       <li>• Type English characters as shown in the layout</li>
                       <li>
                         • Text automatically converts to Nepali Devanagari

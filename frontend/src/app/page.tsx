@@ -182,7 +182,7 @@ export default function Home() {
           <div className='grammarly-status-info mb-8 max-w-2xl mx-auto relative'>
             <button
               onClick={dismissFreeTrialMessage}
-              className='absolute top-2 right-2 text-blue-600 hover:text-blue-800 cursor-pointer transition-colors-smooth'
+              className='absolute top-2 right-2 text-indigo-600 hover:text-indigo-800 cursor-pointer transition-colors-smooth'
               aria-label='Dismiss message'
             >
               <X className='h-4 w-4' />
@@ -202,14 +202,14 @@ export default function Home() {
           <TabsList className='grid w-full grid-cols-2 gap-2 mb-0 max-w-md mx-auto'>
             <TabsTrigger
               value='enhance'
-              className='flex items-center space-x-2 font-medium data-[state=active]:bg-blue-50 data-[state=active]:text-blue-700 transition-colors-smooth'
+              className='flex items-center space-x-2 font-medium data-[state=active]:bg-indigo-50 data-[state=active]:text-indigo-700 transition-colors-smooth'
             >
               <Zap className='h-4 w-4' />
               <span>Enhance</span>
             </TabsTrigger>
             <TabsTrigger
               value='history'
-              className='flex items-center space-x-2 font-medium data-[state=active]:bg-blue-50 data-[state=active]:text-blue-700 transition-colors-smooth'
+              className='flex items-center space-x-2 font-medium data-[state=active]:bg-indigo-50 data-[state=active]:text-indigo-700 transition-colors-smooth'
             >
               <HistoryIcon className='h-4 w-4' />
               <span>History</span>
@@ -232,7 +232,7 @@ export default function Home() {
                 <div className='flex items-center justify-between p-4 border-b border-gray-200 flex-shrink-0'>
                   <div className='flex items-center space-x-6'>
                     <div className='flex items-center space-x-2'>
-                      <Edit3 className='h-5 w-5 text-blue-600' />
+                      <Edit3 className='h-5 w-5 text-indigo-600' />
                       <span className='text-gray-700 font-medium'>Text</span>
                     </div>
                     <KeyboardGuide />
