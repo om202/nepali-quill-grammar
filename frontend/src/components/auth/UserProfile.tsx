@@ -50,11 +50,11 @@ return null;
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent
-        className='w-64 p-2 transition-opacity-smooth'
+        className='w-64 p-2 transition-opacity-smooth bg-white'
         align='end'
         forceMount
       >
-        <div className='flex items-center space-x-3 p-3 bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg mb-2 transition-colors-smooth'>
+        <div className='flex bg-white items-center space-x-3 p-3 bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg mb-2 transition-colors-smooth'>
           <Avatar className='h-12 w-12 border-2 border-white shadow-sm transition-shadow-smooth'>
             <AvatarFallback className='bg-gradient-to-br from-blue-500 to-purple-600 text-white transition-colors-smooth'>
               <User className='h-6 w-6 transition-transform-smooth' />

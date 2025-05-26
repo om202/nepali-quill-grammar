@@ -230,7 +230,7 @@ export default function Home() {
               {/* Text Input Section */}
               <div className='w-full lg:w-[70%] grammarly-card flex flex-col min-h-0'>
                 <div className='flex items-center justify-between p-4 border-b border-gray-200 flex-shrink-0'>
-                  <div className='flex items-center space-x-4'>
+                  <div className='flex items-center space-x-6'>
                     <div className='flex items-center space-x-2'>
                       <Edit3 className='h-5 w-5 text-blue-600' />
                       <span className='text-gray-700 font-medium'>Text</span>

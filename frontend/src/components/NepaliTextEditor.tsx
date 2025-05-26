@@ -164,7 +164,7 @@ return escapeHTML(text);
           className='absolute inset-0 w-full h-full p-6 bg-transparent resize-none focus:outline-none text-lg text-gray-800 leading-relaxed z-10'
           value={text}
           onChange={handleTextareaChange}
-          placeholder='यहाँ नेपाली पाठ लेख्नुहोस्... (Type in English: namaste, nepal, etc.)'
+          placeholder='यहाँ नेपाली पाठ लेख्नुहोस्...'
           spellCheck={false}
           autoComplete='off'
           autoCorrect='off'
