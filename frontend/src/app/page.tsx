@@ -11,6 +11,7 @@ import { HighlightedTextEditor } from '@/components/HighlightedTextEditor';
 import { RootState } from '@/store';
 import { setSuggestions, removeSuggestion } from '@/store/suggestionsSlice';
 import { setText } from '@/store/textSlice';
+import { CheckCircle, Zap, Sparkles } from 'lucide-react';
 
 export default function Home() {
   const dispatch = useDispatch();
@@ -101,79 +102,127 @@ export default function Home() {
   };
 
   return (
-    <div className="container mx-auto p-4 max-w-6xl">
-      {/* Welcome message for authenticated users */}
-      {isAuthenticated && user && (
-        <div className="mb-6 p-4 bg-blue-50 dark:bg-blue-950 rounded-lg border">
-          <h2 className="text-lg font-semibold text-blue-900 dark:text-blue-100">
-            Welcome back, {user.name}!
-          </h2>
-          <p className="text-blue-700 dark:text-blue-300">
-            Your text analysis sessions are now saved to your account.
-          </p>
-        </div>
-      )}
+    <div className="min-h-screen bg-gray-50 py-8">
+      <div className="container mx-auto max-w-6xl px-6">
+        {/* Status Messages */}
+        {isAuthenticated && user && (
+          <div className="grammarly-status-success mb-8 max-w-2xl mx-auto animate-slide-in-right">
+            <div className="flex items-center justify-center space-x-2">
+              <CheckCircle className="h-5 w-5" />
+              <span className="font-semibold">Welcome back, {user.name}!</span>
+            </div>
+            <p className="mt-2 text-sm">Your text analysis sessions are automatically saved to your account.</p>
+          </div>
+        )}
 
-      {/* Guest user notice */}
-      {!isAuthenticated && (
-        <div className="mb-6 p-4 bg-amber-50 dark:bg-amber-950 rounded-lg border">
-          <h2 className="text-lg font-semibold text-amber-900 dark:text-amber-100">
-            Using as Guest
-          </h2>
-          <p className="text-amber-700 dark:text-amber-300">
-            Sign up or log in to save your text analysis sessions and access additional features.
-          </p>
-        </div>
-      )}
-      
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <Card>
-          <CardHeader>
-            <CardTitle>Enter Nepali Text</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <HighlightedTextEditor
-              onSelectSuggestion={setSelectedSuggestionId}
-            />
-            {error && (
-              <div className="text-red-500 text-sm mb-4">
-                {error}
-              </div>
-            )}
-            <Button
-              onClick={handleAnalyze}
-              disabled={isLoading}
-              className="w-full mt-4"
-            >
-              {isLoading ? 'Analyzing...' : 'Analyze Text'}
-            </Button>
-          </CardContent>
-        </Card>
+        {!isAuthenticated && (
+          <div className="grammarly-status-info mb-8 max-w-2xl mx-auto animate-slide-in-right">
+            <div className="flex items-center justify-center space-x-2">
+              <Sparkles className="h-5 w-5" />
+              <span className="font-semibold">Try NepaliQuill for free</span>
+            </div>
+            <p className="mt-2 text-sm">Sign up to save your sessions and unlock additional features.</p>
+          </div>
+        )}
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Suggestions</CardTitle>
-          </CardHeader>
-          <CardContent>
-            {suggestions.length === 0 ? (
-              <p className="text-gray-500 text-center py-4">
-                {isLoading ? 'Analyzing...' : error ? 'Analysis failed' : 'No suggestions yet'}
-              </p>
-            ) : (
-              <div className="space-y-4">
-                {suggestions.map((suggestion) => (
-                  <SuggestionCard
-                    key={suggestion.id}
-                    suggestion={suggestion}
-                    sessionId={sessionId!}
-                    onUpdate={handleSuggestionUpdate}
-                    className={selectedSuggestionId === suggestion.id ? 'ring-2 ring-blue-500' : ''}
-                  />
-                ))}
+        {/* Main Editor Section */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          {/* Text Input */}
+          <div className="grammarly-card animate-fade-in-up">
+            <div className="p-6">
+              <div className="flex items-center space-x-2 mb-4">
+                <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
+                <h2 className="grammarly-heading-3">Enter Your Nepali Text</h2>
               </div>
-            )}
-          </CardContent>
-        </Card>
+              <HighlightedTextEditor
+                onSelectSuggestion={setSelectedSuggestionId}
+              />
+              {error && (
+                <div className="grammarly-status-error mt-4">
+                  <p className="font-medium">Analysis Failed</p>
+                  <p className="text-sm mt-1">{error}</p>
+                </div>
+              )}
+              <Button
+                onClick={handleAnalyze}
+                disabled={isLoading}
+                className="grammarly-button-primary w-full mt-6"
+              >
+                {isLoading ? (
+                  <>
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                    Analyzing...
+                  </>
+                ) : (
+                  <>
+                    <Zap className="h-4 w-4 mr-2" />
+                    Enhance Text
+                  </>
+                )}
+              </Button>
+            </div>
+          </div>
+
+          {/* Suggestions Panel */}
+          <div className="grammarly-card animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
+            <div className="p-6">
+              <div className="flex items-center space-x-2 mb-4">
+                <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                <h2 className="grammarly-heading-3">AI Suggestions</h2>
+                {suggestions.length > 0 && (
+                  <span className="bg-green-100 text-green-800 text-xs font-medium px-2 py-1 rounded-full">
+                    {suggestions.length} suggestion{suggestions.length !== 1 ? 's' : ''}
+                  </span>
+                )}
+              </div>
+              
+              <div className="min-h-[400px]">
+                {suggestions.length === 0 ? (
+                  <div className="flex flex-col items-center justify-center h-full text-center py-12">
+                    {isLoading ? (
+                      <>
+                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mb-4"></div>
+                        <p className="text-gray-500">Analyzing your text...</p>
+                      </>
+                    ) : error ? (
+                      <>
+                        <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mb-4">
+                          <span className="text-red-500 text-xl">!</span>
+                        </div>
+                        <p className="text-gray-500">Analysis failed. Please try again.</p>
+                      </>
+                    ) : (
+                      <>
+                        <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mb-4">
+                          <Sparkles className="h-6 w-6 text-gray-400" />
+                        </div>
+                        <p className="text-gray-500 mb-2">No suggestions yet</p>
+                        <p className="text-sm text-gray-400">Enter some Nepali text to get started</p>
+                      </>
+                    )}
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {suggestions.map((suggestion, index) => (
+                      <div 
+                        key={suggestion.id}
+                        className="animate-fade-in"
+                        style={{ animationDelay: `${index * 0.1}s` }}
+                      >
+                        <SuggestionCard
+                          suggestion={suggestion}
+                          sessionId={sessionId!}
+                          onUpdate={handleSuggestionUpdate}
+                          className={selectedSuggestionId === suggestion.id ? 'ring-2 ring-blue-500' : ''}
+                        />
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );

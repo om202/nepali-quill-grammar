@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { AuthModal } from '@/components/auth/AuthModal';
 import { UserProfile } from '@/components/auth/UserProfile';
 import { RootState } from '@/store';
+import { Sparkles, PenTool } from 'lucide-react';
 
 export function Header() {
   const { isAuthenticated, user } = useSelector((state: RootState) => state.auth);
@@ -24,27 +25,50 @@ export function Header() {
 
   return (
     <>
-      <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="container mx-auto flex h-14 items-center justify-between px-4">
-          <div className="flex items-center space-x-2">
-            <h1 className="text-xl font-bold">NepaliQuill</h1>
+      <header className="grammarly-header">
+        <div className="container mx-auto flex h-16 items-center justify-between px-6">
+          <div className="flex items-center space-x-3">
+            <div className="flex items-center space-x-2">
+              <div className="relative">
+                <PenTool className="h-8 w-8 text-blue-600" />
+                <Sparkles className="h-4 w-4 text-purple-500 absolute -top-1 -right-1" />
+              </div>
+              <div>
+                <h1 className="text-2xl font-bold grammarly-gradient-text">
+                  NepaliQuill
+                </h1>
+                <p className="text-xs text-gray-500 -mt-1">
+                  AI-powered Nepali text enhancement
+                </p>
+              </div>
+            </div>
           </div>
           
           <div className="flex items-center space-x-4">
             {isAuthenticated && user ? (
-              <div className="flex items-center space-x-2">
-                <span className="text-sm text-muted-foreground">
-                  Welcome, {user.name}
-                </span>
+              <div className="flex items-center space-x-4">
+                <div className="hidden md:flex items-center space-x-2 bg-blue-50 px-4 py-2 rounded-full">
+                  <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                  <span className="text-sm font-medium text-blue-700">
+                    {user.name}
+                  </span>
+                </div>
                 <UserProfile />
               </div>
             ) : (
-              <div className="flex items-center space-x-2">
-                <Button variant="ghost" onClick={handleOpenLogin}>
-                  Login
+              <div className="flex items-center space-x-3">
+                <Button 
+                  variant="ghost" 
+                  onClick={handleOpenLogin}
+                  className="font-semibold text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-xl px-4 py-2 transition-all duration-200"
+                >
+                  Log in
                 </Button>
-                <Button onClick={handleOpenSignup}>
-                  Sign Up
+                <Button 
+                  onClick={handleOpenSignup}
+                  className="grammarly-button-primary"
+                >
+                  Get started
                 </Button>
               </div>
             )}

@@ -11,7 +11,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { RootState, AppDispatch } from '@/store';
 import { signupAsync, loginAsync, clearError } from '@/store/authSlice';
 import { toast } from 'sonner';
-import { Loader2 } from 'lucide-react';
+import { Loader2, Mail, Lock, User, Sparkles, CheckCircle } from 'lucide-react';
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -49,7 +49,7 @@ export function AuthModal({ isOpen, onClose, defaultTab = 'login' }: AuthModalPr
         password: loginForm.password,
       })).unwrap();
       
-      toast.success('Login successful!');
+      toast.success('Welcome back!');
       onClose();
       setLoginForm({ email: '', password: '' });
     } catch (error) {
@@ -97,29 +97,46 @@ export function AuthModal({ isOpen, onClose, defaultTab = 'login' }: AuthModalPr
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="sm:max-w-[425px]">
-        <DialogHeader>
-          <DialogTitle>Welcome to NepaliQuill</DialogTitle>
-        </DialogHeader>
+      <DialogContent className="sm:max-w-[480px] p-0 overflow-hidden">
+        <div className="bg-gradient-to-br from-blue-50 to-purple-50 p-6">
+          <DialogHeader className="text-center">
+            <div className="flex items-center justify-center space-x-2 mb-2">
+              <Sparkles className="h-6 w-6 text-blue-600" />
+              <DialogTitle className="text-2xl font-bold grammarly-gradient-text">
+                Welcome to NepaliQuill
+              </DialogTitle>
+            </div>
+            <p className="text-gray-600">
+              Join thousands of users enhancing their Nepali writing with AI
+            </p>
+          </DialogHeader>
+        </div>
         
-        <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as 'login' | 'signup')}>
-          <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="login">Login</TabsTrigger>
-            <TabsTrigger value="signup">Sign Up</TabsTrigger>
-          </TabsList>
-          
-          <TabsContent value="login">
-            <Card>
-              <CardHeader>
-                <CardTitle>Login</CardTitle>
-                <CardDescription>
-                  Enter your credentials to access your account
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <form onSubmit={handleLogin} className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="login-email">Email</Label>
+        <div className="p-6">
+          <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as 'login' | 'signup')}>
+            <TabsList className="grid w-full grid-cols-2 mb-6 bg-gray-100 p-1 rounded-xl">
+              <TabsTrigger 
+                value="login" 
+                className="rounded-lg font-semibold data-[state=active]:bg-white data-[state=active]:shadow-sm"
+              >
+                Log in
+              </TabsTrigger>
+              <TabsTrigger 
+                value="signup" 
+                className="rounded-lg font-semibold data-[state=active]:bg-white data-[state=active]:shadow-sm"
+              >
+                Sign up
+              </TabsTrigger>
+            </TabsList>
+            
+            <TabsContent value="login" className="space-y-4">
+              <form onSubmit={handleLogin} className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="login-email" className="text-sm font-semibold text-gray-700">
+                    Email address
+                  </Label>
+                  <div className="relative">
+                    <Mail className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
                     <Input
                       id="login-email"
                       type="email"
@@ -127,10 +144,16 @@ export function AuthModal({ isOpen, onClose, defaultTab = 'login' }: AuthModalPr
                       value={loginForm.email}
                       onChange={(e) => setLoginForm({ ...loginForm, email: e.target.value })}
                       disabled={isLoading}
+                      className="grammarly-input pl-10"
                     />
                   </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="login-password">Password</Label>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="login-password" className="text-sm font-semibold text-gray-700">
+                    Password
+                  </Label>
+                  <div className="relative">
+                    <Lock className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
                     <Input
                       id="login-password"
                       type="password"
@@ -138,38 +161,36 @@ export function AuthModal({ isOpen, onClose, defaultTab = 'login' }: AuthModalPr
                       value={loginForm.password}
                       onChange={(e) => setLoginForm({ ...loginForm, password: e.target.value })}
                       disabled={isLoading}
+                      className="grammarly-input pl-10"
                     />
                   </div>
-                  {error && (
-                    <div className="text-red-500 text-sm">{error}</div>
+                </div>
+                {error && (
+                  <div className="grammarly-status-error">
+                    <p className="text-sm font-medium">{error}</p>
+                  </div>
+                )}
+                <Button type="submit" className="grammarly-button-primary w-full" disabled={isLoading}>
+                  {isLoading ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Signing in...
+                    </>
+                  ) : (
+                    'Sign in to NepaliQuill'
                   )}
-                  <Button type="submit" className="w-full" disabled={isLoading}>
-                    {isLoading ? (
-                      <>
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        Logging in...
-                      </>
-                    ) : (
-                      'Login'
-                    )}
-                  </Button>
-                </form>
-              </CardContent>
-            </Card>
-          </TabsContent>
-          
-          <TabsContent value="signup">
-            <Card>
-              <CardHeader>
-                <CardTitle>Sign Up</CardTitle>
-                <CardDescription>
-                  Create a new account to get started
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <form onSubmit={handleSignup} className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="signup-name">Full Name</Label>
+                </Button>
+              </form>
+            </TabsContent>
+            
+            <TabsContent value="signup" className="space-y-4">
+              <form onSubmit={handleSignup} className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="signup-name" className="text-sm font-semibold text-gray-700">
+                    Full name
+                  </Label>
+                  <div className="relative">
+                    <User className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
                     <Input
                       id="signup-name"
                       type="text"
@@ -177,10 +198,16 @@ export function AuthModal({ isOpen, onClose, defaultTab = 'login' }: AuthModalPr
                       value={signupForm.name}
                       onChange={(e) => setSignupForm({ ...signupForm, name: e.target.value })}
                       disabled={isLoading}
+                      className="grammarly-input pl-10"
                     />
                   </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="signup-email">Email</Label>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="signup-email" className="text-sm font-semibold text-gray-700">
+                    Email address
+                  </Label>
+                  <div className="relative">
+                    <Mail className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
                     <Input
                       id="signup-email"
                       type="email"
@@ -188,10 +215,16 @@ export function AuthModal({ isOpen, onClose, defaultTab = 'login' }: AuthModalPr
                       value={signupForm.email}
                       onChange={(e) => setSignupForm({ ...signupForm, email: e.target.value })}
                       disabled={isLoading}
+                      className="grammarly-input pl-10"
                     />
                   </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="signup-password">Password</Label>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="signup-password" className="text-sm font-semibold text-gray-700">
+                    Password
+                  </Label>
+                  <div className="relative">
+                    <Lock className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
                     <Input
                       id="signup-password"
                       type="password"
@@ -199,10 +232,16 @@ export function AuthModal({ isOpen, onClose, defaultTab = 'login' }: AuthModalPr
                       value={signupForm.password}
                       onChange={(e) => setSignupForm({ ...signupForm, password: e.target.value })}
                       disabled={isLoading}
+                      className="grammarly-input pl-10"
                     />
                   </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="signup-confirm-password">Confirm Password</Label>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="signup-confirm-password" className="text-sm font-semibold text-gray-700">
+                    Confirm password
+                  </Label>
+                  <div className="relative">
+                    <Lock className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
                     <Input
                       id="signup-confirm-password"
                       type="password"
@@ -210,26 +249,53 @@ export function AuthModal({ isOpen, onClose, defaultTab = 'login' }: AuthModalPr
                       value={signupForm.confirmPassword}
                       onChange={(e) => setSignupForm({ ...signupForm, confirmPassword: e.target.value })}
                       disabled={isLoading}
+                      className="grammarly-input pl-10"
                     />
                   </div>
-                  {error && (
-                    <div className="text-red-500 text-sm">{error}</div>
+                </div>
+                {error && (
+                  <div className="grammarly-status-error">
+                    <p className="text-sm font-medium">{error}</p>
+                  </div>
+                )}
+                
+                {/* Benefits */}
+                <div className="bg-blue-50 rounded-xl p-4 space-y-2">
+                  <p className="text-sm font-semibold text-blue-900 mb-2">What you'll get:</p>
+                  <div className="space-y-1">
+                    <div className="flex items-center space-x-2 text-sm text-blue-800">
+                      <CheckCircle className="h-4 w-4" />
+                      <span>Save your writing sessions</span>
+                    </div>
+                    <div className="flex items-center space-x-2 text-sm text-blue-800">
+                      <CheckCircle className="h-4 w-4" />
+                      <span>Advanced AI suggestions</span>
+                    </div>
+                    <div className="flex items-center space-x-2 text-sm text-blue-800">
+                      <CheckCircle className="h-4 w-4" />
+                      <span>Personal writing insights</span>
+                    </div>
+                  </div>
+                </div>
+                
+                <Button type="submit" className="grammarly-button-primary w-full" disabled={isLoading}>
+                  {isLoading ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Creating account...
+                    </>
+                  ) : (
+                    'Create your free account'
                   )}
-                  <Button type="submit" className="w-full" disabled={isLoading}>
-                    {isLoading ? (
-                      <>
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        Creating account...
-                      </>
-                    ) : (
-                      'Sign Up'
-                    )}
-                  </Button>
-                </form>
-              </CardContent>
-            </Card>
-          </TabsContent>
-        </Tabs>
+                </Button>
+              </form>
+            </TabsContent>
+          </Tabs>
+          
+          <p className="text-xs text-gray-500 text-center mt-6">
+            By continuing, you agree to our Terms of Service and Privacy Policy
+          </p>
+        </div>
       </DialogContent>
     </Dialog>
   );
