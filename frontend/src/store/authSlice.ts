@@ -1,5 +1,17 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
-import { User, signup, login, logout, getProfile, updateProfile, SignupRequest, LoginRequest, UpdateProfileRequest, getAuthToken } from '@/lib/api';
+
+import {
+  User,
+  signup,
+  login,
+  logout,
+  getProfile,
+  updateProfile,
+  SignupRequest,
+  LoginRequest,
+  UpdateProfileRequest,
+  getAuthToken,
+} from '@/lib/api';
 
 interface AuthState {
   user: User | null;
@@ -95,19 +107,19 @@ const authSlice = createSlice({
   name: 'auth',
   initialState,
   reducers: {
-    clearError: (state) => {
+    clearError: state => {
       state.error = null;
     },
-    clearAuth: (state) => {
+    clearAuth: state => {
       state.user = null;
       state.isAuthenticated = false;
       state.error = null;
     },
   },
-  extraReducers: (builder) => {
+  extraReducers: builder => {
     builder
       // Signup
-      .addCase(signupAsync.pending, (state) => {
+      .addCase(signupAsync.pending, state => {
         state.isLoading = true;
         state.error = null;
       })
@@ -122,7 +134,7 @@ const authSlice = createSlice({
         state.error = action.payload as string;
       })
       // Login
-      .addCase(loginAsync.pending, (state) => {
+      .addCase(loginAsync.pending, state => {
         state.isLoading = true;
         state.error = null;
       })
@@ -137,10 +149,10 @@ const authSlice = createSlice({
         state.error = action.payload as string;
       })
       // Logout
-      .addCase(logoutAsync.pending, (state) => {
+      .addCase(logoutAsync.pending, state => {
         state.isLoading = true;
       })
-      .addCase(logoutAsync.fulfilled, (state) => {
+      .addCase(logoutAsync.fulfilled, state => {
         state.isLoading = false;
         state.user = null;
         state.isAuthenticated = false;
@@ -151,16 +163,19 @@ const authSlice = createSlice({
         state.error = action.payload as string;
       })
       // Get Profile
-      .addCase(getProfileAsync.pending, (state) => {
+      .addCase(getProfileAsync.pending, state => {
         state.isLoading = true;
         state.error = null;
       })
-      .addCase(getProfileAsync.fulfilled, (state, action: PayloadAction<User>) => {
-        state.isLoading = false;
-        state.user = action.payload;
-        state.isAuthenticated = true;
-        state.error = null;
-      })
+      .addCase(
+        getProfileAsync.fulfilled,
+        (state, action: PayloadAction<User>) => {
+          state.isLoading = false;
+          state.user = action.payload;
+          state.isAuthenticated = true;
+          state.error = null;
+        }
+      )
       .addCase(getProfileAsync.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload as string;
@@ -168,30 +183,36 @@ const authSlice = createSlice({
         state.user = null;
       })
       // Update Profile
-      .addCase(updateProfileAsync.pending, (state) => {
+      .addCase(updateProfileAsync.pending, state => {
         state.isLoading = true;
         state.error = null;
       })
-      .addCase(updateProfileAsync.fulfilled, (state, action: PayloadAction<User>) => {
-        state.isLoading = false;
-        state.user = action.payload;
-        state.error = null;
-      })
+      .addCase(
+        updateProfileAsync.fulfilled,
+        (state, action: PayloadAction<User>) => {
+          state.isLoading = false;
+          state.user = action.payload;
+          state.error = null;
+        }
+      )
       .addCase(updateProfileAsync.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload as string;
       })
       // Check Auth Status
-      .addCase(checkAuthStatus.pending, (state) => {
+      .addCase(checkAuthStatus.pending, state => {
         state.isLoading = true;
       })
-      .addCase(checkAuthStatus.fulfilled, (state, action: PayloadAction<User>) => {
-        state.isLoading = false;
-        state.user = action.payload;
-        state.isAuthenticated = true;
-        state.error = null;
-      })
-      .addCase(checkAuthStatus.rejected, (state) => {
+      .addCase(
+        checkAuthStatus.fulfilled,
+        (state, action: PayloadAction<User>) => {
+          state.isLoading = false;
+          state.user = action.payload;
+          state.isAuthenticated = true;
+          state.error = null;
+        }
+      )
+      .addCase(checkAuthStatus.rejected, state => {
         state.isLoading = false;
         state.isAuthenticated = false;
         state.user = null;
@@ -201,4 +222,4 @@ const authSlice = createSlice({
 });
 
 export const { clearError, clearAuth } = authSlice.actions;
-export default authSlice.reducer; 
+export default authSlice.reducer;

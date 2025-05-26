@@ -1,6 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@300;400;500;600;700&display=swap');
 
-@import "tailwindcss";
+@import 'tailwindcss';
 
 :root {
   --background: 0 0% 100%;
@@ -82,7 +82,9 @@
 body {
   background-color: hsl(var(--background));
   color: hsl(var(--foreground));
-  font-feature-settings: "rlig" 1, "calt" 1;
+  font-feature-settings:
+    'rlig' 1,
+    'calt' 1;
   background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
   min-height: 100vh;
   -webkit-font-smoothing: antialiased;
@@ -92,7 +94,10 @@ body {
 
 /* Global transition utilities - simplified */
 .transition-smooth {
-  transition: color 0.15s ease, background-color 0.15s ease, border-color 0.15s ease;
+  transition:
+    color 0.15s ease,
+    background-color 0.15s ease,
+    border-color 0.15s ease;
 }
 
 .transition-smooth-slow {
@@ -100,7 +105,10 @@ body {
 }
 
 .transition-colors-smooth {
-  transition: color 0.15s ease, background-color 0.15s ease, border-color 0.15s ease;
+  transition:
+    color 0.15s ease,
+    background-color 0.15s ease,
+    border-color 0.15s ease;
 }
 
 .transition-transform-smooth {
@@ -117,47 +125,76 @@ body {
 
 .grammarly-card {
   @apply bg-white border border-gray-200 hover:border-gray-300 hover:shadow-sm;
-  transition: color 0.15s ease, background-color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+  transition:
+    color 0.15s ease,
+    background-color 0.15s ease,
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
 }
 
 .grammarly-button-primary {
   @apply bg-blue-600 hover:bg-blue-700 text-white font-medium px-6 py-3 cursor-pointer hover:shadow-md;
-  transition: color 0.15s ease, background-color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+  transition:
+    color 0.15s ease,
+    background-color 0.15s ease,
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
 }
 
 .grammarly-button-secondary {
   @apply bg-white border border-gray-300 hover:border-gray-400 text-gray-700 font-medium px-6 py-3 cursor-pointer hover:shadow-sm;
-  transition: color 0.15s ease, background-color 0.15s ease, border-color 0.15s ease;
+  transition:
+    color 0.15s ease,
+    background-color 0.15s ease,
+    border-color 0.15s ease;
 }
 
 .grammarly-input {
   @apply w-full px-4 py-4 border border-gray-300 focus:border-blue-500 bg-white text-base;
-  transition: color 0.15s ease, background-color 0.15s ease, border-color 0.15s ease;
+  transition:
+    color 0.15s ease,
+    background-color 0.15s ease,
+    border-color 0.15s ease;
 }
 
 .grammarly-input-with-icon {
   @apply w-full pl-12 pr-4 py-4 border border-gray-300 focus:border-blue-500 bg-white text-base;
-  transition: color 0.15s ease, background-color 0.15s ease, border-color 0.15s ease;
+  transition:
+    color 0.15s ease,
+    background-color 0.15s ease,
+    border-color 0.15s ease;
 }
 
 .grammarly-textarea {
   @apply w-full px-4 py-4 border border-gray-300 focus:border-blue-500 bg-white resize-none;
-  transition: color 0.15s ease, background-color 0.15s ease, border-color 0.15s ease;
+  transition:
+    color 0.15s ease,
+    background-color 0.15s ease,
+    border-color 0.15s ease;
 }
 
 .grammarly-suggestion {
   @apply bg-white border border-gray-200 p-4 hover:border-gray-300 hover:shadow-sm;
-  transition: color 0.15s ease, background-color 0.15s ease, border-color 0.15s ease;
+  transition:
+    color 0.15s ease,
+    background-color 0.15s ease,
+    border-color 0.15s ease;
 }
 
 .grammarly-suggestion-accept {
   @apply bg-green-600 hover:bg-green-700 text-white font-medium px-4 py-2 cursor-pointer hover:shadow-md;
-  transition: color 0.15s ease, background-color 0.15s ease, border-color 0.15s ease;
+  transition:
+    color 0.15s ease,
+    background-color 0.15s ease,
+    border-color 0.15s ease;
 }
 
 .grammarly-suggestion-reject {
   @apply bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium px-4 py-2 cursor-pointer;
-  transition: color 0.15s ease, background-color 0.15s ease, border-color 0.15s ease;
+  transition:
+    color 0.15s ease,
+    background-color 0.15s ease,
+    border-color 0.15s ease;
 }
 
 .grammarly-header {
@@ -288,7 +325,9 @@ body {
 /* Nepali Font Support */
 .nepali-text {
   font-family: 'Noto Sans Devanagari', 'Mangal', 'Devanagari MT', sans-serif;
-  font-feature-settings: "kern" 1, "liga" 1;
+  font-feature-settings:
+    'kern' 1,
+    'liga' 1;
   text-rendering: optimizeLegibility;
   line-height: 1.6;
 }
@@ -311,4 +350,4 @@ body {
 
 .language-toggle-inactive {
   @apply bg-gray-50 border-gray-300 text-gray-600;
-} 
+}

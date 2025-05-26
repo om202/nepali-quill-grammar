@@ -22,4 +22,4 @@ const textSlice = createSlice({
 });
 
 export const { setText, clearText } = textSlice.actions;
-export default textSlice.reducer; 
+export default textSlice.reducer;

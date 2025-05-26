@@ -1,16 +1,18 @@
-import type { Metadata } from "next";
-import { Inter } from "next/font/google";
-import "./globals.css";
-import { Toaster } from "sonner";
-import { Providers } from "./providers";
-import { Header } from "@/components/Header";
-import { AuthProvider } from "@/components/auth/AuthProvider";
+import type { Metadata } from 'next';
+import { Inter } from 'next/font/google';
+import './globals.css';
+import { Toaster } from 'sonner';
 
-const inter = Inter({ subsets: ["latin"] });
+import { Header } from '@/components/Header';
+import { AuthProvider } from '@/components/auth/AuthProvider';
+
+import { Providers } from './providers';
+
+const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: "Vyakaranly - Nepali Text Enhancement",
-  description: "AI-powered Nepali text enhancement and grammar checking",
+  title: 'Vyakaranly - Nepali Text Enhancement',
+  description: 'AI-powered Nepali text enhancement and grammar checking',
 };
 
 export default function RootLayout({
@@ -19,15 +21,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang='en'>
       <body className={inter.className}>
         <Providers>
           <AuthProvider>
-            <div className="min-h-screen bg-background">
+            <div className='min-h-screen bg-background'>
               <Header />
-              <main>
-                {children}
-              </main>
+              <main>{children}</main>
             </div>
             <Toaster />
           </AuthProvider>

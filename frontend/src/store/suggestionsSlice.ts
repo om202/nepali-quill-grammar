@@ -1,4 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+
 import { Suggestion } from '@/lib/api';
 
 interface SuggestionsState {
@@ -44,4 +45,4 @@ export const {
   setSuggestionsError,
   removeSuggestion,
 } = suggestionsSlice.actions;
-export default suggestionsSlice.reducer; 
+export default suggestionsSlice.reducer;

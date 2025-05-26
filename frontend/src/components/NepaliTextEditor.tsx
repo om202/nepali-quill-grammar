@@ -1,10 +1,11 @@
-"use client";
-import React, { useRef, useEffect, useCallback } from "react";
-import { useSelector, useDispatch } from "react-redux";
-import { RootState } from "@/store";
-import { setText } from "@/store/textSlice";
-import { Suggestion } from "@/lib/api";
-import nepalify from "nepalify";
+'use client';
+import React, { useRef, useEffect, useCallback } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import nepalify from 'nepalify';
+
+import { RootState } from '@/store';
+import { setText } from '@/store/textSlice';
+import { Suggestion } from '@/lib/api';
 
 interface NepaliTextEditorProps {
   onSelectSuggestion?: (suggestionId: string) => void;
@@ -20,7 +21,7 @@ export const NepaliTextEditor: React.FC<NepaliTextEditorProps> = ({
   const suggestions = useSelector(
     (state: RootState) => state.suggestions.items
   ) as Suggestion[];
-  
+
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const overlayRef = useRef<HTMLDivElement>(null);
   const nepalifyInstanceRef = useRef<{
@@ -30,50 +31,60 @@ export const NepaliTextEditor: React.FC<NepaliTextEditorProps> = ({
   } | null>(null);
 
   // Unique ID for the textarea
-  const textareaId = "nepali-text-editor";
+  const textareaId = 'nepali-text-editor';
 
   // Test nepalify on component mount
   useEffect(() => {
     try {
-      console.log("Testing nepalify conversion:");
-      console.log("Available layouts:", nepalify.availableLayouts());
-      console.log("namaste ->", nepalify.format("namaste", { layout: "romanized" }));
-      console.log("nepal ->", nepalify.format("nepal", { layout: "romanized" }));
-      console.log("dhanyawaad ->", nepalify.format("dhanyawaad", { layout: "romanized" }));
+      console.log('Testing nepalify conversion:');
+      console.log('Available layouts:', nepalify.availableLayouts());
+      console.log(
+        'namaste ->',
+        nepalify.format('namaste', { layout: 'romanized' })
+      );
+      console.log(
+        'nepal ->',
+        nepalify.format('nepal', { layout: 'romanized' })
+      );
+      console.log(
+        'dhanyawaad ->',
+        nepalify.format('dhanyawaad', { layout: 'romanized' })
+      );
     } catch (error) {
-      console.warn("Error testing nepalify:", error);
+      console.warn('Error testing nepalify:', error);
     }
   }, []);
 
   // Initialize Nepalify when component mounts and Nepali mode changes
   useEffect(() => {
-    if (!textareaRef.current) return;
+    if (!textareaRef.current) {
+return;
+}
 
     // Clean up previous instance
     if (nepalifyInstanceRef.current) {
       try {
         nepalifyInstanceRef.current.disable();
       } catch (error) {
-        console.warn("Error disabling previous nepalify instance:", error);
+        console.warn('Error disabling previous nepalify instance:', error);
       }
     }
 
     if (isNepaliMode) {
       try {
-        console.log("Initializing Nepalify with romanized layout");
-        
+        console.log('Initializing Nepalify with romanized layout');
+
         // Initialize nepalify on the textarea with romanized layout
         const instance = nepalify.interceptElementById(textareaId, {
-          layout: "romanized",
+          layout: 'romanized',
           enable: true,
         });
-        
+
         nepalifyInstanceRef.current = instance;
-        console.log("Nepalify instance created:", instance);
-        console.log("Is enabled:", instance.isEnabled());
-        
+        console.log('Nepalify instance created:', instance);
+        console.log('Is enabled:', instance.isEnabled());
       } catch (error) {
-        console.error("Error initializing Nepalify:", error);
+        console.error('Error initializing Nepalify:', error);
       }
     }
 
@@ -83,7 +94,7 @@ export const NepaliTextEditor: React.FC<NepaliTextEditorProps> = ({
         try {
           nepalifyInstanceRef.current.disable();
         } catch (error) {
-          console.warn("Error during cleanup:", error);
+          console.warn('Error during cleanup:', error);
         }
       }
     };
@@ -107,9 +118,11 @@ export const NepaliTextEditor: React.FC<NepaliTextEditorProps> = ({
     if (!text && !suggestions.length) {
       return `<span class="text-gray-500">यहाँ नेपाली पाठ लेख्नुहोस्...</span>`;
     }
-    if (!suggestions.length) return escapeHTML(text);
-    
-    let html = "";
+    if (!suggestions.length) {
+return escapeHTML(text);
+}
+
+    let html = '';
     let lastIndex = 0;
     const sortedSuggestions: Suggestion[] = [...suggestions].sort(
       (a, b) => a.startIndex - b.startIndex
@@ -122,17 +135,17 @@ export const NepaliTextEditor: React.FC<NepaliTextEditorProps> = ({
         s.startIndex < lastIndex ||
         s.startIndex >= s.endIndex
       ) {
-        console.warn("Skipping invalid or overlapping suggestion:", s);
+        console.warn('Skipping invalid or overlapping suggestion:', s);
         return;
       }
 
       html += escapeHTML(text.slice(lastIndex, s.startIndex));
       html += `<span class='underline text-red-600 bg-red-100 cursor-pointer' data-suggestion-id='${s.id}'>`;
       html += escapeHTML(text.slice(s.startIndex, s.endIndex));
-      html += "</span>";
+      html += '</span>';
       lastIndex = s.endIndex;
     });
-    
+
     html += escapeHTML(text.slice(lastIndex));
     return html;
   }, [text, suggestions, isNepaliMode]);
@@ -141,11 +154,11 @@ export const NepaliTextEditor: React.FC<NepaliTextEditorProps> = ({
   const escapeHTML = useCallback((str: string) => {
     return str.replace(/[&<>"']/g, function (tag) {
       const chars: Record<string, string> = {
-        "&": "&amp;",
-        "<": "&lt;",
-        ">": "&gt;",
-        '"': "&quot;",
-        "'": "&#39;",
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#39;',
       };
       return chars[tag] || tag;
     });
@@ -167,40 +180,40 @@ export const NepaliTextEditor: React.FC<NepaliTextEditorProps> = ({
   }, [getHighlightedHTML]);
 
   return (
-    <div className="w-full h-full flex flex-col">
+    <div className='w-full h-full flex flex-col'>
       {/* Text Editor Container */}
-      <div className="flex-1 relative border border-gray-300 rounded-lg bg-white">
+      <div className='flex-1 relative border border-gray-300 rounded-lg bg-white'>
         {/* Textarea for actual input */}
         <textarea
           ref={textareaRef}
           id={textareaId}
-          className="absolute inset-0 w-full h-full p-6 bg-transparent resize-none focus:outline-none text-lg text-gray-800 leading-relaxed z-10"
+          className='absolute inset-0 w-full h-full p-6 bg-transparent resize-none focus:outline-none text-lg text-gray-800 leading-relaxed z-10'
           value={text}
           onChange={handleTextareaChange}
-          placeholder="यहाँ नेपाली पाठ लेख्नुहोस्..."
+          placeholder='यहाँ नेपाली पाठ लेख्नुहोस्...'
           spellCheck={false}
-          autoComplete="off"
-          autoCorrect="off"
-          autoCapitalize="off"
+          autoComplete='off'
+          autoCorrect='off'
+          autoCapitalize='off'
           style={{
             fontFamily: "'Noto Sans Devanagari', 'Mangal', sans-serif",
-            color: suggestions.length > 0 ? "transparent" : "inherit", // Hide text when showing suggestions
+            color: suggestions.length > 0 ? 'transparent' : 'inherit', // Hide text when showing suggestions
           }}
         />
-        
+
         {/* Overlay for highlighting suggestions */}
         {suggestions.length > 0 && (
           <div
             ref={overlayRef}
-            className="absolute inset-0 w-full h-full p-6 pointer-events-none text-lg text-gray-800 leading-relaxed z-20 whitespace-pre-wrap"
+            className='absolute inset-0 w-full h-full p-6 pointer-events-none text-lg text-gray-800 leading-relaxed z-20 whitespace-pre-wrap'
             onClick={handleOverlayClick}
             style={{
               fontFamily: "'Noto Sans Devanagari', 'Mangal', sans-serif",
-              pointerEvents: "auto", // Allow clicks on suggestions
+              pointerEvents: 'auto', // Allow clicks on suggestions
             }}
           />
         )}
       </div>
     </div>
   );
-}; 
+};

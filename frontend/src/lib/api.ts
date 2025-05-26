@@ -1,6 +1,7 @@
 import axios, { AxiosError } from 'axios';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api/v1';
+const API_URL =
+  process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api/v1';
 
 export interface Suggestion {
   id: string;
@@ -110,7 +111,9 @@ export const setAuthToken = (token: string | null) => {
 };
 
 export const getAuthToken = (): string | null => {
-  if (authToken) return authToken;
+  if (authToken) {
+return authToken;
+}
   if (typeof window !== 'undefined') {
     authToken = localStorage.getItem('auth_token');
   }
@@ -126,37 +129,36 @@ const api = axios.create({
 
 // Request interceptor to add auth token
 api.interceptors.request.use(
-  (config) => {
+  config => {
     const token = getAuthToken();
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
     return config;
   },
-  (error) => {
+  error => {
     return Promise.reject(error);
   }
 );
 
 // Error interceptor to format error responses
 api.interceptors.response.use(
-  (response) => response,
+  response => response,
   (error: AxiosError<ErrorResponse>) => {
     if (error.response) {
       // The request was made and the server responded with a status code
       // that falls out of the range of 2xx
-      const message = error.response.data?.message || error.response.data?.error || error.message;
-      
+      const message =
+        error.response.data?.message ||
+        error.response.data?.error ||
+        error.message;
+
       // Handle 401 errors by clearing auth token
       if (error.response.status === 401) {
         setAuthToken(null);
       }
-      
-      throw new APIError(
-        message,
-        error.response.status,
-        error.response.data
-      );
+
+      throw new APIError(message, error.response.status, error.response.data);
     } else if (error.request) {
       // The request was made but no response was received
       throw new APIError(
@@ -165,10 +167,7 @@ api.interceptors.response.use(
       );
     } else {
       // Something happened in setting up the request that triggered an Error
-      throw new APIError(
-        'Failed to make request: ' + error.message,
-        0
-      );
+      throw new APIError('Failed to make request: ' + error.message, 0);
     }
   }
 );
@@ -237,7 +236,9 @@ export const getProfile = async (): Promise<ProfileResponse> => {
   }
 };
 
-export const updateProfile = async (data: UpdateProfileRequest): Promise<ProfileResponse> => {
+export const updateProfile = async (
+  data: UpdateProfileRequest
+): Promise<ProfileResponse> => {
   try {
     const response = await api.put<ProfileResponse>('/auth/profile', data);
     return response.data;
@@ -323,4 +324,4 @@ export const getUserHistory = async (): Promise<UserHistoryResponse> => {
       error instanceof Error ? error.message : 'Unknown error'
     );
   }
-}; 
+};

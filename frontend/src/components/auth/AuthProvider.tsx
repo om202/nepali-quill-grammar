@@ -2,6 +2,7 @@
 
 import { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
+
 import { AppDispatch } from '@/store';
 import { checkAuthStatus } from '@/store/authSlice';
 
@@ -18,4 +19,4 @@ export function AuthProvider({ children }: AuthProviderProps) {
   }, [dispatch]);
 
   return <>{children}</>;
-} 
+}

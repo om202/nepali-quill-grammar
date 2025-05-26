@@ -1,13 +1,20 @@
 'use client';
 
 import { useDispatch, useSelector } from 'react-redux';
+import { toast } from 'sonner';
+import { LogOut, User } from 'lucide-react';
+
 import { Button } from '@/components/ui/button';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { RootState, AppDispatch } from '@/store';
 import { logoutAsync } from '@/store/authSlice';
-import { toast } from 'sonner';
-import { LogOut, User } from 'lucide-react';
 
 export function UserProfile() {
   const dispatch = useDispatch<AppDispatch>();
@@ -22,42 +29,55 @@ export function UserProfile() {
     }
   };
 
-  if (!user) return null;
+  if (!user) {
+return null;
+}
 
   const firstName = user.name.split(' ')[0];
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" className="relative h-10 w-10 rounded-full hover:bg-blue-50 transition-smooth hover:scale-105 active:scale-95">
-          <Avatar className="h-10 w-10 border-2 border-blue-200 transition-colors-smooth">
-            <AvatarFallback className="bg-gradient-to-br from-blue-500 to-purple-600 text-white transition-colors-smooth">
-              <User className="h-5 w-5 transition-transform-smooth" />
+        <Button
+          variant='ghost'
+          className='relative h-10 w-10 rounded-full hover:bg-blue-50 transition-smooth hover:scale-105 active:scale-95'
+        >
+          <Avatar className='h-10 w-10 border-2 border-blue-200 transition-colors-smooth'>
+            <AvatarFallback className='bg-gradient-to-br from-blue-500 to-purple-600 text-white transition-colors-smooth'>
+              <User className='h-5 w-5 transition-transform-smooth' />
             </AvatarFallback>
           </Avatar>
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent className="w-64 p-2 transition-opacity-smooth" align="end" forceMount>
-        <div className="flex items-center space-x-3 p-3 bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg mb-2 transition-colors-smooth">
-          <Avatar className="h-12 w-12 border-2 border-white shadow-sm transition-shadow-smooth">
-            <AvatarFallback className="bg-gradient-to-br from-blue-500 to-purple-600 text-white transition-colors-smooth">
-              <User className="h-6 w-6 transition-transform-smooth" />
+      <DropdownMenuContent
+        className='w-64 p-2 transition-opacity-smooth'
+        align='end'
+        forceMount
+      >
+        <div className='flex items-center space-x-3 p-3 bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg mb-2 transition-colors-smooth'>
+          <Avatar className='h-12 w-12 border-2 border-white shadow-sm transition-shadow-smooth'>
+            <AvatarFallback className='bg-gradient-to-br from-blue-500 to-purple-600 text-white transition-colors-smooth'>
+              <User className='h-6 w-6 transition-transform-smooth' />
             </AvatarFallback>
           </Avatar>
-          <div className="flex-1 min-w-0">
-            <p className="font-semibold text-gray-900 truncate transition-colors-smooth">{firstName}</p>
-            <p className="text-sm text-gray-600 truncate transition-colors-smooth">{user.email}</p>
+          <div className='flex-1 min-w-0'>
+            <p className='font-semibold text-gray-900 truncate transition-colors-smooth'>
+              {firstName}
+            </p>
+            <p className='text-sm text-gray-600 truncate transition-colors-smooth'>
+              {user.email}
+            </p>
           </div>
         </div>
         <DropdownMenuSeparator />
-        <DropdownMenuItem 
+        <DropdownMenuItem
           onClick={handleLogout}
-          className="flex items-center space-x-2 p-3 rounded-lg hover:bg-red-50 cursor-pointer text-red-600 transition-smooth hover:scale-[1.02] active:scale-[0.98]"
+          className='flex items-center space-x-2 p-3 rounded-lg hover:bg-red-50 cursor-pointer text-red-600 transition-smooth hover:scale-[1.02] active:scale-[0.98]'
         >
-          <LogOut className="h-4 w-4 transition-transform-smooth" />
-          <span className="font-medium">Sign out</span>
+          <LogOut className='h-4 w-4 transition-transform-smooth' />
+          <span className='font-medium'>Sign out</span>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );
-} 
+}
