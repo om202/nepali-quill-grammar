@@ -12,7 +12,16 @@ export const diffEngineService = {
   async createDiffModel(originalText: string, suggestions: SuggestionModel[]): Promise<DiffModel> {
     // Separate accepted and pending suggestions
     const acceptedSuggestions = suggestions.filter(s => s.action === 'accept');
-    const pendingSuggestions = suggestions.filter(s => s.action !== 'accept' && s.action !== 'reject');
+    
+    // Get token IDs that have accepted suggestions
+    const acceptedTokenIds = new Set(acceptedSuggestions.map(s => s.tokenId));
+    
+    // Filter pending suggestions: exclude rejected AND exclude any suggestions for tokens that already have accepted suggestions
+    const pendingSuggestions = suggestions.filter(s => 
+      s.action !== 'accept' && 
+      s.action !== 'reject' && 
+      !acceptedTokenIds.has(s.tokenId)
+    );
     
     if (acceptedSuggestions.length === 0) {
       // No accepted suggestions, return original text

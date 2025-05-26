@@ -113,12 +113,19 @@ export const textAnalysisService = {
           return;
         }
         
-        suggestion.suggestions.forEach(text => {
+        // Use the single suggestion from the AI
+        if (suggestion.suggestion) {
+          // Filter out suggestions where the suggested text is identical to the original text
+          if (suggestion.suggestion.trim() === suggestion.originalText.trim()) {
+            logger.info(`Skipping identical suggestion: "${suggestion.originalText}" → "${suggestion.suggestion}"`);
+            return;
+          }
+          
           suggestionRecords.push({
             token_id: tokenId,
-            suggested_text: text
+            suggested_text: suggestion.suggestion // Use the single suggestion
           });
-        });
+        }
       });
       
       // Insert suggestions

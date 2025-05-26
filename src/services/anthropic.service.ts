@@ -30,7 +30,7 @@ Format your response strictly as a JSON array of objects:
     "start": number,      // Starting character position (0-based)
     "end": number,        // Ending character position (exclusive)
     "originalText": "original text segment",
-    "suggestions": ["suggestion1", "suggestion2"]
+    "suggestion": "best_correction"  // Only provide the single best suggestion
   }
 ]
 `;
@@ -40,7 +40,7 @@ interface TextSuggestion {
   start: number;
   end: number;
   originalText: string;
-  suggestions: string[];
+  suggestion: string;
 }
 
 class NepaliTextProcessor {
@@ -147,7 +147,7 @@ class NepaliTextProcessor {
           start: adjustedStart,
           end: adjustedEnd,
           originalText: suggestion.originalText,
-          suggestions: suggestion.suggestions,
+          suggestion: suggestion.suggestion,
         });
       }
     }
@@ -213,10 +213,9 @@ class NepaliTextProcessor {
         const validSuggestions = suggestions.filter((suggestion) => {
           return (
             suggestion.originalText &&
-            Array.isArray(suggestion.suggestions) &&
+            typeof suggestion.suggestion === "string" &&
             typeof suggestion.start === "number" &&
-            typeof suggestion.end === "number" &&
-            suggestion.suggestions.length > 0
+            typeof suggestion.end === "number"
           );
         });
 
@@ -334,11 +333,9 @@ export const anthropicService = {
         const validSuggestions = suggestions.filter((suggestion) => {
           const isValid =
             suggestion.originalText &&
-            Array.isArray(suggestion.suggestions) &&
+            typeof suggestion.suggestion === "string" &&
             typeof suggestion.start === "number" &&
-            typeof suggestion.end === "number" &&
-            suggestion.suggestions.length > 0 &&
-            suggestion.suggestions.every((s: any) => typeof s === "string");
+            typeof suggestion.end === "number";
 
           if (!isValid) {
             logger.warn("Invalid suggestion filtered out");
