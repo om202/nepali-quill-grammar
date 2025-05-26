@@ -14,6 +14,9 @@ SUPABASE_URL=your_supabase_project_url
 SUPABASE_KEY=your_supabase_anon_key
 SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
 
+# Frontend URL (for password reset redirects)
+FRONTEND_URL=http://localhost:3000
+
 # No longer needed (removed custom JWT)
 # JWT_SECRET=your_jwt_secret
 ```
@@ -110,6 +113,22 @@ POST /api/v1/auth/login
   "password": "SecurePass123"
 }
 
+# Forgot Password
+POST /api/v1/auth/forgot-password
+{
+  "email": "user@example.com"
+}
+
+# Verify Reset Token
+GET /api/v1/auth/verify-reset-token?token=reset_token_here
+
+# Reset Password
+POST /api/v1/auth/reset-password
+{
+  "token": "reset_token_from_email",
+  "password": "NewSecurePass123"
+}
+
 # Get Profile (requires auth)
 GET /api/v1/auth/profile
 Authorization: Bearer <supabase_access_token>
@@ -119,6 +138,14 @@ PUT /api/v1/auth/profile
 Authorization: Bearer <supabase_access_token>
 {
   "name": "Updated Name"
+}
+
+# Change Password (requires auth)
+POST /api/v1/auth/change-password
+Authorization: Bearer <supabase_access_token>
+{
+  "currentPassword": "CurrentPass123",
+  "newPassword": "NewSecurePass123"
 }
 
 # Logout (requires auth)

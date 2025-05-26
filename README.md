@@ -31,8 +31,12 @@ A production-ready backend service for enhancing Nepali text with AI-powered sug
 ### Authentication
 - `POST /api/v1/auth/signup` - Register a new user
 - `POST /api/v1/auth/login` - Login user
+- `POST /api/v1/auth/forgot-password` - Send password reset email
+- `GET /api/v1/auth/verify-reset-token` - Verify password reset token
+- `POST /api/v1/auth/reset-password` - Reset password with token
 - `GET /api/v1/auth/profile` - Get user profile (protected)
 - `PUT /api/v1/auth/profile` - Update user profile (protected)
+- `POST /api/v1/auth/change-password` - Change password (protected)
 - `POST /api/v1/auth/logout` - Logout user (protected)
 
 ## Setup Instructions
@@ -74,6 +78,9 @@ NODE_ENV=development
 SUPABASE_URL=your_supabase_url
 SUPABASE_KEY=your_supabase_anon_key
 SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
+
+# Frontend URL (for password reset redirects)
+FRONTEND_URL=http://localhost:3000
 
 # Anthropic
 ANTHROPIC_API_KEY=your_anthropic_api_key

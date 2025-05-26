@@ -1,7 +1,13 @@
 import { Request, Response } from 'express';
 import { AuthService } from '../services/auth.service';
 import { sessionService } from '../services/session.service';
-import { SignupRequestBody, LoginRequestBody } from '../schemas/auth.schema';
+import { 
+  SignupRequestBody, 
+  LoginRequestBody, 
+  ForgotPasswordRequestBody,
+  ResetPasswordRequestBody,
+  ChangePasswordRequestBody 
+} from '../schemas/auth.schema';
 import { UserModel } from '../types/database.types';
 import { supabase } from '../config/supabase';
 import { logger } from '../utils/logger';
@@ -169,6 +175,129 @@ export class AuthController {
       });
     } catch (error) {
       logger.error('Get user history controller error:', error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  }
+
+  /**
+   * Send password reset email
+   */
+  static async forgotPassword(req: Request<{}, {}, ForgotPasswordRequestBody>, res: Response): Promise<void> {
+    try {
+      const { email } = req.body;
+
+      await AuthService.forgotPassword(email);
+
+      res.status(200).json({
+        message: 'If an account with that email exists, a password reset link has been sent.',
+      });
+    } catch (error) {
+      logger.error('Forgot password controller error:', error);
+      
+      // Always return success message for security (don't reveal if email exists)
+      res.status(200).json({
+        message: 'If an account with that email exists, a password reset link has been sent.',
+      });
+    }
+  }
+
+  /**
+   * Reset password using reset token
+   */
+  static async resetPassword(req: Request<{}, {}, ResetPasswordRequestBody>, res: Response): Promise<void> {
+    try {
+      const { token, password } = req.body;
+
+      // Verify the reset token first
+      const user = await AuthService.verifyResetToken(token);
+      if (!user) {
+        res.status(400).json({ error: 'Invalid or expired reset token' });
+        return;
+      }
+
+      await AuthService.resetPassword(token, password);
+
+      res.status(200).json({
+        message: 'Password reset successfully',
+      });
+    } catch (error) {
+      logger.error('Reset password controller error:', error);
+      
+      if (error instanceof Error) {
+        if (error.message.includes('Invalid') || error.message.includes('expired')) {
+          res.status(400).json({ error: 'Invalid or expired reset token' });
+          return;
+        }
+        if (error.message.includes('Password')) {
+          res.status(400).json({ error: error.message });
+          return;
+        }
+      }
+
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  }
+
+  /**
+   * Verify reset token validity
+   */
+  static async verifyResetToken(req: Request, res: Response): Promise<void> {
+    try {
+      const { token } = req.query;
+
+      if (!token || typeof token !== 'string') {
+        res.status(400).json({ error: 'Reset token is required' });
+        return;
+      }
+
+      const user = await AuthService.verifyResetToken(token);
+      
+      if (!user) {
+        res.status(400).json({ error: 'Invalid or expired reset token' });
+        return;
+      }
+
+      res.status(200).json({
+        message: 'Reset token is valid',
+        email: user.email,
+      });
+    } catch (error) {
+      logger.error('Verify reset token controller error:', error);
+      res.status(400).json({ error: 'Invalid or expired reset token' });
+    }
+  }
+
+  /**
+   * Change password for authenticated user
+   */
+  static async changePassword(req: Request<{}, {}, ChangePasswordRequestBody>, res: Response): Promise<void> {
+    try {
+      if (!req.user) {
+        res.status(401).json({ error: 'User not authenticated' });
+        return;
+      }
+
+      const { currentPassword, newPassword } = req.body;
+
+      await AuthService.changePassword(req.user.id, currentPassword, newPassword);
+
+      res.status(200).json({
+        message: 'Password changed successfully',
+      });
+    } catch (error) {
+      logger.error('Change password controller error:', error);
+      
+      if (error instanceof Error) {
+        if (error.message.includes('Current password is incorrect')) {
+          res.status(400).json({ error: 'Current password is incorrect' });
+          return;
+        }
+        if (error.message.includes('Password')) {
+          res.status(400).json({ error: error.message });
+          return;
+        }
+      }
+
       res.status(500).json({ error: 'Internal server error' });
     }
   }

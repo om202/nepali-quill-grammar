@@ -223,4 +223,110 @@ export class AuthService {
       throw error;
     }
   }
+
+  /**
+   * Send password reset email
+   */
+  static async forgotPassword(email: string): Promise<void> {
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${process.env.FRONTEND_URL || 'http://localhost:3000'}/reset-password`,
+      });
+
+      if (error) {
+        logger.error('Forgot password error:', error);
+        throw new Error(error.message);
+      }
+
+      logger.info(`Password reset email sent to ${email}`);
+    } catch (error) {
+      logger.error('Forgot password error:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Reset password using reset token
+   */
+  static async resetPassword(token: string, newPassword: string): Promise<void> {
+    try {
+      const { error } = await supabase.auth.updateUser({
+        password: newPassword
+      });
+
+      if (error) {
+        logger.error('Reset password error:', error);
+        throw new Error(error.message);
+      }
+
+      logger.info('Password reset successfully');
+    } catch (error) {
+      logger.error('Reset password error:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Change password for authenticated user
+   */
+  static async changePassword(userId: string, currentPassword: string, newPassword: string): Promise<void> {
+    try {
+      // First verify the current password by attempting to sign in
+      const user = await this.getUserById(userId);
+      if (!user) {
+        throw new Error('User not found');
+      }
+
+      // Verify current password
+      const { error: signInError } = await supabase.auth.signInWithPassword({
+        email: user.email,
+        password: currentPassword,
+      });
+
+      if (signInError) {
+        logger.error('Current password verification failed:', signInError);
+        throw new Error('Current password is incorrect');
+      }
+
+      // Update to new password
+      const { error } = await supabase.auth.updateUser({
+        password: newPassword
+      });
+
+      if (error) {
+        logger.error('Change password error:', error);
+        throw new Error(error.message);
+      }
+
+      logger.info(`Password changed successfully for user ${userId}`);
+    } catch (error) {
+      logger.error('Change password error:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Verify reset token and get user
+   */
+  static async verifyResetToken(token: string): Promise<UserModel | null> {
+    try {
+      const { data, error } = await supabase.auth.getUser(token);
+
+      if (error || !data.user) {
+        logger.error('Invalid reset token:', error);
+        return null;
+      }
+
+      return {
+        id: data.user.id,
+        email: data.user.email!,
+        name: data.user.user_metadata?.name,
+        createdAt: data.user.created_at,
+        updatedAt: data.user.updated_at || data.user.created_at,
+      };
+    } catch (error) {
+      logger.error('Verify reset token error:', error);
+      return null;
+    }
+  }
 } 
