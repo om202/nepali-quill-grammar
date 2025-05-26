@@ -15,6 +15,7 @@ interface SuggestionCardProps {
     suggestionId: string,
     action: 'accept' | 'reject'
   ) => Promise<void>;
+  onSelect?: (suggestionId: string) => void;
   className?: string;
   index: number;
   total: number;
@@ -24,6 +25,7 @@ export function SuggestionCard({
   suggestion,
   sessionId,
   onUpdate,
+  onSelect,
   className,
   index,
   total,
@@ -46,11 +48,12 @@ export function SuggestionCard({
 
   return (
     <div
-      className={`border rounded-lg p-4 hover:shadow-sm transition-all duration-200 ${className}`}
+      className={`border rounded-lg p-4 hover:shadow-sm transition-all duration-200 cursor-pointer ${className}`}
       style={{
         backgroundColor: colors.backgroundColor,
         borderColor: colors.borderColor,
       }}
+      onClick={() => onSelect?.(suggestion.id)}
       onMouseEnter={(e) => {
         e.currentTarget.style.backgroundColor = colors.hoverBackgroundColor;
       }}
@@ -78,7 +81,10 @@ export function SuggestionCard({
 
       <div className='flex space-x-2'>
         <button
-          onClick={() => handleAction('accept')}
+          onClick={(e) => {
+            e.stopPropagation();
+            handleAction('accept');
+          }}
           disabled={isLoading}
           className='flex items-center bg-green-600 hover:bg-green-700 text-white px-3 py-2 rounded-md text-xs font-medium transition-colors-smooth hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed'
         >
@@ -87,7 +93,10 @@ export function SuggestionCard({
         </button>
 
         <button
-          onClick={() => handleAction('reject')}
+          onClick={(e) => {
+            e.stopPropagation();
+            handleAction('reject');
+          }}
           disabled={isLoading}
           className='flex items-center border border-gray-300 text-gray-600 hover:bg-gray-100 px-3 py-2 rounded-md text-xs font-medium transition-colors-smooth disabled:opacity-50 disabled:cursor-not-allowed'
         >

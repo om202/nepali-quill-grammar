@@ -11,11 +11,14 @@ import {
   Edit3,
   Bot,
   X,
+  List,
+  Navigation,
 } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { SuggestionCard } from '@/components/suggestion-card';
+import { SuggestionNavigator } from '@/components/SuggestionNavigator';
 import { History } from '@/components/History';
 import { analyzeText, updateSuggestion, APIError } from '@/lib/api';
 import { NepaliTextEditor } from '@/components/NepaliTextEditor';
@@ -43,6 +46,7 @@ export default function Home() {
   const [activeTab, setActiveTab] = useState('enhance');
   const [showWelcomeMessage, setShowWelcomeMessage] = useState(false);
   const [showFreeTrialMessage, setShowFreeTrialMessage] = useState(true);
+  const [suggestionViewMode, setSuggestionViewMode] = useState<'list' | 'navigate'>('navigate');
 
   // Check if welcome message should be shown
   useEffect(() => {
@@ -259,6 +263,8 @@ export default function Home() {
                   <div className='flex-1 min-h-[300px] mb-4'>
                     <NepaliTextEditor
                       onSelectSuggestion={setSelectedSuggestionId}
+                      selectedSuggestionId={selectedSuggestionId}
+                      viewMode={suggestionViewMode}
                     />
                   </div>
                   {error && (
@@ -271,14 +277,44 @@ export default function Home() {
 
               {/* Suggestions Panel - 30% width */}
               <div className='w-full lg:w-[30%] grammarly-card flex flex-col min-h-0 border-2 border-transparent bg-clip-padding'>
-                <div className='flex items-center space-x-2 p-4 border-b border-gray-200 flex-shrink-0'>
-                  <Bot className='h-5 w-5 text-purple-600' />
-                  <span className='text-gray-700 font-medium'>Suggestions</span>
+                <div className='flex items-center justify-between p-4 border-b border-gray-200 flex-shrink-0'>
+                  <div className='flex items-center space-x-2'>
+                    <Bot className='h-5 w-5 text-purple-600' />
+                    <span className='text-gray-700 font-medium'>Suggestions</span>
+                    {suggestions.length > 0 && (
+                      <span className='bg-gradient-to-r from-green-100 to-emerald-100 text-green-800 text-xs font-medium px-2 py-1 rounded-full border border-green-200'>
+                        {suggestions.length} suggestion
+                        {suggestions.length !== 1 ? 's' : ''}
+                      </span>
+                    )}
+                  </div>
+                  
+                  {/* View Mode Toggle */}
                   {suggestions.length > 0 && (
-                    <span className='bg-gradient-to-r from-green-100 to-emerald-100 text-green-800 text-xs font-medium px-2 py-1 rounded-full border border-green-200'>
-                      {suggestions.length} suggestion
-                      {suggestions.length !== 1 ? 's' : ''}
-                    </span>
+                    <div className='flex items-center space-x-1 bg-gray-100 rounded-md p-1'>
+                      <button
+                        onClick={() => setSuggestionViewMode('list')}
+                        className={`p-1.5 rounded text-xs font-medium transition-colors ${
+                          suggestionViewMode === 'list'
+                            ? 'bg-white text-gray-900 shadow-sm'
+                            : 'text-gray-600 hover:text-gray-900'
+                        }`}
+                        title='List view - Show all suggestions'
+                      >
+                        <List className='h-3.5 w-3.5' />
+                      </button>
+                      <button
+                        onClick={() => setSuggestionViewMode('navigate')}
+                        className={`p-1.5 rounded text-xs font-medium transition-colors ${
+                          suggestionViewMode === 'navigate'
+                            ? 'bg-white text-gray-900 shadow-sm'
+                            : 'text-gray-600 hover:text-gray-900'
+                        }`}
+                        title='Navigate view - Review one by one'
+                      >
+                        <Navigation className='h-3.5 w-3.5' />
+                      </button>
+                    </div>
                   )}
                 </div>
 
@@ -312,6 +348,13 @@ export default function Home() {
                         </>
                       )}
                     </div>
+                  ) : suggestionViewMode === 'navigate' ? (
+                    <SuggestionNavigator
+                      suggestions={suggestions}
+                      sessionId={sessionId!}
+                      onUpdate={handleSuggestionUpdate}
+                      onSuggestionChange={setSelectedSuggestionId}
+                    />
                   ) : (
                     <div className='space-y-4'>
                       {suggestions.map((suggestion, index) => (
@@ -323,6 +366,7 @@ export default function Home() {
                             suggestion={suggestion}
                             sessionId={sessionId!}
                             onUpdate={handleSuggestionUpdate}
+                            onSelect={setSelectedSuggestionId}
                             index={index}
                             total={suggestions.length}
                             className={

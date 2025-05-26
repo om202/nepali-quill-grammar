@@ -10,10 +10,14 @@ import { getHighlightColor } from '@/utils/colors';
 
 interface NepaliTextEditorProps {
   onSelectSuggestion?: (suggestionId: string) => void;
+  selectedSuggestionId?: string | null;
+  viewMode?: 'list' | 'navigate';
 }
 
 export const NepaliTextEditor: React.FC<NepaliTextEditorProps> = ({
   onSelectSuggestion,
+  selectedSuggestionId,
+  viewMode,
 }) => {
   const dispatch = useDispatch();
   const text = useSelector((state: RootState) => state.text.value);
@@ -97,6 +101,51 @@ export const NepaliTextEditor: React.FC<NepaliTextEditorProps> = ({
       return escapeHTML(text);
     }
 
+    // In navigate mode, only show selected suggestion
+    if (viewMode === 'navigate') {
+      if (!selectedSuggestionId) {
+        return escapeHTML(text);
+      }
+
+      // Find the currently selected suggestion
+      const selectedSuggestion = suggestions.find(s => s.id === selectedSuggestionId);
+      if (!selectedSuggestion) {
+        return escapeHTML(text);
+      }
+
+      let html = '';
+      const lastIndex = 0;
+
+      // Only highlight the selected suggestion
+      if (
+        selectedSuggestion.startIndex !== undefined &&
+        selectedSuggestion.endIndex !== undefined &&
+        selectedSuggestion.startIndex < selectedSuggestion.endIndex
+      ) {
+        // Add text before the selected suggestion
+        html += escapeHTML(text.slice(lastIndex, selectedSuggestion.startIndex));
+        
+        // Get color for the selected suggestion (use index 0 for consistent color)
+        const colors = getHighlightColor(0, 1);
+        
+        html += `<span class='cursor-pointer font-medium' 
+          style='background-color: ${colors.backgroundColor}; 
+                 color: ${colors.textColor};
+                 border: 2px solid ${colors.borderColor};'
+          data-suggestion-id='${selectedSuggestion.id}'>`;
+        html += escapeHTML(text.slice(selectedSuggestion.startIndex, selectedSuggestion.endIndex));
+        html += '</span>';
+        
+        // Add text after the selected suggestion
+        html += escapeHTML(text.slice(selectedSuggestion.endIndex));
+      } else {
+        html = escapeHTML(text);
+      }
+
+      return html;
+    }
+
+    // In list mode, show all suggestions (original behavior)
     let html = '';
     let lastIndex = 0;
     const sortedSuggestions: Suggestion[] = [...suggestions].sort(
@@ -118,9 +167,14 @@ export const NepaliTextEditor: React.FC<NepaliTextEditorProps> = ({
       // Get unique color for this suggestion
       const colors = getHighlightColor(index, suggestions.length);
       
+      // Add special styling for selected suggestion in list mode
+      const isSelected = selectedSuggestionId === s.id;
+      const borderStyle = isSelected ? `border: 2px solid ${colors.borderColor};` : '';
+      
       html += `<span class='cursor-pointer font-medium' 
         style='background-color: ${colors.backgroundColor}; 
-               color: ${colors.textColor};'
+               color: ${colors.textColor};
+               ${borderStyle}'
         data-suggestion-id='${s.id}'>`;
       html += escapeHTML(text.slice(s.startIndex, s.endIndex));
       html += '</span>';
@@ -130,7 +184,7 @@ export const NepaliTextEditor: React.FC<NepaliTextEditorProps> = ({
     html += escapeHTML(text.slice(lastIndex));
     return html;
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [text, suggestions]);
+  }, [text, suggestions, selectedSuggestionId, viewMode]);
 
   // Escape HTML to prevent XSS
   const escapeHTML = useCallback((str: string) => {
@@ -179,12 +233,12 @@ export const NepaliTextEditor: React.FC<NepaliTextEditorProps> = ({
           autoCapitalize='off'
           style={{
             fontFamily: "'Noto Sans Devanagari', 'Mangal', sans-serif",
-            color: suggestions.length > 0 ? 'transparent' : 'inherit', // Hide text when showing suggestions
+            color: suggestions.length > 0 && (viewMode === 'list' || (viewMode === 'navigate' && selectedSuggestionId)) ? 'transparent' : 'inherit', // Hide text when showing suggestions
           }}
         />
 
         {/* Overlay for highlighting suggestions */}
-        {suggestions.length > 0 && (
+        {suggestions.length > 0 && (viewMode === 'list' || (viewMode === 'navigate' && selectedSuggestionId)) && (
           <div
             ref={overlayRef}
             className='absolute inset-0 w-full h-full p-6 pointer-events-none text-lg  text-gray-700 leading-relaxed z-20 whitespace-pre-wrap'
