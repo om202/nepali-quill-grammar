@@ -14,6 +14,44 @@ interface ExtendedSuggestionModel extends SuggestionModel {
 }
 
 export const textAnalysisService = {
+  /**
+   * Filter out suggestions that are contained within other suggestions (center overlaps)
+   */
+  filterCenterOverlaps(suggestions: any[]): any[] {
+    if (suggestions.length <= 1) {
+      return suggestions;
+    }
+
+    const filtered = [];
+    
+    for (let i = 0; i < suggestions.length; i++) {
+      const current = suggestions[i];
+      let isContained = false;
+      
+      // Check if current suggestion is contained within any other suggestion
+      for (let j = 0; j < suggestions.length; j++) {
+        if (i === j) continue;
+        
+        const other = suggestions[j];
+        
+        // Check if current is completely inside other
+        if (current.start >= other.start && current.end <= other.end && 
+            !(current.start === other.start && current.end === other.end)) {
+          isContained = true;
+          logger.info(`Ignoring center overlap: "${current.originalText}" (${current.start}-${current.end}) contained within "${other.originalText}" (${other.start}-${other.end})`);
+          break;
+        }
+      }
+      
+      if (!isContained) {
+        filtered.push(current);
+      }
+    }
+    
+    logger.info(`Center overlap filtering: ${suggestions.length - filtered.length} suggestions ignored, ${filtered.length} remaining`);
+    return filtered;
+  },
+
   async analyzeText(text: string, sessionId: string): Promise<{
     suggestions: ExtendedSuggestionModel[];
   }> {
@@ -56,6 +94,9 @@ export const textAnalysisService = {
       
       logger.info(`Position verification complete, ${correctedSuggestions.length} suggestions processed`);
 
+      // Step 2.7: Filter out center overlaps
+      const filteredSuggestions = this.filterCenterOverlaps(correctedSuggestions);
+
       // Step 3: Store tokens and suggestions in database
       const tokens: Array<{
         id?: string;
@@ -69,7 +110,7 @@ export const textAnalysisService = {
       const tokenIdMap = new Map<number, string>();
       
       // Prepare tokens for insertion
-      for (const suggestion of correctedSuggestions) {
+      for (const suggestion of filteredSuggestions) {
         tokens.push({
           session_id: sessionId,
           text_segment: suggestion.originalText,
@@ -106,7 +147,7 @@ export const textAnalysisService = {
         suggested_text: string;
       }> = [];
       
-      correctedSuggestions.forEach((suggestion, index) => {
+      filteredSuggestions.forEach((suggestion, index) => {
         const tokenId = tokenIdMap.get(index);
         if (!tokenId) {
           logger.error(`Missing token ID for suggestion at index ${index}`);
