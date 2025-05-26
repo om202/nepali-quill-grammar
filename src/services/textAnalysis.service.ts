@@ -6,9 +6,16 @@ import { SuggestionModel } from '../types/database.types';
 import { HttpError } from '../utils/httpError';
 import { logger } from '../utils/logger';
 
+// Extended suggestion model for API response
+interface ExtendedSuggestionModel extends SuggestionModel {
+  originalText: string;
+  startIndex: number;
+  endIndex: number;
+}
+
 export const textAnalysisService = {
   async analyzeText(text: string, sessionId: string): Promise<{
-    suggestions: SuggestionModel[];
+    suggestions: ExtendedSuggestionModel[];
   }> {
     try {
       // Step 1: Normalize text
@@ -45,16 +52,22 @@ export const textAnalysisService = {
       const { data: insertedTokens, error: tokensError } = await supabase
         .from('tokens')
         .insert(tokens)
-        .select('id, text_segment, start_index');
+        .select('id, text_segment, start_index, end_index');
       
       if (tokensError) {
         logger.error('Error inserting tokens:', tokensError);
         throw new HttpError(500, 'Failed to save text tokens');
       }
       
-      // Map token indices to their IDs
+      // Map token indices to their generated IDs and store token data
+      const tokenDataMap = new Map<string, { textSegment: string; startIndex: number; endIndex: number }>();
       insertedTokens.forEach((token, index) => {
         tokenIdMap.set(index, token.id);
+        tokenDataMap.set(token.id, {
+          textSegment: token.text_segment,
+          startIndex: token.start_index,
+          endIndex: token.end_index
+        });
       });
       
       // Prepare suggestions for insertion
@@ -89,19 +102,46 @@ export const textAnalysisService = {
         throw new HttpError(500, 'Failed to save suggestions');
       }
       
-      // Transform to API response format
-      const suggestions: SuggestionModel[] = insertedSuggestions.map(suggestion => ({
-        id: suggestion.id,
-        tokenId: suggestion.token_id,
-        suggestedText: suggestion.suggested_text,
-        createdAt: suggestion.created_at
-      }));
+      // Transform to API response format with token information
+      const suggestions: ExtendedSuggestionModel[] = insertedSuggestions.map(suggestion => {
+        const tokenData = tokenDataMap.get(suggestion.token_id);
+        if (!tokenData) {
+          logger.error(`Missing token data for suggestion ${suggestion.id}`);
+          throw new HttpError(500, 'Missing token data for suggestion');
+        }
+        
+        return {
+          id: suggestion.id,
+          tokenId: suggestion.token_id,
+          suggestedText: suggestion.suggested_text,
+          createdAt: suggestion.created_at,
+          originalText: tokenData.textSegment,
+          startIndex: tokenData.startIndex,
+          endIndex: tokenData.endIndex
+        };
+      });
       
       // Resolve any overlapping suggestions
       const resolvedSuggestions = await diffEngineService.resolveOverlappingSuggestions(suggestions);
       
+      // Add the missing properties to resolved suggestions
+      const extendedResolvedSuggestions: ExtendedSuggestionModel[] = resolvedSuggestions.map(suggestion => {
+        const tokenData = tokenDataMap.get(suggestion.tokenId);
+        if (!tokenData) {
+          logger.error(`Missing token data for resolved suggestion ${suggestion.id}`);
+          throw new HttpError(500, 'Missing token data for resolved suggestion');
+        }
+        
+        return {
+          ...suggestion,
+          originalText: tokenData.textSegment,
+          startIndex: tokenData.startIndex,
+          endIndex: tokenData.endIndex
+        };
+      });
+      
       return {
-        suggestions: resolvedSuggestions
+        suggestions: extendedResolvedSuggestions
       };
     } catch (error) {
       logger.error('Error in textAnalysis service:', error);

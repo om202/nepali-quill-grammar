@@ -1,5 +1,5 @@
 "use client";
-import React, { useRef, useEffect } from "react";
+import React, { useRef, useEffect, useCallback } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "@/store";
 import { setText } from "@/store/textSlice";
@@ -14,10 +14,28 @@ export const HighlightedTextEditor: React.FC<HighlightedTextEditorProps> = ({ on
   const text = useSelector((state: RootState) => state.text.value);
   const suggestions = useSelector((state: RootState) => state.suggestions.items) as Suggestion[];
   const editorRef = useRef<HTMLDivElement>(null);
+  const isUpdatingRef = useRef(false);
+
+  // Escape HTML to prevent XSS
+  const escapeHTML = useCallback((str: string) => {
+    return str.replace(/[&<>"']/g, function (tag) {
+      const chars: Record<string, string> = {
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#39;"
+      };
+      return chars[tag] || tag;
+    });
+  }, []);
 
   // Build HTML with underlines for mistake ranges
-  const getHighlightedHTML = () => {
-    if (!suggestions.length) return text;
+  const getHighlightedHTML = useCallback(() => {
+    if (!text && !suggestions.length) {
+      return '<span class="text-gray-400">Enter Nepali text here...</span>';
+    }
+    if (!suggestions.length) return escapeHTML(text);
     let html = "";
     let lastIndex = 0;
     // Sort by startIndex to process in order of appearance
@@ -43,25 +61,19 @@ export const HighlightedTextEditor: React.FC<HighlightedTextEditorProps> = ({ on
     // Add any remaining text after the last suggestion
     html += escapeHTML(text.slice(lastIndex));
     return html;
-  };
-
-  // Escape HTML to prevent XSS
-  function escapeHTML(str: string) {
-    return str.replace(/[&<>"']/g, function (tag) {
-      const chars: Record<string, string> = {
-        "&": "&amp;",
-        "<": "&lt;",
-        ">": "&gt;",
-        '"': "&quot;",
-        "'": "&#39;"
-      };
-      return chars[tag] || tag;
-    });
-  }
+  }, [text, suggestions, escapeHTML]);
 
   // Handle input and sync with Redux
   const handleInput = (e: React.FormEvent<HTMLDivElement>) => {
-    dispatch(setText(e.currentTarget.innerText));
+    if (isUpdatingRef.current) return; // Prevent infinite loops
+    
+    const newText = e.currentTarget.innerText;
+    // Clear placeholder text when user starts typing
+    if (newText === 'Enter Nepali text here...') {
+      dispatch(setText(''));
+      return;
+    }
+    dispatch(setText(newText));
   };
 
   // Handle click on suggestion highlight
@@ -72,13 +84,48 @@ export const HighlightedTextEditor: React.FC<HighlightedTextEditorProps> = ({ on
     }
   };
 
+  // Handle focus to clear placeholder
+  const handleFocus = (e: React.FocusEvent<HTMLDivElement>) => {
+    if (!text && e.currentTarget.innerHTML.includes('Enter Nepali text here...')) {
+      e.currentTarget.innerHTML = '';
+    }
+  };
+
   // Keep contentEditable in sync with Redux text and highlights
   useEffect(() => {
-    if (editorRef.current) {
-      editorRef.current.innerHTML = getHighlightedHTML();
+    if (editorRef.current && !isUpdatingRef.current) {
+      isUpdatingRef.current = true;
+      const currentHTML = getHighlightedHTML();
+      
+      // Only update if the content has actually changed
+      if (editorRef.current.innerHTML !== currentHTML) {
+        // Save cursor position
+        const selection = window.getSelection();
+        const range = selection?.rangeCount ? selection.getRangeAt(0) : null;
+        const cursorOffset = range ? range.startOffset : 0;
+        
+        editorRef.current.innerHTML = currentHTML;
+        
+        // Restore cursor position if possible
+        if (range && editorRef.current.firstChild) {
+          try {
+            const newRange = document.createRange();
+            const textNode = editorRef.current.firstChild;
+            const maxOffset = textNode.textContent?.length || 0;
+            newRange.setStart(textNode, Math.min(cursorOffset, maxOffset));
+            newRange.collapse(true);
+            selection?.removeAllRanges();
+            selection?.addRange(newRange);
+          } catch (error) {
+            // Ignore cursor restoration errors
+            console.warn('Could not restore cursor position:', error);
+          }
+        }
+      }
+      
+      isUpdatingRef.current = false;
     }
-    // eslint-disable-next-line
-  }, [text, suggestions]);
+  }, [getHighlightedHTML]);
 
   return (
     <div
@@ -89,6 +136,7 @@ export const HighlightedTextEditor: React.FC<HighlightedTextEditorProps> = ({ on
       spellCheck={false}
       onInput={handleInput}
       onClick={handleClick}
+      onFocus={handleFocus}
       aria-label="Nepali text editor"
       style={{ whiteSpace: "pre-wrap", outline: "none" }}
     />

@@ -8,20 +8,19 @@ import { SuggestionCard } from '@/components/suggestion-card';
 import { analyzeText, updateSuggestion, APIError } from '@/lib/api';
 import { toast } from 'sonner';
 import { HighlightedTextEditor } from '@/components/HighlightedTextEditor';
-import { Provider } from 'react-redux';
-import { store, RootState } from '@/store';
+import { RootState } from '@/store';
 import { setSuggestions, removeSuggestion } from '@/store/suggestionsSlice';
 
 export default function Home() {
   const dispatch = useDispatch();
   const suggestions = useSelector((state: RootState) => state.suggestions.items);
+  const text = useSelector((state: RootState) => state.text.value);
   const [isLoading, setIsLoading] = useState(false);
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [selectedSuggestionId, setSelectedSuggestionId] = useState<string | null>(null);
 
   const handleAnalyze = async () => {
-    const text = store.getState().text.value;
     if (!text.trim()) {
       toast.error('Please enter some text to analyze');
       return;
@@ -88,60 +87,58 @@ export default function Home() {
   };
 
   return (
-    <Provider store={store}>
-      <main className="container mx-auto p-4 max-w-6xl">
-        <h1 className="text-3xl font-bold mb-8 text-center">NepaliQuill</h1>
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>Enter Nepali Text</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <HighlightedTextEditor
-                onSelectSuggestion={setSelectedSuggestionId}
-              />
-              {error && (
-                <div className="text-red-500 text-sm mb-4">
-                  {error}
-                </div>
-              )}
-              <Button
-                onClick={handleAnalyze}
-                disabled={isLoading}
-                className="w-full mt-4"
-              >
-                {isLoading ? 'Analyzing...' : 'Analyze Text'}
-              </Button>
-            </CardContent>
-          </Card>
+    <main className="container mx-auto p-4 max-w-6xl">
+      <h1 className="text-3xl font-bold mb-8 text-center">NepaliQuill</h1>
+      
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <Card>
+          <CardHeader>
+            <CardTitle>Enter Nepali Text</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <HighlightedTextEditor
+              onSelectSuggestion={setSelectedSuggestionId}
+            />
+            {error && (
+              <div className="text-red-500 text-sm mb-4">
+                {error}
+              </div>
+            )}
+            <Button
+              onClick={handleAnalyze}
+              disabled={isLoading}
+              className="w-full mt-4"
+            >
+              {isLoading ? 'Analyzing...' : 'Analyze Text'}
+            </Button>
+          </CardContent>
+        </Card>
 
-          <Card>
-            <CardHeader>
-              <CardTitle>Suggestions</CardTitle>
-            </CardHeader>
-            <CardContent>
-              {suggestions.length === 0 ? (
-                <p className="text-gray-500 text-center py-4">
-                  {isLoading ? 'Analyzing...' : error ? 'Analysis failed' : 'No suggestions yet'}
-                </p>
-              ) : (
-                <div className="space-y-4">
-                  {suggestions.map((suggestion) => (
-                    <SuggestionCard
-                      key={suggestion.id}
-                      suggestion={suggestion}
-                      sessionId={sessionId!}
-                      onUpdate={handleSuggestionUpdate}
-                      className={selectedSuggestionId === suggestion.id ? 'ring-2 ring-blue-500' : ''}
-                    />
-                  ))}
-                </div>
-              )}
-            </CardContent>
-          </Card>
-        </div>
-      </main>
-    </Provider>
+        <Card>
+          <CardHeader>
+            <CardTitle>Suggestions</CardTitle>
+          </CardHeader>
+          <CardContent>
+            {suggestions.length === 0 ? (
+              <p className="text-gray-500 text-center py-4">
+                {isLoading ? 'Analyzing...' : error ? 'Analysis failed' : 'No suggestions yet'}
+              </p>
+            ) : (
+              <div className="space-y-4">
+                {suggestions.map((suggestion) => (
+                  <SuggestionCard
+                    key={suggestion.id}
+                    suggestion={suggestion}
+                    sessionId={sessionId!}
+                    onUpdate={handleSuggestionUpdate}
+                    className={selectedSuggestionId === suggestion.id ? 'ring-2 ring-blue-500' : ''}
+                  />
+                ))}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      </div>
+    </main>
   );
 }
