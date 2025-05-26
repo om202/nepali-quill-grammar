@@ -9,7 +9,10 @@ import {
   ChevronLeft, 
   ChevronRight,
   SkipForward,
-  SkipBack
+  SkipBack,
+  Keyboard,
+  ChevronDown,
+  ChevronUp
 } from 'lucide-react';
 
 import { Suggestion } from '@/lib/api';
@@ -34,6 +37,7 @@ export function SuggestionNavigator({
 }: SuggestionNavigatorProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
+  const [showKeyboardGuide, setShowKeyboardGuide] = useState(false);
 
   // Reset to first suggestion when suggestions change
   useEffect(() => {
@@ -159,6 +163,56 @@ return;
 
   return (
     <div className='flex flex-col h-full'>
+      {/* Keyboard shortcuts toggle */}
+      <button
+        onClick={() => setShowKeyboardGuide(!showKeyboardGuide)}
+        className='flex items-center justify-between w-full p-2 mb-3 bg-gray-50 hover:bg-gray-100 border border-gray-200 rounded-lg transition-colors text-left'
+      >
+        <div className='flex items-center space-x-2'>
+          <Keyboard className='h-3.5 w-3.5 text-gray-600' />
+          <span className='text-xs font-medium text-gray-700'>Keyboard Shortcuts</span>
+        </div>
+        {showKeyboardGuide ? (
+          <ChevronUp className='h-3.5 w-3.5 text-gray-500' />
+        ) : (
+          <ChevronDown className='h-3.5 w-3.5 text-gray-500' />
+        )}
+      </button>
+
+      {/* Collapsible keyboard guide */}
+      {showKeyboardGuide && (
+        <div className='bg-white border border-gray-200 rounded-lg p-3 mb-3'>
+          <div className='space-y-1.5 text-xs text-gray-600'>
+            <div className='flex items-center justify-between'>
+              <span>Navigate</span>
+              <div className='flex items-center space-x-1'>
+                <kbd className='px-1.5 py-0.5 bg-gray-100 border border-gray-300 rounded text-xs font-mono'>←</kbd>
+                <kbd className='px-1.5 py-0.5 bg-gray-100 border border-gray-300 rounded text-xs font-mono'>→</kbd>
+                <span className='text-gray-400'>or</span>
+                <kbd className='px-1.5 py-0.5 bg-gray-100 border border-gray-300 rounded text-xs font-mono'>↑</kbd>
+                <kbd className='px-1.5 py-0.5 bg-gray-100 border border-gray-300 rounded text-xs font-mono'>↓</kbd>
+              </div>
+            </div>
+            
+            <div className='flex items-center justify-between'>
+              <span>Accept</span>
+              <kbd className='px-2 py-0.5 bg-gray-100 border border-gray-300 rounded text-xs font-mono'>Enter</kbd>
+            </div>
+            
+            <div className='flex items-center justify-between'>
+              <span>Reject</span>
+              <div className='flex items-center space-x-1'>
+                <kbd className='px-1.5 py-0.5 bg-gray-100 border border-gray-300 rounded text-xs font-mono'>Shift</kbd>
+                <span className='text-gray-400'>+</span>
+                <kbd className='px-1.5 py-0.5 bg-gray-100 border border-gray-300 rounded text-xs font-mono'>Enter</kbd>
+                <span className='text-gray-400'>or</span>
+                <kbd className='px-1.5 py-0.5 bg-gray-100 border border-gray-300 rounded text-xs font-mono'>Esc</kbd>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Progress indicator */}
       <div className='flex items-center justify-between mb-3 text-xs text-gray-600'>
         <span>
@@ -214,7 +268,7 @@ return;
           <button
             onClick={() => handleAction('reject')}
             disabled={isLoading}
-            className='flex-1 flex items-center justify-center border border-gray-300 text-gray-600 hover:bg-gray-100 px-3 py-2 rounded-md text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed'
+            className='flex-1 flex items-center justify-center bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 px-3 py-2 rounded-md text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed'
           >
             <X className='h-3.5 w-3.5 mr-1.5' />
             Reject
@@ -260,14 +314,6 @@ return;
           >
             <SkipForward className='h-3.5 w-3.5' />
           </button>
-        </div>
-      </div>
-
-      {/* Keyboard shortcuts help */}
-      <div className='text-xs text-gray-500 text-center'>
-        <div className='space-y-0.5'>
-          <div>← → or ↑ ↓ to navigate</div>
-          <div>Enter to accept • Shift+Enter or Esc to reject</div>
         </div>
       </div>
     </div>

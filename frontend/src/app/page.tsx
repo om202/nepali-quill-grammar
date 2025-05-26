@@ -13,6 +13,9 @@ import {
   X,
   List,
   Navigation,
+  Keyboard,
+  ChevronDown,
+  ChevronUp,
 } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
@@ -47,6 +50,8 @@ export default function Home() {
   const [showWelcomeMessage, setShowWelcomeMessage] = useState(false);
   const [showFreeTrialMessage, setShowFreeTrialMessage] = useState(true);
   const [suggestionViewMode, setSuggestionViewMode] = useState<'list' | 'navigate'>('navigate');
+  const [listModeSelectedIndex, setListModeSelectedIndex] = useState(0);
+  const [showListKeyboardGuide, setShowListKeyboardGuide] = useState(false);
 
   // Check if welcome message should be shown
   useEffect(() => {
@@ -159,6 +164,61 @@ export default function Home() {
       throw error;
     }
   };
+
+  // Keyboard navigation for list mode
+  useEffect(() => {
+    if (suggestionViewMode !== 'list' || suggestions.length === 0) {
+      return;
+    }
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      switch (event.key) {
+        case 'ArrowUp':
+          event.preventDefault();
+          setListModeSelectedIndex(prev => {
+            const newIndex = Math.max(0, prev - 1);
+            setSelectedSuggestionId(suggestions[newIndex]?.id || null);
+            return newIndex;
+          });
+          break;
+        case 'ArrowDown':
+          event.preventDefault();
+          setListModeSelectedIndex(prev => {
+            const newIndex = Math.min(suggestions.length - 1, prev + 1);
+            setSelectedSuggestionId(suggestions[newIndex]?.id || null);
+            return newIndex;
+          });
+          break;
+        case 'Enter':
+          event.preventDefault();
+          if (suggestions[listModeSelectedIndex]) {
+            if (event.shiftKey) {
+              handleSuggestionUpdate(sessionId!, suggestions[listModeSelectedIndex].id, 'reject');
+            } else {
+              handleSuggestionUpdate(sessionId!, suggestions[listModeSelectedIndex].id, 'accept');
+            }
+          }
+          break;
+        case 'Escape':
+          event.preventDefault();
+          if (suggestions[listModeSelectedIndex]) {
+            handleSuggestionUpdate(sessionId!, suggestions[listModeSelectedIndex].id, 'reject');
+          }
+          break;
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [suggestionViewMode, suggestions, listModeSelectedIndex, sessionId, handleSuggestionUpdate]);
+
+  // Reset list mode selection when suggestions change
+  useEffect(() => {
+    if (suggestionViewMode === 'list' && suggestions.length > 0) {
+      setListModeSelectedIndex(0);
+      setSelectedSuggestionId(suggestions[0].id);
+    }
+  }, [suggestions, suggestionViewMode]);
 
   return (
     <div className='min-h-screen bg-gray-50 flex flex-col'>
@@ -357,6 +417,53 @@ export default function Home() {
                     />
                   ) : (
                     <div className='space-y-4'>
+                      {/* Keyboard guide toggle for list mode */}
+                      <button
+                        onClick={() => setShowListKeyboardGuide(!showListKeyboardGuide)}
+                        className='flex items-center justify-between w-full p-2 bg-gray-50 hover:bg-gray-100 border border-gray-200 rounded-lg transition-colors text-left'
+                      >
+                        <div className='flex items-center space-x-2'>
+                          <Keyboard className='h-3.5 w-3.5 text-gray-600' />
+                          <span className='text-xs font-medium text-gray-700'>Keyboard Shortcuts</span>
+                        </div>
+                        {showListKeyboardGuide ? (
+                          <ChevronUp className='h-3.5 w-3.5 text-gray-500' />
+                        ) : (
+                          <ChevronDown className='h-3.5 w-3.5 text-gray-500' />
+                        )}
+                      </button>
+
+                      {/* Collapsible keyboard guide for list mode */}
+                      {showListKeyboardGuide && (
+                        <div className='bg-white border border-gray-200 rounded-lg p-3'>
+                          <div className='space-y-1.5 text-xs text-gray-600'>
+                            <div className='flex items-center justify-between'>
+                              <span>Navigate</span>
+                              <div className='flex items-center space-x-1'>
+                                <kbd className='px-1.5 py-0.5 bg-gray-100 border border-gray-300 rounded text-xs font-mono'>↑</kbd>
+                                <kbd className='px-1.5 py-0.5 bg-gray-100 border border-gray-300 rounded text-xs font-mono'>↓</kbd>
+                              </div>
+                            </div>
+                            
+                            <div className='flex items-center justify-between'>
+                              <span>Accept</span>
+                              <kbd className='px-2 py-0.5 bg-gray-100 border border-gray-300 rounded text-xs font-mono'>Enter</kbd>
+                            </div>
+                            
+                            <div className='flex items-center justify-between'>
+                              <span>Reject</span>
+                              <div className='flex items-center space-x-1'>
+                                <kbd className='px-1.5 py-0.5 bg-gray-100 border border-gray-300 rounded text-xs font-mono'>Shift</kbd>
+                                <span className='text-gray-400'>+</span>
+                                <kbd className='px-1.5 py-0.5 bg-gray-100 border border-gray-300 rounded text-xs font-mono'>Enter</kbd>
+                                <span className='text-gray-400'>or</span>
+                                <kbd className='px-1.5 py-0.5 bg-gray-100 border border-gray-300 rounded text-xs font-mono'>Esc</kbd>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+
                       {suggestions.map((suggestion, index) => (
                         <div
                           key={suggestion.id}
@@ -366,7 +473,10 @@ export default function Home() {
                             suggestion={suggestion}
                             sessionId={sessionId!}
                             onUpdate={handleSuggestionUpdate}
-                            onSelect={setSelectedSuggestionId}
+                            onSelect={(suggestionId) => {
+                              setSelectedSuggestionId(suggestionId);
+                              setListModeSelectedIndex(index);
+                            }}
                             index={index}
                             total={suggestions.length}
                             className={

@@ -107,9 +107,11 @@ export const NepaliTextEditor: React.FC<NepaliTextEditorProps> = ({
         return escapeHTML(text);
       }
 
-      // Find the currently selected suggestion
-      const selectedSuggestion = suggestions.find(s => s.id === selectedSuggestionId);
-      if (!selectedSuggestion) {
+      // Find the currently selected suggestion and its index
+      const selectedSuggestionIndex = suggestions.findIndex(s => s.id === selectedSuggestionId);
+      const selectedSuggestion = suggestions[selectedSuggestionIndex];
+      
+      if (!selectedSuggestion || selectedSuggestionIndex === -1) {
         return escapeHTML(text);
       }
 
@@ -125,8 +127,8 @@ export const NepaliTextEditor: React.FC<NepaliTextEditorProps> = ({
         // Add text before the selected suggestion
         html += escapeHTML(text.slice(lastIndex, selectedSuggestion.startIndex));
         
-        // Get color for the selected suggestion (use index 0 for consistent color)
-        const colors = getHighlightColor(0, 1);
+        // Get color for the selected suggestion using its actual index
+        const colors = getHighlightColor(selectedSuggestionIndex, suggestions.length);
         
         html += `<span class='cursor-pointer font-medium' 
           style='background-color: ${colors.backgroundColor}; 
