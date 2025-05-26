@@ -5,6 +5,7 @@ import { toast } from 'sonner';
 import { Check, X, ArrowRight } from 'lucide-react';
 
 import { Suggestion } from '@/lib/api';
+import { getSuggestionContainerColor } from '@/utils/colors';
 
 interface SuggestionCardProps {
   suggestion: Suggestion;
@@ -15,6 +16,8 @@ interface SuggestionCardProps {
     action: 'accept' | 'reject'
   ) => Promise<void>;
   className?: string;
+  index: number;
+  total: number;
 }
 
 export function SuggestionCard({
@@ -22,8 +25,11 @@ export function SuggestionCard({
   sessionId,
   onUpdate,
   className,
+  index,
+  total,
 }: SuggestionCardProps) {
   const [isLoading, setIsLoading] = useState(false);
+  const colors = getSuggestionContainerColor(index, total);
 
   const handleAction = async (action: 'accept' | 'reject') => {
     setIsLoading(true);
@@ -40,15 +46,31 @@ export function SuggestionCard({
 
   return (
     <div
-      className={`bg-white border border-gray-200 rounded-lg p-4 hover:border-gray-300 transition-colors-smooth hover:shadow-sm ${className}`}
+      className={`border rounded-lg p-4 hover:shadow-sm transition-all duration-200 ${className}`}
+      style={{
+        backgroundColor: colors.backgroundColor,
+        borderColor: colors.borderColor,
+      }}
+      onMouseEnter={(e) => {
+        e.currentTarget.style.backgroundColor = colors.hoverBackgroundColor;
+      }}
+      onMouseLeave={(e) => {
+        e.currentTarget.style.backgroundColor = colors.backgroundColor;
+      }}
     >
       <div className='flex items-center justify-between mb-3'>
         <div className='flex items-center space-x-3'>
-          <span className='text-red-700 text-base font-medium'>
+          <span 
+            className='text-base font-medium'
+            style={{ color: colors.textColor }}
+          >
             {suggestion.originalText}
           </span>
-          <ArrowRight className='h-4 w-4 text-gray-400' />
-          <span className='text-green-700 text-base font-medium'>
+          <ArrowRight className='h-4 w-4' style={{ color: colors.textColor }} />
+          <span 
+            className='text-base font-medium'
+            style={{ color: colors.textColor }}
+          >
             {suggestion.suggestedText}
           </span>
         </div>

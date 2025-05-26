@@ -6,6 +6,7 @@ import nepalify from 'nepalify';
 import { RootState } from '@/store';
 import { setText } from '@/store/textSlice';
 import { Suggestion } from '@/lib/api';
+import { getHighlightColor } from '@/utils/colors';
 
 interface NepaliTextEditorProps {
   onSelectSuggestion?: (suggestionId: string) => void;
@@ -93,8 +94,8 @@ export const NepaliTextEditor: React.FC<NepaliTextEditorProps> = ({
       return `<span class="text-gray-500">${placeholderText}</span>`;
     }
     if (!suggestions.length) {
-return escapeHTML(text);
-}
+      return escapeHTML(text);
+    }
 
     let html = '';
     let lastIndex = 0;
@@ -102,7 +103,7 @@ return escapeHTML(text);
       (a, b) => a.startIndex - b.startIndex
     );
 
-    sortedSuggestions.forEach((s: Suggestion) => {
+    sortedSuggestions.forEach((s: Suggestion, index: number) => {
       if (
         s.startIndex === undefined ||
         s.endIndex === undefined ||
@@ -113,7 +114,15 @@ return escapeHTML(text);
       }
 
       html += escapeHTML(text.slice(lastIndex, s.startIndex));
-      html += `<span class='underline text-red-600 bg-red-100 cursor-pointer' data-suggestion-id='${s.id}'>`;
+      
+      // Get unique color for this suggestion
+      const colors = getHighlightColor(index, suggestions.length);
+      
+      html += `<span class='underline cursor-pointer font-medium' 
+        style='background-color: ${colors.backgroundColor}; 
+               color: ${colors.textColor}; 
+               border-bottom: 2px solid ${colors.borderColor};'
+        data-suggestion-id='${s.id}'>`;
       html += escapeHTML(text.slice(s.startIndex, s.endIndex));
       html += '</span>';
       lastIndex = s.endIndex;

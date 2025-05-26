@@ -15,6 +15,7 @@ import {
 
 import { Button } from '@/components/ui/button';
 import { getSession, DiffModel, Suggestion } from '@/lib/api';
+import { getSuggestionContainerColor } from '@/utils/colors';
 
 interface SessionDetailProps {
   sessionId: string;
@@ -95,26 +96,46 @@ export function SessionDetail({ sessionId, onBack }: SessionDetailProps) {
         );
       }
 
-      // Add highlighted suggestion
+      // Add highlighted suggestion with unique color
       const suggestionText = text.slice(
         suggestion.startIndex,
         suggestion.endIndex
       );
-      const bgColor =
-        suggestion.action === 'accept'
-          ? 'bg-green-100 text-green-800'
-          : suggestion.action === 'reject'
-            ? 'bg-red-100 text-red-800'
-            : 'bg-yellow-100 text-yellow-800';
+      
+      // Get unique color for this suggestion
+      const colors = getSuggestionContainerColor(index, suggestions.length);
+      
+      // Override color based on action status
+      let finalColors = colors;
+      if (suggestion.action === 'accept') {
+        finalColors = {
+          backgroundColor: 'rgba(34, 197, 94, 0.1)',
+          borderColor: 'rgba(34, 197, 94, 0.3)',
+          textColor: 'rgb(21, 128, 61)',
+          hoverBackgroundColor: 'rgba(34, 197, 94, 0.15)',
+        };
+      } else if (suggestion.action === 'reject') {
+        finalColors = {
+          backgroundColor: 'rgba(239, 68, 68, 0.1)',
+          borderColor: 'rgba(239, 68, 68, 0.3)',
+          textColor: 'rgb(153, 27, 27)',
+          hoverBackgroundColor: 'rgba(239, 68, 68, 0.15)',
+        };
+      }
 
       result.push(
         <span
           key={`suggestion-${suggestion.id}`}
-          className={`px-1 py-0.5 rounded ${bgColor} font-medium`}
+          className='px-1 py-0.5 rounded font-medium border'
+          style={{
+            backgroundColor: finalColors.backgroundColor,
+            borderColor: finalColors.borderColor,
+            color: finalColors.textColor,
+          }}
           title={
             isOriginal
-              ? `Original: &quot;${suggestionText}&quot; → Suggested: &quot;${suggestion.suggestedText}&quot; (${suggestion.action || 'pending'})`
-              : `Applied suggestion: &quot;${suggestion.suggestedText}&quot;`
+              ? `Original: "${suggestionText}" → Suggested: "${suggestion.suggestedText}" (${suggestion.action || 'pending'})`
+              : `Applied suggestion: "${suggestion.suggestedText}"`
           }
         >
           {isOriginal ? suggestionText : suggestion.suggestedText}
@@ -341,45 +362,62 @@ export function SessionDetail({ sessionId, onBack }: SessionDetailProps) {
             All Suggestions
           </h3>
           <div className='space-y-3'>
-            {allSuggestions.map(suggestion => (
-              <div
-                key={suggestion.id}
-                className='flex items-center justify-between p-4 bg-gray-50 rounded-lg'
-              >
-                <div className='flex items-center space-x-4 flex-1'>
+            {allSuggestions.map((suggestion, index) => {
+              const colors = getSuggestionContainerColor(index, allSuggestions.length);
+              
+              return (
+                <div
+                  key={suggestion.id}
+                  className='flex items-center justify-between p-4 rounded-lg border'
+                  style={{
+                    backgroundColor: colors.backgroundColor,
+                    borderColor: colors.borderColor,
+                  }}
+                >
+                  <div className='flex items-center space-x-4 flex-1'>
+                    <div className='flex items-center space-x-2'>
+                      <span 
+                        className='font-medium'
+                        style={{ color: colors.textColor }}
+                      >
+                        "{suggestion.originalText}"
+                      </span>
+                      <ArrowRight 
+                        className='h-4 w-4' 
+                        style={{ color: colors.textColor }}
+                      />
+                      <span 
+                        className='font-medium'
+                        style={{ color: colors.textColor }}
+                      >
+                        "{suggestion.suggestedText}"
+                      </span>
+                    </div>
+                  </div>
+
                   <div className='flex items-center space-x-2'>
-                    <span className='text-red-700 font-medium'>
-                      &quot;{suggestion.originalText}&quot;
-                    </span>
-                    <ArrowRight className='h-4 w-4 text-gray-400' />
-                    <span className='text-green-700 font-medium'>
-                      &quot;{suggestion.suggestedText}&quot;
-                    </span>
+                    {suggestion.action === 'accept' && (
+                      <div className='flex items-center space-x-1 text-green-600'>
+                        <CheckCircle className='h-4 w-4' />
+                        <span className='text-sm font-medium'>Accepted</span>
+                      </div>
+                    )}
+                    {suggestion.action === 'reject' && (
+                      <div className='flex items-center space-x-1 text-red-600'>
+                        <XCircle className='h-4 w-4' />
+                        <span className='text-sm font-medium'>Rejected</span>
+                      </div>
+                    )}
+                    {!suggestion.action && (
+                      <div className='flex items-center space-x-1 text-orange-600'>
+                        <Clock className='h-4 w-4' />
+                        <span className='text-sm font-medium'>Pending</span>
+                      </div>
+                    )}
                   </div>
                 </div>
-
-                <div className='flex items-center space-x-2'>
-                  {suggestion.action === 'accept' && (
-                    <div className='flex items-center space-x-1 text-green-600'>
-                      <CheckCircle className='h-4 w-4' />
-                      <span className='text-sm font-medium'>Accepted</span>
-                    </div>
-                  )}
-                  {suggestion.action === 'reject' && (
-                    <div className='flex items-center space-x-1 text-red-600'>
-                      <XCircle className='h-4 w-4' />
-                      <span className='text-sm font-medium'>Rejected</span>
-                    </div>
-                  )}
-                  {!suggestion.action && (
-                    <div className='flex items-center space-x-1 text-orange-600'>
-                      <Clock className='h-4 w-4' />
-                      <span className='text-sm font-medium'>Pending</span>
-                    </div>
-                  )}
-                </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       )}

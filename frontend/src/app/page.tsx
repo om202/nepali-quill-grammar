@@ -270,12 +270,12 @@ export default function Home() {
               </div>
 
               {/* Suggestions Panel - 30% width */}
-              <div className='w-full lg:w-[30%] grammarly-card flex flex-col min-h-0'>
-                <div className='flex items-center space-x-2 p-4 border-b border-gray-200 flex-shrink-0'>
-                  <Bot className='h-5 w-5 text-green-600' />
+              <div className='w-full lg:w-[30%] grammarly-card flex flex-col min-h-0 bg-gradient-to-br from-blue-50 via-purple-50 to-indigo-50 border-2 border-transparent bg-clip-padding'>
+                <div className='flex items-center space-x-2 p-4 border-b border-gray-200 flex-shrink-0 bg-gradient-to-r from-blue-100 to-purple-100'>
+                  <Bot className='h-5 w-5 text-purple-600' />
                   <span className='text-gray-700 font-medium'>Suggestions</span>
                   {suggestions.length > 0 && (
-                    <span className='bg-green-100 text-green-800 text-xs font-medium px-2 py-1 rounded-full'>
+                    <span className='bg-gradient-to-r from-green-100 to-emerald-100 text-green-800 text-xs font-medium px-2 py-1 rounded-full border border-green-200'>
                       {suggestions.length} suggestion
                       {suggestions.length !== 1 ? 's' : ''}
                     </span>
@@ -323,6 +323,8 @@ export default function Home() {
                             suggestion={suggestion}
                             sessionId={sessionId!}
                             onUpdate={handleSuggestionUpdate}
+                            index={index}
+                            total={suggestions.length}
                             className={
                               selectedSuggestionId === suggestion.id
                                 ? 'ring-2 ring-blue-500'
