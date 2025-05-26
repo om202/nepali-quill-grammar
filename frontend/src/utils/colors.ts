@@ -1,33 +1,33 @@
 import chroma from 'chroma-js';
 
-// Generate a color palette with distinct colors for suggestions
+// Simple seeded random number generator for consistent colors
+const seededRandom = (seed: number) => {
+  const x = Math.sin(seed) * 10000;
+  return x - Math.floor(x);
+};
+
+// Generate a color palette with super random distinct colors for suggestions
 export const generateSuggestionColors = (count: number) => {
-  if (count === 0) return [];
-  
-  // Use a color scale that provides good contrast and readability
-  const baseColors = [
-    '#3B82F6', // Blue
-    '#10B981', // Emerald
-    '#F59E0B', // Amber
-    '#EF4444', // Red
-    '#8B5CF6', // Violet
-    '#06B6D4', // Cyan
-    '#F97316', // Orange
-    '#84CC16', // Lime
-    '#EC4899', // Pink
-    '#6366F1', // Indigo
-  ];
-
-  if (count <= baseColors.length) {
-    return baseColors.slice(0, count);
+  if (count === 0) {
+    return [];
   }
-
-  // If we need more colors than our base set, generate them using chroma
-  const scale = chroma.scale(['#3B82F6', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6'])
-    .mode('hsl')
-    .colors(count);
   
-  return scale;
+  const colors: string[] = [];
+  
+  for (let i = 0; i < count; i++) {
+    // Use seeded random for consistent colors across re-renders
+    const seed = i * 1234.5678; // Different seed for each index
+    
+    // Generate completely random colors with good saturation and lightness
+    const hue = seededRandom(seed) * 360; // Random hue (0-360)
+    const saturation = 0.6 + seededRandom(seed + 1) * 0.4; // Saturation between 60-100%
+    const lightness = 0.4 + seededRandom(seed + 2) * 0.3; // Lightness between 40-70% for good contrast
+    
+    const color = chroma.hsl(hue, saturation, lightness).hex();
+    colors.push(color);
+  }
+  
+  return colors;
 };
 
 // Generate background and text colors for a suggestion

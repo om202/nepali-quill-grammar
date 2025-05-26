@@ -118,10 +118,9 @@ export const NepaliTextEditor: React.FC<NepaliTextEditorProps> = ({
       // Get unique color for this suggestion
       const colors = getHighlightColor(index, suggestions.length);
       
-      html += `<span class='underline cursor-pointer font-medium' 
+      html += `<span class='cursor-pointer font-medium' 
         style='background-color: ${colors.backgroundColor}; 
-               color: ${colors.textColor}; 
-               border-bottom: 2px solid ${colors.borderColor};'
+               color: ${colors.textColor};'
         data-suggestion-id='${s.id}'>`;
       html += escapeHTML(text.slice(s.startIndex, s.endIndex));
       html += '</span>';

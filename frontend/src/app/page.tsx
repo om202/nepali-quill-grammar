@@ -270,8 +270,8 @@ export default function Home() {
               </div>
 
               {/* Suggestions Panel - 30% width */}
-              <div className='w-full lg:w-[30%] grammarly-card flex flex-col min-h-0 bg-gradient-to-br from-blue-50 via-purple-50 to-indigo-50 border-2 border-transparent bg-clip-padding'>
-                <div className='flex items-center space-x-2 p-4 border-b border-gray-200 flex-shrink-0 bg-gradient-to-r from-blue-100 to-purple-100'>
+              <div className='w-full lg:w-[30%] grammarly-card flex flex-col min-h-0 border-2 border-transparent bg-clip-padding'>
+                <div className='flex items-center space-x-2 p-4 border-b border-gray-200 flex-shrink-0'>
                   <Bot className='h-5 w-5 text-purple-600' />
                   <span className='text-gray-700 font-medium'>Suggestions</span>
                   {suggestions.length > 0 && (
