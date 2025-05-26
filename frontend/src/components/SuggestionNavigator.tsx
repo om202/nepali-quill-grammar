@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { toast } from 'sonner';
 import { 
   Check, 
@@ -27,6 +27,7 @@ interface SuggestionNavigatorProps {
     action: 'accept' | 'reject'
   ) => Promise<void>;
   onSuggestionChange?: (suggestionId: string | null) => void;
+  selectedSuggestionId?: string | null;
 }
 
 export function SuggestionNavigator({
@@ -34,10 +35,14 @@ export function SuggestionNavigator({
   sessionId,
   onUpdate,
   onSuggestionChange,
+  selectedSuggestionId,
 }: SuggestionNavigatorProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [showKeyboardGuide, setShowKeyboardGuide] = useState(false);
+  
+  // Track if the index change is from external selection to prevent circular updates
+  const isExternalUpdateRef = useRef(false);
 
   // Reset to first suggestion when suggestions change
   useEffect(() => {
@@ -49,10 +54,27 @@ export function SuggestionNavigator({
     }
   }, [suggestions, onSuggestionChange]);
 
-  // Update selected suggestion when index changes
+  // Sync with external selection (when user clicks on highlighted text)
+  useEffect(() => {
+    if (selectedSuggestionId && suggestions.length > 0) {
+      const suggestionIndex = suggestions.findIndex(s => s.id === selectedSuggestionId);
+      if (suggestionIndex !== -1 && suggestionIndex !== currentIndex) {
+        isExternalUpdateRef.current = true;
+        setCurrentIndex(suggestionIndex);
+      }
+    }
+  }, [selectedSuggestionId, suggestions]);
+
+  // Update selected suggestion when index changes (only for internal navigation)
   useEffect(() => {
     if (suggestions.length > 0 && currentIndex < suggestions.length) {
-      onSuggestionChange?.(suggestions[currentIndex].id);
+      // Only notify parent if this wasn't triggered by external selection
+      if (!isExternalUpdateRef.current) {
+        onSuggestionChange?.(suggestions[currentIndex].id);
+      } else {
+        // Reset the flag after handling external update
+        isExternalUpdateRef.current = false;
+      }
     }
   }, [currentIndex, suggestions, onSuggestionChange]);
 

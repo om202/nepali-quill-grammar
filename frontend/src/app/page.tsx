@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'sonner';
 import {
@@ -53,6 +53,21 @@ export default function Home() {
   const [listModeSelectedIndex, setListModeSelectedIndex] = useState(0);
   const [showListKeyboardGuide, setShowListKeyboardGuide] = useState(false);
 
+  // Use refs to prevent unnecessary re-renders
+  const isScrollingRef = useRef(false);
+  const lastSuggestionsLengthRef = useRef(0);
+  const suggestionsRef = useRef(suggestions);
+  const suggestionViewModeRef = useRef(suggestionViewMode);
+
+  // Update refs when values change
+  useEffect(() => {
+    suggestionsRef.current = suggestions;
+  }, [suggestions]);
+
+  useEffect(() => {
+    suggestionViewModeRef.current = suggestionViewMode;
+  }, [suggestionViewMode]);
+
   // Check if welcome message should be shown
   useEffect(() => {
     if (isAuthenticated && user) {
@@ -93,8 +108,6 @@ export default function Home() {
     setError(null);
     try {
       const response = await analyzeText(text);
-      console.log('API Response:', response);
-      console.log('Suggestions:', response.suggestions);
       dispatch(setSuggestions(response.suggestions));
       setSessionId(response.sessionId);
       if (response.suggestions.length === 0) {
@@ -114,13 +127,12 @@ export default function Home() {
       }
       setError(errorMessage);
       toast.error(errorMessage);
-      console.error('Analysis error:', error);
     } finally {
       setIsLoading(false);
     }
   };
 
-  const handleSuggestionUpdate = async (
+  const handleSuggestionUpdate = useCallback(async (
     sessionId: string,
     suggestionId: string,
     action: 'accept' | 'reject'
@@ -160,10 +172,9 @@ export default function Home() {
         }
       }
       toast.error(errorMessage);
-      console.error('Update error:', error);
       throw error;
     }
-  };
+  }, [dispatch]);
 
   // Keyboard navigation for list mode
   useEffect(() => {
@@ -177,32 +188,32 @@ export default function Home() {
           event.preventDefault();
           setListModeSelectedIndex(prev => {
             const newIndex = Math.max(0, prev - 1);
-            setSelectedSuggestionId(suggestions[newIndex]?.id || null);
+            setSelectedSuggestionId(suggestionsRef.current[newIndex]?.id || null);
             return newIndex;
           });
           break;
         case 'ArrowDown':
           event.preventDefault();
           setListModeSelectedIndex(prev => {
-            const newIndex = Math.min(suggestions.length - 1, prev + 1);
-            setSelectedSuggestionId(suggestions[newIndex]?.id || null);
+            const newIndex = Math.min(suggestionsRef.current.length - 1, prev + 1);
+            setSelectedSuggestionId(suggestionsRef.current[newIndex]?.id || null);
             return newIndex;
           });
           break;
         case 'Enter':
           event.preventDefault();
-          if (suggestions[listModeSelectedIndex]) {
+          if (suggestionsRef.current[listModeSelectedIndex]) {
             if (event.shiftKey) {
-              handleSuggestionUpdate(sessionId!, suggestions[listModeSelectedIndex].id, 'reject');
+              handleSuggestionUpdate(sessionId!, suggestionsRef.current[listModeSelectedIndex].id, 'reject');
             } else {
-              handleSuggestionUpdate(sessionId!, suggestions[listModeSelectedIndex].id, 'accept');
+              handleSuggestionUpdate(sessionId!, suggestionsRef.current[listModeSelectedIndex].id, 'accept');
             }
           }
           break;
         case 'Escape':
           event.preventDefault();
-          if (suggestions[listModeSelectedIndex]) {
-            handleSuggestionUpdate(sessionId!, suggestions[listModeSelectedIndex].id, 'reject');
+          if (suggestionsRef.current[listModeSelectedIndex]) {
+            handleSuggestionUpdate(sessionId!, suggestionsRef.current[listModeSelectedIndex].id, 'reject');
           }
           break;
       }
@@ -210,18 +221,97 @@ export default function Home() {
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [suggestionViewMode, suggestions, listModeSelectedIndex, sessionId, handleSuggestionUpdate]);
+  }, [suggestionViewMode, suggestions.length, listModeSelectedIndex, sessionId, handleSuggestionUpdate]);
 
-  // Reset list mode selection when suggestions change
+  // Reset list mode selection when suggestions change (only when suggestions actually change)
   useEffect(() => {
-    if (suggestionViewMode === 'list' && suggestions.length > 0) {
+    // Only reset if suggestions array actually changed, not just re-rendered
+    if (suggestionViewMode === 'list' && suggestions.length > 0 && 
+        suggestions.length !== lastSuggestionsLengthRef.current) {
+      lastSuggestionsLengthRef.current = suggestions.length;
       setListModeSelectedIndex(0);
       setSelectedSuggestionId(suggestions[0].id);
     }
-  }, [suggestions, suggestionViewMode]);
+  }, [suggestions.length, suggestionViewMode]);
+
+  // Auto-scroll to selected suggestion in list mode (debounced)
+  useEffect(() => {
+    if (suggestionViewMode === 'list' && suggestions.length > 0 && !isScrollingRef.current) {
+      const timeoutId = setTimeout(() => {
+        const selectedElement = document.querySelector(`[data-suggestion-index="${listModeSelectedIndex}"]`) as HTMLElement;
+        if (selectedElement) {
+          const container = selectedElement.closest('.overflow-y-auto') as HTMLElement;
+          if (container) {
+            const containerRect = container.getBoundingClientRect();
+            const elementRect = selectedElement.getBoundingClientRect();
+            
+            const buffer = 40;
+            const isOutOfView = 
+              elementRect.top < containerRect.top + buffer || 
+              elementRect.bottom > containerRect.bottom - buffer;
+            
+            if (isOutOfView) {
+              isScrollingRef.current = true;
+              const elementTop = selectedElement.offsetTop;
+              const containerHeight = container.clientHeight;
+              const elementHeight = selectedElement.offsetHeight;
+              
+              let newScrollTop;
+              if (elementRect.top < containerRect.top + buffer) {
+                newScrollTop = elementTop - buffer;
+              } else {
+                newScrollTop = elementTop - containerHeight + elementHeight + buffer;
+              }
+              
+              container.scrollTo({
+                top: Math.max(0, newScrollTop),
+                behavior: 'smooth'
+              });
+
+              // Reset scrolling flag after animation
+              setTimeout(() => {
+                isScrollingRef.current = false;
+              }, 300);
+            }
+          }
+        }
+      }, 50);
+
+      return () => clearTimeout(timeoutId);
+    }
+  }, [listModeSelectedIndex, suggestionViewMode, suggestions.length]);
+
+  // Function to scroll to a specific suggestion in the suggestions panel
+  const scrollToSuggestion = useCallback((suggestionId: string) => {
+    const suggestionIndex = suggestionsRef.current.findIndex(s => s.id === suggestionId);
+    if (suggestionIndex === -1) {
+      return;
+    }
+
+    if (suggestionViewModeRef.current === 'list') {
+      // Prevent circular updates
+      setListModeSelectedIndex(prev => {
+        if (prev !== suggestionIndex) {
+          return suggestionIndex;
+        }
+        return prev;
+      });
+    }
+  }, []);
+
+  // Enhanced suggestion selection handler
+  const handleSuggestionSelect = useCallback((suggestionId: string) => {
+    setSelectedSuggestionId(prev => {
+      if (prev !== suggestionId) {
+        scrollToSuggestion(suggestionId);
+        return suggestionId;
+      }
+      return prev;
+    });
+  }, [scrollToSuggestion]);
 
   return (
-    <div className='min-h-screen bg-gray-50 flex flex-col'>
+    <div className='h-screen bg-gray-50 flex flex-col overflow-hidden'>
       <div className='px-6 py-6 flex-shrink-0'>
         {/* Status Messages */}
         {isAuthenticated && user && showWelcomeMessage && (
@@ -282,17 +372,17 @@ export default function Home() {
         </Tabs>
       </div>
 
-      {/* Full width content area */}
-      <div className='flex-1 w-full px-4 pb-8 min-h-0'>
+      {/* Full width content area - constrained to remaining viewport height */}
+      <div className='flex-1 w-full px-4 pb-8 min-h-0 overflow-hidden'>
         <Tabs
           value={activeTab}
           onValueChange={setActiveTab}
           className='w-full h-full'
         >
           <TabsContent value='enhance' className='h-full'>
-            <div className='flex flex-col lg:flex-row gap-6 h-full'>
+            <div className='flex flex-col lg:flex-row gap-6 h-full max-h-full'>
               {/* Text Input Section */}
-              <div className='w-full lg:w-[70%] grammarly-card flex flex-col min-h-0'>
+              <div className='w-full lg:w-[70%] grammarly-card flex flex-col h-full max-h-full'>
                 <div className='flex items-center justify-between p-4 border-b border-gray-200 flex-shrink-0'>
                   <div className='flex items-center space-x-6'>
                     <div className='flex items-center space-x-2'>
@@ -319,10 +409,10 @@ export default function Home() {
                     )}
                   </Button>
                 </div>
-                <div className='flex-1 flex flex-col min-h-[400px] p-4'>
-                  <div className='flex-1 min-h-[300px] mb-4'>
+                <div className='flex-1 flex flex-col p-4 min-h-0'>
+                  <div className='flex-1 mb-4 min-h-0'>
                     <NepaliTextEditor
-                      onSelectSuggestion={setSelectedSuggestionId}
+                      onSelectSuggestion={handleSuggestionSelect}
                       selectedSuggestionId={selectedSuggestionId}
                       viewMode={suggestionViewMode}
                     />
@@ -335,8 +425,8 @@ export default function Home() {
                 </div>
               </div>
 
-              {/* Suggestions Panel - 30% width */}
-              <div className='w-full lg:w-[30%] grammarly-card flex flex-col min-h-0 border-2 border-transparent bg-clip-padding'>
+              {/* Suggestions Panel - 30% width, constrained height */}
+              <div className='w-full lg:w-[30%] grammarly-card flex flex-col h-full max-h-full border-2 border-transparent bg-clip-padding'>
                 <div className='flex items-center justify-between p-4 border-b border-gray-200 flex-shrink-0'>
                   <div className='flex items-center space-x-2'>
                     <Bot className='h-5 w-5 text-purple-600' />
@@ -414,6 +504,7 @@ export default function Home() {
                       sessionId={sessionId!}
                       onUpdate={handleSuggestionUpdate}
                       onSuggestionChange={setSelectedSuggestionId}
+                      selectedSuggestionId={selectedSuggestionId}
                     />
                   ) : (
                     <div className='space-y-4'>
@@ -467,6 +558,7 @@ export default function Home() {
                       {suggestions.map((suggestion, index) => (
                         <div
                           key={suggestion.id}
+                          data-suggestion-index={index}
                           style={{ animationDelay: `${index * 0.1}s` }}
                         >
                           <SuggestionCard
@@ -474,8 +566,7 @@ export default function Home() {
                             sessionId={sessionId!}
                             onUpdate={handleSuggestionUpdate}
                             onSelect={(suggestionId) => {
-                              setSelectedSuggestionId(suggestionId);
-                              setListModeSelectedIndex(index);
+                              handleSuggestionSelect(suggestionId);
                             }}
                             index={index}
                             total={suggestions.length}
