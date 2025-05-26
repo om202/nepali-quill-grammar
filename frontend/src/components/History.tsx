@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { getUserHistory, UserHistoryItem } from '@/lib/api';
 import { RootState } from '@/store';
@@ -27,8 +26,9 @@ export function History() {
     try {
       const response = await getUserHistory();
       setHistory(response.history);
-    } catch (error: any) {
-      setError(error.message || 'Failed to load history');
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'Failed to load history';
+      setError(errorMessage);
       toast.error('Failed to load history');
     } finally {
       setIsLoading(false);
@@ -52,29 +52,31 @@ export function History() {
 
   if (!isAuthenticated || !user) {
     return (
-      <div className="grammarly-card p-8 text-center fade-in">
-        <FileText className="h-12 w-12 text-gray-400 mx-auto mb-4 transition-colors-smooth" />
-        <h3 className="text-base font-medium text-gray-900 mb-2 transition-colors-smooth">Sign in to view history</h3>
-        <p className="text-gray-600 transition-colors-smooth">Your text enhancement history will appear here once you're logged in.</p>
+      <div className="grammarly-card p-8 text-center">
+        <div className="text-center py-12">
+          <FileText className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+          <h3 className="text-base font-medium text-gray-900 mb-2">Sign in to view history</h3>
+          <p className="text-gray-600">Your text enhancement history will appear here once you&apos;re logged in.</p>
+        </div>
       </div>
     );
   }
 
   if (isLoading) {
     return (
-      <div className="grammarly-card p-8 text-center fade-in">
+      <div className="grammarly-card p-8 text-center">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mx-auto mb-4"></div>
-        <p className="text-gray-600 transition-colors-smooth">Loading your history...</p>
+        <p className="text-gray-600">Loading your history...</p>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="grammarly-card p-8 text-center fade-in">
-        <XCircle className="h-12 w-12 text-red-400 mx-auto mb-4 transition-colors-smooth" />
-        <h3 className="text-base font-medium text-gray-900 mb-2 transition-colors-smooth">Failed to load history</h3>
-        <p className="text-gray-600 mb-4 transition-colors-smooth">{error}</p>
+      <div className="grammarly-card p-8 text-center">
+        <XCircle className="h-12 w-12 text-red-400 mx-auto mb-4" />
+        <h3 className="text-base font-medium text-gray-900 mb-2">Failed to load history</h3>
+        <p className="text-gray-600 mb-4">{error}</p>
         <Button onClick={fetchHistory} className="grammarly-button-primary">
           Try again
         </Button>
@@ -84,10 +86,10 @@ export function History() {
 
   if (history.length === 0) {
     return (
-      <div className="grammarly-card p-8 text-center fade-in">
-        <FileText className="h-12 w-12 text-gray-400 mx-auto mb-4 transition-colors-smooth" />
-        <h3 className="text-base font-medium text-gray-900 mb-2 transition-colors-smooth">No history yet</h3>
-        <p className="text-gray-600 transition-colors-smooth">Start enhancing your Nepali text to see your history here.</p>
+      <div className="grammarly-card p-8 text-center">
+        <FileText className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+        <h3 className="text-base font-medium text-gray-900 mb-2">No history yet</h3>
+        <p className="text-gray-600">Start enhancing your Nepali text to see your history here.</p>
       </div>
     );
   }
@@ -98,60 +100,60 @@ export function History() {
   const acceptanceRate = totalSuggestions > 0 ? Math.round((totalAccepted / totalSuggestions) * 100) : 0;
 
   return (
-    <div className="space-y-6 fade-in">
+    <div className="space-y-6">
       {/* Statistics Summary */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <div className="grammarly-card p-4 text-center transition-smooth hover:scale-[1.02] fade-in" style={{ animationDelay: '0.1s' }}>
-          <FileText className="h-8 w-8 text-blue-600 mx-auto mb-2 transition-colors-smooth" />
-          <div className="text-xl font-semibold text-gray-900 transition-colors-smooth">{totalSessions}</div>
-          <div className="text-sm text-gray-600 transition-colors-smooth">Sessions</div>
+        <div className="grammarly-card p-4 text-center" style={{ animationDelay: '0.1s' }}>
+          <FileText className="h-8 w-8 text-blue-600 mx-auto mb-2" />
+          <div className="text-xl font-semibold text-gray-900">{totalSessions}</div>
+          <div className="text-sm text-gray-600">Sessions</div>
         </div>
-        <div className="grammarly-card p-4 text-center transition-smooth hover:scale-[1.02] fade-in" style={{ animationDelay: '0.2s' }}>
-          <TrendingUp className="h-8 w-8 text-purple-600 mx-auto mb-2 transition-colors-smooth" />
-          <div className="text-xl font-semibold text-gray-900 transition-colors-smooth">{totalSuggestions}</div>
-          <div className="text-sm text-gray-600 transition-colors-smooth">Suggestions</div>
+        <div className="grammarly-card p-4 text-center" style={{ animationDelay: '0.2s' }}>
+          <TrendingUp className="h-8 w-8 text-purple-600 mx-auto mb-2" />
+          <div className="text-xl font-semibold text-gray-900">{totalSuggestions}</div>
+          <div className="text-sm text-gray-600">Suggestions</div>
         </div>
-        <div className="grammarly-card p-4 text-center transition-smooth hover:scale-[1.02] fade-in" style={{ animationDelay: '0.3s' }}>
-          <CheckCircle className="h-8 w-8 text-green-600 mx-auto mb-2 transition-colors-smooth" />
-          <div className="text-xl font-semibold text-gray-900 transition-colors-smooth">{totalAccepted}</div>
-          <div className="text-sm text-gray-600 transition-colors-smooth">Accepted</div>
+        <div className="grammarly-card p-4 text-center" style={{ animationDelay: '0.3s' }}>
+          <CheckCircle className="h-8 w-8 text-green-600 mx-auto mb-2" />
+          <div className="text-xl font-semibold text-gray-900">{totalAccepted}</div>
+          <div className="text-sm text-gray-600">Accepted</div>
         </div>
-        <div className="grammarly-card p-4 text-center transition-smooth hover:scale-[1.02] fade-in" style={{ animationDelay: '0.4s' }}>
-          <Clock className="h-8 w-8 text-orange-600 mx-auto mb-2 transition-colors-smooth" />
-          <div className="text-xl font-semibold text-gray-900 transition-colors-smooth">{acceptanceRate}%</div>
-          <div className="text-sm text-gray-600 transition-colors-smooth">Acceptance Rate</div>
+        <div className="grammarly-card p-4 text-center" style={{ animationDelay: '0.4s' }}>
+          <Clock className="h-8 w-8 text-orange-600 mx-auto mb-2" />
+          <div className="text-xl font-semibold text-gray-900">{acceptanceRate}%</div>
+          <div className="text-sm text-gray-600">Acceptance Rate</div>
         </div>
       </div>
 
       {/* History List */}
       <div className="space-y-4">
-        <h3 className="text-lg font-medium text-gray-900 transition-colors-smooth">Recent Sessions</h3>
+        <h3 className="text-lg font-medium text-gray-900">Recent Sessions</h3>
         {history.map((item, index) => (
-          <div key={item.id} className="grammarly-card p-6 transition-smooth hover:scale-[1.01] fade-in" style={{ animationDelay: `${0.5 + index * 0.1}s` }}>
+          <div key={item.id} className="grammarly-card p-6" style={{ animationDelay: `${0.5 + index * 0.1}s` }}>
             <div className="flex items-start justify-between mb-4">
               <div className="flex items-center space-x-2 text-sm text-gray-500">
-                <Calendar className="h-4 w-4 transition-colors-smooth" />
-                <span className="transition-colors-smooth">{formatDate(item.createdAt)}</span>
+                <Calendar className="h-4 w-4" />
+                <span>{formatDate(item.createdAt)}</span>
               </div>
               <div className="flex items-center space-x-4 text-sm">
                 <div className="flex items-center space-x-1">
-                  <TrendingUp className="h-4 w-4 text-purple-600 transition-colors-smooth" />
-                  <span className="text-gray-600 transition-colors-smooth">{item.suggestionsCount} suggestions</span>
+                  <TrendingUp className="h-4 w-4 text-purple-600" />
+                  <span className="text-gray-600">{item.suggestionsCount} suggestions</span>
                 </div>
                 <div className="flex items-center space-x-1">
-                  <CheckCircle className="h-4 w-4 text-green-600 transition-colors-smooth" />
-                  <span className="text-gray-600 transition-colors-smooth">{item.acceptedCount} accepted</span>
+                  <CheckCircle className="h-4 w-4 text-green-600" />
+                  <span className="text-gray-600">{item.acceptedCount} accepted</span>
                 </div>
                 <div className="flex items-center space-x-1">
-                  <XCircle className="h-4 w-4 text-red-600 transition-colors-smooth" />
-                  <span className="text-gray-600 transition-colors-smooth">{item.rejectedCount} rejected</span>
+                  <XCircle className="h-4 w-4 text-red-600" />
+                  <span className="text-gray-600">{item.rejectedCount} rejected</span>
                 </div>
               </div>
             </div>
             
-            <div className="bg-gray-50 rounded-lg p-4 transition-colors-smooth">
-              <h4 className="text-sm font-medium text-gray-700 mb-2 transition-colors-smooth">Original Text:</h4>
-              <p className="text-gray-900 leading-relaxed transition-colors-smooth">
+            <div className="bg-gray-50 rounded-lg p-4">
+              <h4 className="text-sm font-medium text-gray-700 mb-2">Original Text:</h4>
+              <p className="text-gray-900 leading-relaxed">
                 {truncateText(item.originalText)}
               </p>
             </div>
