@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -25,6 +25,19 @@ export default function Home() {
   const [error, setError] = useState<string | null>(null);
   const [selectedSuggestionId, setSelectedSuggestionId] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState('enhance');
+  const [showWelcomeMessage, setShowWelcomeMessage] = useState(false);
+
+  // Show welcome message for 5 seconds when user is authenticated
+  useEffect(() => {
+    if (isAuthenticated && user) {
+      setShowWelcomeMessage(true);
+      const timer = setTimeout(() => {
+        setShowWelcomeMessage(false);
+      }, 5000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [isAuthenticated, user]);
 
   const handleAnalyze = async () => {
     if (!text.trim()) {
@@ -108,13 +121,12 @@ export default function Home() {
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="container mx-auto max-w-6xl px-6">
         {/* Status Messages */}
-        {isAuthenticated && user && (
+        {isAuthenticated && user && showWelcomeMessage && (
           <div className="grammarly-status-success mb-8 max-w-2xl mx-auto animate-slide-in-right">
             <div className="flex items-center justify-center space-x-2">
               <CheckCircle className="h-5 w-5" />
               <span className="font-semibold">Welcome back, {user.name.split(' ')[0]}!</span>
             </div>
-            <p className="mt-2 text-sm">Your text analysis sessions are automatically saved to your account.</p>
           </div>
         )}
 
