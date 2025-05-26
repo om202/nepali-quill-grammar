@@ -19,6 +19,7 @@ import { SuggestionCard } from '@/components/suggestion-card';
 import { History } from '@/components/History';
 import { analyzeText, updateSuggestion, APIError } from '@/lib/api';
 import { NepaliTextEditor } from '@/components/NepaliTextEditor';
+import { KeyboardGuide } from '@/components/KeyboardGuide';
 import { RootState } from '@/store';
 import { setSuggestions, removeSuggestion } from '@/store/suggestionsSlice';
 import { setText } from '@/store/textSlice';
@@ -42,8 +43,6 @@ export default function Home() {
   const [activeTab, setActiveTab] = useState('enhance');
   const [showWelcomeMessage, setShowWelcomeMessage] = useState(false);
   const [showFreeTrialMessage, setShowFreeTrialMessage] = useState(true);
-  // State for Nepali typing
-  const [isNepaliMode, setIsNepaliMode] = useState(true);
 
   // Check if welcome message should be shown
   useEffect(() => {
@@ -236,6 +235,7 @@ export default function Home() {
                       <Edit3 className='h-5 w-5 text-blue-600' />
                       <span className='text-gray-700 font-medium'>Text</span>
                     </div>
+                    <KeyboardGuide />
                   </div>
                   <Button
                     onClick={handleAnalyze}
@@ -259,7 +259,6 @@ export default function Home() {
                   <div className='flex-1 min-h-[300px] mb-4'>
                     <NepaliTextEditor
                       onSelectSuggestion={setSelectedSuggestionId}
-                      isNepaliMode={isNepaliMode}
                     />
                   </div>
                   {error && (

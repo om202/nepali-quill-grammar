@@ -9,12 +9,10 @@ import { Suggestion } from '@/lib/api';
 
 interface NepaliTextEditorProps {
   onSelectSuggestion?: (suggestionId: string) => void;
-  isNepaliMode?: boolean;
 }
 
 export const NepaliTextEditor: React.FC<NepaliTextEditorProps> = ({
   onSelectSuggestion,
-  isNepaliMode = true,
 }) => {
   const dispatch = useDispatch();
   const text = useSelector((state: RootState) => state.text.value);
@@ -33,59 +31,33 @@ export const NepaliTextEditor: React.FC<NepaliTextEditorProps> = ({
   // Unique ID for the textarea
   const textareaId = 'nepali-text-editor';
 
-  // Test nepalify on component mount
-  useEffect(() => {
-    try {
-      console.log('Testing nepalify conversion:');
-      console.log('Available layouts:', nepalify.availableLayouts());
-      console.log(
-        'namaste ->',
-        nepalify.format('namaste', { layout: 'romanized' })
-      );
-      console.log(
-        'nepal ->',
-        nepalify.format('nepal', { layout: 'romanized' })
-      );
-      console.log(
-        'dhanyawaad ->',
-        nepalify.format('dhanyawaad', { layout: 'romanized' })
-      );
-    } catch (error) {
-      console.warn('Error testing nepalify:', error);
-    }
-  }, []);
-
-  // Initialize Nepalify when component mounts and Nepali mode changes
+  // Initialize Nepalify when component mounts
   useEffect(() => {
     if (!textareaRef.current) {
-return;
-}
+      return;
+    }
 
     // Clean up previous instance
     if (nepalifyInstanceRef.current) {
       try {
         nepalifyInstanceRef.current.disable();
       } catch (error) {
+        // eslint-disable-next-line no-console
         console.warn('Error disabling previous nepalify instance:', error);
       }
     }
 
-    if (isNepaliMode) {
-      try {
-        console.log('Initializing Nepalify with romanized layout');
+    try {
+      // Initialize nepalify on the textarea with romanized layout
+      const instance = nepalify.interceptElementById(textareaId, {
+        layout: 'romanized',
+        enable: true,
+      });
 
-        // Initialize nepalify on the textarea with romanized layout
-        const instance = nepalify.interceptElementById(textareaId, {
-          layout: 'romanized',
-          enable: true,
-        });
-
-        nepalifyInstanceRef.current = instance;
-        console.log('Nepalify instance created:', instance);
-        console.log('Is enabled:', instance.isEnabled());
-      } catch (error) {
-        console.error('Error initializing Nepalify:', error);
-      }
+      nepalifyInstanceRef.current = instance;
+    } catch (error) {
+      // eslint-disable-next-line no-console
+      console.error('Error initializing Nepalify:', error);
     }
 
     // Cleanup function
@@ -94,11 +66,12 @@ return;
         try {
           nepalifyInstanceRef.current.disable();
         } catch (error) {
+          // eslint-disable-next-line no-console
           console.warn('Error during cleanup:', error);
         }
       }
     };
-  }, [isNepaliMode]);
+  }, []);
 
   // Handle textarea input
   const handleTextareaChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -116,7 +89,8 @@ return;
   // Build highlighted text for overlay
   const getHighlightedHTML = useCallback(() => {
     if (!text && !suggestions.length) {
-      return `<span class="text-gray-500">यहाँ नेपाली पाठ लेख्नुहोस्...</span>`;
+      const placeholderText = 'यहाँ नेपाली पाठ लेख्नुहोस्...';
+      return `<span class="text-gray-500">${placeholderText}</span>`;
     }
     if (!suggestions.length) {
 return escapeHTML(text);
@@ -135,7 +109,6 @@ return escapeHTML(text);
         s.startIndex < lastIndex ||
         s.startIndex >= s.endIndex
       ) {
-        console.warn('Skipping invalid or overlapping suggestion:', s);
         return;
       }
 
@@ -148,7 +121,8 @@ return escapeHTML(text);
 
     html += escapeHTML(text.slice(lastIndex));
     return html;
-  }, [text, suggestions, isNepaliMode]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [text, suggestions]);
 
   // Escape HTML to prevent XSS
   const escapeHTML = useCallback((str: string) => {
@@ -190,7 +164,7 @@ return escapeHTML(text);
           className='absolute inset-0 w-full h-full p-6 bg-transparent resize-none focus:outline-none text-lg text-gray-800 leading-relaxed z-10'
           value={text}
           onChange={handleTextareaChange}
-          placeholder='यहाँ नेपाली पाठ लेख्नुहोस्...'
+          placeholder='यहाँ नेपाली पाठ लेख्नुहोस्... (Type in English: namaste, nepal, etc.)'
           spellCheck={false}
           autoComplete='off'
           autoCorrect='off'
