@@ -333,7 +333,7 @@ export default function Home() {
         )}
 
         {!isAuthenticated && showFreeTrialMessage && (
-          <div className='grammarly-status-info mb-8 max-w-2xl mx-auto relative'>
+          <div className='grammarly-status-info mb-4 w-full relative'>
             <button
               onClick={dismissFreeTrialMessage}
               className='absolute top-2 right-2 text-indigo-600 hover:text-indigo-800 cursor-pointer transition-colors-smooth'
@@ -341,12 +341,36 @@ export default function Home() {
             >
               <X className='h-4 w-4' />
             </button>
-            <div className='flex items-center justify-center space-x-2'>
-              <Sparkles className='h-5 w-5' />
-              <span className='font-semibold'>Try Vyakaranly for free</span>
+            
+            {/* Header */}
+            <div className='flex items-center justify-center space-x-2 mb-6'>
+              <Sparkles className='h-6 w-6' />
+              <span className='font-semibold text-lg'>Perfect Your Nepali Writing - Free Trial</span>
             </div>
-            <p className='mt-2 text-sm text-center'>
-              Sign up to save your sessions and unlock additional features.
+            
+            {/* Feature Grid */}
+            <div className='flex justify-center items-center space-x-8 mb-6'>
+              <div className='flex flex-col items-center text-center'>
+                <Bot className='h-8 w-8 text-indigo-600 mb-2' />
+                <span className='text-sm font-medium text-gray-700'>Fix Errors</span>
+              </div>
+              <div className='flex flex-col items-center text-center'>
+                <Zap className='h-8 w-8 text-purple-600 mb-2' />
+                <span className='text-sm font-medium text-gray-700'>Improve Style</span>
+              </div>
+              <div className='flex flex-col items-center text-center'>
+                <HistoryIcon className='h-8 w-8 text-green-600 mb-2' />
+                <span className='text-sm font-medium text-gray-700'>Save Work</span>
+              </div>
+              <div className='flex flex-col items-center text-center'>
+                <Keyboard className='h-8 w-8 text-blue-600 mb-2' />
+                <span className='text-sm font-medium text-gray-700'>Type Faster</span>
+              </div>
+            </div>
+            
+            {/* Call to Action */}
+            <p className='text-sm text-center text-gray-600'>
+              Write better Nepali instantly. <span className='font-medium text-indigo-700'>Sign up free</span> to save your work & get unlimited corrections
             </p>
           </div>
         )}
