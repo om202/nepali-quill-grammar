@@ -26,6 +26,36 @@ export const textAnalysisService = {
       const aiSuggestions = await anthropicService.getTextSuggestions(normalizedText);
       logger.info(`Received ${aiSuggestions.length} suggestions from AI`);
       
+      // Step 2.5: Verify and correct AI-provided positions
+      const correctedSuggestions = aiSuggestions.map((suggestion, index) => {
+        const { originalText, start, end } = suggestion;
+        
+        // Find the actual position of the original text in the normalized text
+        const actualStart = normalizedText.indexOf(originalText);
+        
+        if (actualStart === -1) {
+          logger.warn(`Could not find original text "${originalText}" in normalized text at suggestion ${index}`);
+          // Try to find a close match or use AI positions as fallback
+          return suggestion;
+        }
+        
+        const actualEnd = actualStart + originalText.length;
+        
+        // Check if AI positions are correct
+        if (start !== actualStart || end !== actualEnd) {
+          logger.info(`Correcting positions for "${originalText}": AI said ${start}-${end}, actual is ${actualStart}-${actualEnd}`);
+          return {
+            ...suggestion,
+            start: actualStart,
+            end: actualEnd
+          };
+        }
+        
+        return suggestion;
+      });
+      
+      logger.info(`Position verification complete, ${correctedSuggestions.length} suggestions processed`);
+
       // Step 3: Store tokens and suggestions in database
       const tokens: Array<{
         id?: string;
@@ -39,7 +69,7 @@ export const textAnalysisService = {
       const tokenIdMap = new Map<number, string>();
       
       // Prepare tokens for insertion
-      for (const suggestion of aiSuggestions) {
+      for (const suggestion of correctedSuggestions) {
         tokens.push({
           session_id: sessionId,
           text_segment: suggestion.originalText,
@@ -76,7 +106,7 @@ export const textAnalysisService = {
         suggested_text: string;
       }> = [];
       
-      aiSuggestions.forEach((suggestion, index) => {
+      correctedSuggestions.forEach((suggestion, index) => {
         const tokenId = tokenIdMap.get(index);
         if (!tokenId) {
           logger.error(`Missing token ID for suggestion at index ${index}`);

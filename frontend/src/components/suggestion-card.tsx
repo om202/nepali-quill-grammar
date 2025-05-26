@@ -32,16 +32,23 @@ export function SuggestionCard({ suggestion, sessionId, onUpdate, className }: S
   return (
     <Card className={className}>
       <CardContent className="p-4">
-        <p className="mb-2">
-          <span className="font-semibold">Original:</span>{' '}
-          {suggestion.originalText}
-        </p>
+        <div className="mb-3">
+          <p className="mb-1">
+            <span className="font-semibold">Original:</span>{' '}
+            <span className="text-red-600">{suggestion.originalText}</span>
+          </p>
+          <p className="mb-2">
+            <span className="font-semibold">Suggested:</span>{' '}
+            <span className="text-green-600">{suggestion.suggestedText}</span>
+          </p>
+        </div>
         <div className="flex gap-2">
           <Button
             variant="outline"
             size="sm"
             onClick={() => handleAction('accept')}
             disabled={isLoading}
+            className="text-green-600 border-green-600 hover:bg-green-50"
           >
             Accept
           </Button>
@@ -50,6 +57,7 @@ export function SuggestionCard({ suggestion, sessionId, onUpdate, className }: S
             size="sm"
             onClick={() => handleAction('reject')}
             disabled={isLoading}
+            className="text-red-600 border-red-600 hover:bg-red-50"
           >
             Reject
           </Button>

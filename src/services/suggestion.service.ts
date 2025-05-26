@@ -71,8 +71,16 @@ export const suggestionService = {
 
       // Flatten suggestions and add action information
       const allSuggestions: SuggestionModel[] = [];
+      const tokenMap = new Map<string, { textSegment: string; startIndex: number; endIndex: number }>();
       
       tokens.forEach(token => {
+        // Store token information for later use
+        tokenMap.set(token.id, {
+          textSegment: token.text_segment,
+          startIndex: token.start_index,
+          endIndex: token.end_index
+        });
+        
         token.suggestions.forEach(suggestion => {
           const action = suggestion.actions.length > 0 
             ? suggestion.actions[0].action as 'accept' | 'reject'
@@ -89,12 +97,31 @@ export const suggestionService = {
       });
 
       // Create diff model
-      const diffModel = diffEngineService.createDiffModel(
+      const diffModel = await diffEngineService.createDiffModel(
         session.original_text,
         allSuggestions
       );
 
-      return diffModel;
+      // Add token information to pending suggestions for frontend
+      const enhancedPendingSuggestions = diffModel.pendingSuggestions.map(suggestion => {
+        const tokenInfo = tokenMap.get(suggestion.tokenId);
+        if (!tokenInfo) {
+          logger.error(`Missing token info for suggestion ${suggestion.id}`);
+          throw new HttpError(500, 'Missing token information');
+        }
+        
+        return {
+          ...suggestion,
+          originalText: tokenInfo.textSegment,
+          startIndex: tokenInfo.startIndex,
+          endIndex: tokenInfo.endIndex
+        };
+      });
+
+      return {
+        ...diffModel,
+        pendingSuggestions: enhancedPendingSuggestions
+      };
     } catch (error) {
       logger.error('Error in getUpdatedDiffModel:', error);
       if (error instanceof HttpError) {

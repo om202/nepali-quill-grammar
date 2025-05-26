@@ -10,6 +10,7 @@ import { toast } from 'sonner';
 import { HighlightedTextEditor } from '@/components/HighlightedTextEditor';
 import { RootState } from '@/store';
 import { setSuggestions, removeSuggestion } from '@/store/suggestionsSlice';
+import { setText } from '@/store/textSlice';
 
 export default function Home() {
   const dispatch = useDispatch();
@@ -64,10 +65,22 @@ export default function Home() {
     }
 
     try {
-      await updateSuggestion(sessionId, suggestionId, action);
-      dispatch(removeSuggestion(suggestionId));
+      const result = await updateSuggestion(sessionId, suggestionId, action);
+      
+      // If suggestion was accepted, update the text with the enhanced version
+      if (action === 'accept') {
+        dispatch(setText(result.enhancedText));
+        // Update suggestions to show remaining pending suggestions
+        dispatch(setSuggestions(result.pendingSuggestions));
+      } else {
+        // If rejected, just remove this suggestion
+        dispatch(removeSuggestion(suggestionId));
+      }
+      
       setSelectedSuggestionId(null);
-      if (suggestions.length === 1) {
+      
+      // If no more suggestions, clear session
+      if (result.pendingSuggestions.length === 0) {
         setSessionId(null);
       }
     } catch (error) {

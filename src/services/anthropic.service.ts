@@ -70,7 +70,7 @@ export const anthropicService = {
         system: SYSTEM_PROMPT,
         messages: [
           {
-            role: 'user',
+            role: 'user' as const,
             content: `Analyze and suggest improvements for this Nepali text: ${text}`
           }
         ]
@@ -126,7 +126,7 @@ export const anthropicService = {
           }
 
           // Ensure all suggestions are strings
-          if (!suggestion.suggestions.every(s => typeof s === 'string')) {
+          if (!suggestion.suggestions.every((s: string) => typeof s === 'string')) {
             logger.error(`Invalid suggestion text at index ${index}:`, suggestion);
             throw new HttpError(500, 'AI response contains invalid suggestion text');
           }
