@@ -144,7 +144,7 @@ export const HighlightedTextEditor: React.FC<HighlightedTextEditorProps> = ({
   return (
     <div
       ref={editorRef}
-      className="w-full min-h-[200px] p-3 border rounded bg-white focus:outline-none text-base"
+      className="w-full h-full p-4 border rounded bg-white focus:outline-none text-base"
       contentEditable
       suppressContentEditableWarning
       spellCheck={false}

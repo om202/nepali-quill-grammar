@@ -19,6 +19,7 @@ import {
   History as HistoryIcon,
   Edit3,
   Bot,
+  X,
 } from "lucide-react";
 
 export default function Home() {
@@ -38,18 +39,20 @@ export default function Home() {
   >(null);
   const [activeTab, setActiveTab] = useState("enhance");
   const [showWelcomeMessage, setShowWelcomeMessage] = useState(false);
+  const [showFreeTrialMessage, setShowFreeTrialMessage] = useState(true);
 
-  // Show welcome message for 5 seconds when user is authenticated
+  // Check if welcome message should be shown
   useEffect(() => {
     if (isAuthenticated && user) {
-      setShowWelcomeMessage(true);
-      const timer = setTimeout(() => {
-        setShowWelcomeMessage(false);
-      }, 5000);
-
-      return () => clearTimeout(timer);
+      const welcomeKey = `welcome-dismissed-${user.id}`;
+      const isDismissed = localStorage.getItem(welcomeKey);
+      setShowWelcomeMessage(!isDismissed);
     }
   }, [isAuthenticated, user]);
+
+  const dismissFreeTrialMessage = () => {
+    setShowFreeTrialMessage(false);
+  };
 
   const handleAnalyze = async () => {
     if (!text.trim()) {
@@ -134,8 +137,8 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
-      <div className="px-6">
+    <div className="min-h-screen bg-gray-50 flex flex-col">
+      <div className="px-6 py-8 flex-shrink-0">
         {/* Status Messages */}
         {isAuthenticated && user && showWelcomeMessage && (
           <div className="grammarly-status-success mb-8 max-w-2xl mx-auto">
@@ -148,8 +151,15 @@ export default function Home() {
           </div>
         )}
 
-        {!isAuthenticated && (
-          <div className="grammarly-status-info mb-8 max-w-2xl mx-auto">
+        {!isAuthenticated && showFreeTrialMessage && (
+          <div className="grammarly-status-info mb-8 max-w-2xl mx-auto relative">
+            <button
+              onClick={dismissFreeTrialMessage}
+              className="absolute top-2 right-2 text-blue-600 hover:text-blue-800"
+              aria-label="Dismiss message"
+            >
+              <X className="h-4 w-4" />
+            </button>
             <div className="flex items-center justify-center space-x-2">
               <Sparkles className="h-5 w-5" />
               <span className="font-semibold">Try Vyakaranly for free</span>
@@ -162,7 +172,7 @@ export default function Home() {
 
         {/* Main Content with Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-2 gap-2 mb-8 max-w-md mx-auto">
+          <TabsList className="grid w-full grid-cols-2 gap-2 mb-0 max-w-md mx-auto">
             <TabsTrigger
               value="enhance"
               className="flex items-center space-x-2 font-medium data-[state=active]:bg-blue-50 data-[state=active]:text-blue-700"
@@ -182,23 +192,25 @@ export default function Home() {
       </div>
 
       {/* Full width content area */}
-      <div className="w-full px-4">
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsContent value="enhance" className="space-y-0">
+      <div className="flex-1 w-full px-4 pb-16 min-h-0">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full h-full">
+          <TabsContent value="enhance" className="h-full">
             {/* Main Editor Section */}
-            <div className="flex flex-col lg:flex-row w-full gap-4">
+            <div className="flex flex-col lg:flex-row w-full gap-4 h-[calc(100vh-280px)]">
               {/* Text Input - 70% width */}
-              <div className="w-full lg:w-[70%] grammarly-card">
-                <div className="p-6">
-                  <div className="flex items-center space-x-2 mb-4">
+              <div className="w-full lg:w-[70%] grammarly-card flex flex-col min-h-0">
+                <div className="p-6 flex flex-col h-full min-h-0">
+                  <div className="flex items-center space-x-2 mb-4 flex-shrink-0">
                     <Edit3 className="h-5 w-5 text-blue-600" />
                     <span className="text-gray-500 font-medium">Text</span>
                   </div>
-                  <HighlightedTextEditor
-                    onSelectSuggestion={setSelectedSuggestionId}
-                  />
+                  <div className="flex-1 mb-4 min-h-0">
+                    <HighlightedTextEditor
+                      onSelectSuggestion={setSelectedSuggestionId}
+                    />
+                  </div>
                   {error && (
-                    <div className="grammarly-status-error mt-4">
+                    <div className="grammarly-status-error mb-4 flex-shrink-0">
                       <p className="font-medium">Analysis Failed</p>
                       <p className="text-sm mt-1">{error}</p>
                     </div>
@@ -206,7 +218,7 @@ export default function Home() {
                   <Button
                     onClick={handleAnalyze}
                     disabled={isLoading}
-                    className="grammarly-button-primary w-full mt-6"
+                    className="grammarly-button-primary w-full flex-shrink-0"
                   >
                     {isLoading ? (
                       <>
@@ -224,9 +236,9 @@ export default function Home() {
               </div>
 
               {/* Suggestions Panel - 30% width */}
-              <div className="w-full lg:w-[30%] grammarly-card">
-                <div className="p-6">
-                  <div className="flex items-center space-x-2 mb-4">
+              <div className="w-full lg:w-[30%] grammarly-card flex flex-col min-h-0">
+                <div className="p-6 flex flex-col h-full min-h-0">
+                  <div className="flex items-center space-x-2 mb-4 flex-shrink-0">
                     <Bot className="h-5 w-5 text-green-600" />
                     <span className="text-gray-500 font-medium">
                       Suggestions
@@ -238,8 +250,8 @@ export default function Home() {
                       </span>
                     )}
                   </div>
-
-                  <div className="min-h-[400px]">
+                  
+                  <div className="flex-1 overflow-y-auto min-h-0">
                     {suggestions.length === 0 ? (
                       <div className="flex flex-col items-center justify-center h-full text-center py-12">
                         {isLoading ? (
@@ -296,8 +308,8 @@ export default function Home() {
             </div>
           </TabsContent>
 
-          <TabsContent value="history" className="space-y-0">
-            <div className="px-6">
+          <TabsContent value="history" className="h-full">
+            <div className="px-6 h-full">
               <History />
             </div>
           </TabsContent>
