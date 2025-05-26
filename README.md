@@ -24,11 +24,13 @@ A production-ready backend service for enhancing Nepali text with AI-powered sug
 ## API Endpoints
 
 ### Text Analysis
+
 - `POST /api/v1/analyze` - Analyze text and get suggestions
 - `PATCH /api/v1/suggestions/:sessionId` - Accept or reject suggestions
 - `GET /api/v1/sessions/:sessionId` - Get session details with suggestions
 
 ### Authentication
+
 - `POST /api/v1/auth/signup` - Register a new user
 - `POST /api/v1/auth/login` - Login user
 - `POST /api/v1/auth/forgot-password` - Send password reset email
@@ -115,9 +117,11 @@ For detailed authentication setup and usage, see [AUTHENTICATION_SETUP.md](./AUT
 The service uses the following database tables:
 
 ### Supabase Managed
+
 - `auth.users`: User accounts (managed by Supabase)
 
 ### Application Tables
+
 - `profiles`: User profile information (references auth.users)
 - `sessions`: Stores the original text and user information
 - `tokens`: Contains tokenized segments of the text

@@ -7,15 +7,19 @@ All password reset endpoints have been successfully tested with live API calls. 
 ## ✅ Test Results
 
 ### 1. **Forgot Password Endpoint**
+
 **`POST /api/v1/auth/forgot-password`**
 
 #### ✅ Valid Email Test
+
 ```bash
 curl -X POST http://localhost:3000/api/v1/auth/forgot-password \
   -H "Content-Type: application/json" \
   -d '{"email":"test@example.com"}'
 ```
+
 **Result:** ✅ SUCCESS
+
 ```json
 {
   "message": "If an account with that email exists, a password reset link has been sent."
@@ -23,12 +27,15 @@ curl -X POST http://localhost:3000/api/v1/auth/forgot-password \
 ```
 
 #### ✅ Invalid Email Format Test
+
 ```bash
 curl -X POST http://localhost:3000/api/v1/auth/forgot-password \
   -H "Content-Type: application/json" \
   -d '{"email":"invalid-email"}'
 ```
+
 **Result:** ✅ VALIDATION ERROR (Expected)
+
 ```json
 {
   "error": {
@@ -46,12 +53,15 @@ curl -X POST http://localhost:3000/api/v1/auth/forgot-password \
 ```
 
 #### ✅ Missing Email Test
+
 ```bash
 curl -X POST http://localhost:3000/api/v1/auth/forgot-password \
   -H "Content-Type: application/json" \
   -d '{}'
 ```
+
 **Result:** ✅ VALIDATION ERROR (Expected)
+
 ```json
 {
   "error": {
@@ -69,13 +79,17 @@ curl -X POST http://localhost:3000/api/v1/auth/forgot-password \
 ```
 
 ### 2. **Verify Reset Token Endpoint**
+
 **`GET /api/v1/auth/verify-reset-token`**
 
 #### ✅ Invalid Token Test
+
 ```bash
 curl -X GET "http://localhost:3000/api/v1/auth/verify-reset-token?token=invalid-token"
 ```
+
 **Result:** ✅ ERROR (Expected)
+
 ```json
 {
   "error": "Invalid or expired reset token"
@@ -83,10 +97,13 @@ curl -X GET "http://localhost:3000/api/v1/auth/verify-reset-token?token=invalid-
 ```
 
 #### ✅ Missing Token Test
+
 ```bash
 curl -X GET "http://localhost:3000/api/v1/auth/verify-reset-token"
 ```
+
 **Result:** ✅ ERROR (Expected)
+
 ```json
 {
   "error": "Reset token is required"
@@ -94,15 +111,19 @@ curl -X GET "http://localhost:3000/api/v1/auth/verify-reset-token"
 ```
 
 ### 3. **Reset Password Endpoint**
+
 **`POST /api/v1/auth/reset-password`**
 
 #### ✅ Missing Token Test
+
 ```bash
 curl -X POST http://localhost:3000/api/v1/auth/reset-password \
   -H "Content-Type: application/json" \
   -d '{"password":"NewPassword123"}'
 ```
+
 **Result:** ✅ VALIDATION ERROR (Expected)
+
 ```json
 {
   "error": {
@@ -120,12 +141,15 @@ curl -X POST http://localhost:3000/api/v1/auth/reset-password \
 ```
 
 #### ✅ Weak Password Test
+
 ```bash
 curl -X POST http://localhost:3000/api/v1/auth/reset-password \
   -H "Content-Type: application/json" \
   -d '{"token":"some-token","password":"weak"}'
 ```
+
 **Result:** ✅ VALIDATION ERROR (Expected)
+
 ```json
 {
   "error": {
@@ -147,12 +171,15 @@ curl -X POST http://localhost:3000/api/v1/auth/reset-password \
 ```
 
 #### ✅ Invalid Token Test
+
 ```bash
 curl -X POST http://localhost:3000/api/v1/auth/reset-password \
   -H "Content-Type: application/json" \
   -d '{"token":"invalid-reset-token","password":"NewPassword123"}'
 ```
+
 **Result:** ✅ ERROR (Expected)
+
 ```json
 {
   "error": "Invalid or expired reset token"
@@ -160,15 +187,19 @@ curl -X POST http://localhost:3000/api/v1/auth/reset-password \
 ```
 
 ### 4. **Change Password Endpoint**
+
 **`POST /api/v1/auth/change-password`**
 
 #### ✅ Missing Authentication Test
+
 ```bash
 curl -X POST http://localhost:3000/api/v1/auth/change-password \
   -H "Content-Type: application/json" \
   -d '{"currentPassword":"CurrentPass123","newPassword":"NewPassword123"}'
 ```
+
 **Result:** ✅ UNAUTHORIZED (Expected)
+
 ```json
 {
   "error": "Access token required"
@@ -176,13 +207,16 @@ curl -X POST http://localhost:3000/api/v1/auth/change-password \
 ```
 
 #### ✅ Invalid Token Test
+
 ```bash
 curl -X POST http://localhost:3000/api/v1/auth/change-password \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer fake-token" \
   -d '{"currentPassword":"CurrentPass123","newPassword":"weak"}'
 ```
+
 **Result:** ✅ INVALID TOKEN (Expected)
+
 ```json
 {
   "error": "Invalid token"
@@ -192,12 +226,15 @@ curl -X POST http://localhost:3000/api/v1/auth/change-password \
 ### 5. **Existing Endpoints Verification**
 
 #### ✅ Signup Endpoint
+
 ```bash
 curl -X POST http://localhost:3000/api/v1/auth/signup \
   -H "Content-Type: application/json" \
   -d '{"email":"testuser@example.com","password":"TestPassword123","name":"Test User"}'
 ```
+
 **Result:** ✅ WORKING (User already exists)
+
 ```json
 {
   "error": "User with this email already exists"
@@ -205,12 +242,15 @@ curl -X POST http://localhost:3000/api/v1/auth/signup \
 ```
 
 #### ✅ Login Endpoint
+
 ```bash
 curl -X POST http://localhost:3000/api/v1/auth/login \
   -H "Content-Type: application/json" \
   -d '{"email":"invalid@example.com","password":"wrongpassword"}'
 ```
+
 **Result:** ✅ WORKING (Invalid credentials)
+
 ```json
 {
   "error": "Invalid email or password"
@@ -218,10 +258,13 @@ curl -X POST http://localhost:3000/api/v1/auth/login \
 ```
 
 #### ✅ Health Check
+
 ```bash
 curl -X GET http://localhost:3000/health
 ```
+
 **Result:** ✅ SERVER HEALTHY
+
 ```json
 {
   "status": "ok"
@@ -278,4 +321,4 @@ All endpoints are working as expected and ready for frontend integration!
 **Server Status:** ✅ Healthy  
 **All Endpoints:** ✅ Functional  
 **Security:** ✅ Verified  
-**Ready for Production:** ✅ Yes 
+**Ready for Production:** ✅ Yes
