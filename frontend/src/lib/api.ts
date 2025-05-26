@@ -25,8 +25,51 @@ export interface DiffModel {
   pendingSuggestions: Suggestion[];
 }
 
+// Authentication interfaces
+export interface User {
+  id: string;
+  email: string;
+  name: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface AuthSession {
+  access_token: string;
+  refresh_token: string;
+  expires_in: number;
+  token_type: string;
+  user: User;
+}
+
+export interface SignupRequest {
+  email: string;
+  password: string;
+  name: string;
+}
+
+export interface LoginRequest {
+  email: string;
+  password: string;
+}
+
+export interface AuthResponse {
+  message: string;
+  user: User;
+  session: AuthSession;
+}
+
+export interface ProfileResponse {
+  user: User;
+}
+
+export interface UpdateProfileRequest {
+  name: string;
+}
+
 interface ErrorResponse {
   message?: string;
+  error?: string;
   [key: string]: unknown;
 }
 
@@ -41,12 +84,46 @@ export class APIError extends Error {
   }
 }
 
+// Token management
+let authToken: string | null = null;
+
+export const setAuthToken = (token: string | null) => {
+  authToken = token;
+  if (token) {
+    localStorage.setItem('auth_token', token);
+  } else {
+    localStorage.removeItem('auth_token');
+  }
+};
+
+export const getAuthToken = (): string | null => {
+  if (authToken) return authToken;
+  if (typeof window !== 'undefined') {
+    authToken = localStorage.getItem('auth_token');
+  }
+  return authToken;
+};
+
 const api = axios.create({
   baseURL: API_URL,
   headers: {
     'Content-Type': 'application/json',
   },
 });
+
+// Request interceptor to add auth token
+api.interceptors.request.use(
+  (config) => {
+    const token = getAuthToken();
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
 
 // Error interceptor to format error responses
 api.interceptors.response.use(
@@ -55,7 +132,13 @@ api.interceptors.response.use(
     if (error.response) {
       // The request was made and the server responded with a status code
       // that falls out of the range of 2xx
-      const message = error.response.data?.message || error.message;
+      const message = error.response.data?.message || error.response.data?.error || error.message;
+      
+      // Handle 401 errors by clearing auth token
+      if (error.response.status === 401) {
+        setAuthToken(null);
+      }
+      
       throw new APIError(
         message,
         error.response.status,
@@ -77,6 +160,87 @@ api.interceptors.response.use(
   }
 );
 
+// Authentication API functions
+export const signup = async (data: SignupRequest): Promise<AuthResponse> => {
+  try {
+    const response = await api.post<AuthResponse>('/auth/signup', data);
+    // Store the token
+    setAuthToken(response.data.session.access_token);
+    return response.data;
+  } catch (error) {
+    if (error instanceof APIError) {
+      throw error;
+    }
+    throw new APIError(
+      'Failed to sign up',
+      500,
+      error instanceof Error ? error.message : 'Unknown error'
+    );
+  }
+};
+
+export const login = async (data: LoginRequest): Promise<AuthResponse> => {
+  try {
+    const response = await api.post<AuthResponse>('/auth/login', data);
+    // Store the token
+    setAuthToken(response.data.session.access_token);
+    return response.data;
+  } catch (error) {
+    if (error instanceof APIError) {
+      throw error;
+    }
+    throw new APIError(
+      'Failed to log in',
+      500,
+      error instanceof Error ? error.message : 'Unknown error'
+    );
+  }
+};
+
+export const logout = async (): Promise<void> => {
+  try {
+    await api.post('/auth/logout');
+  } catch (error) {
+    // Even if logout fails on server, clear local token
+    console.warn('Logout request failed:', error);
+  } finally {
+    setAuthToken(null);
+  }
+};
+
+export const getProfile = async (): Promise<ProfileResponse> => {
+  try {
+    const response = await api.get<ProfileResponse>('/auth/profile');
+    return response.data;
+  } catch (error) {
+    if (error instanceof APIError) {
+      throw error;
+    }
+    throw new APIError(
+      'Failed to get profile',
+      500,
+      error instanceof Error ? error.message : 'Unknown error'
+    );
+  }
+};
+
+export const updateProfile = async (data: UpdateProfileRequest): Promise<ProfileResponse> => {
+  try {
+    const response = await api.put<ProfileResponse>('/auth/profile', data);
+    return response.data;
+  } catch (error) {
+    if (error instanceof APIError) {
+      throw error;
+    }
+    throw new APIError(
+      'Failed to update profile',
+      500,
+      error instanceof Error ? error.message : 'Unknown error'
+    );
+  }
+};
+
+// Existing text analysis functions
 export const analyzeText = async (text: string): Promise<AnalysisResponse> => {
   try {
     const response = await api.post<AnalysisResponse>('/analyze', { text });

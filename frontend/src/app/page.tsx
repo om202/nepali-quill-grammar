@@ -16,6 +16,7 @@ export default function Home() {
   const dispatch = useDispatch();
   const suggestions = useSelector((state: RootState) => state.suggestions.items);
   const text = useSelector((state: RootState) => state.text.value);
+  const { isAuthenticated, user } = useSelector((state: RootState) => state.auth);
   const [isLoading, setIsLoading] = useState(false);
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -100,8 +101,30 @@ export default function Home() {
   };
 
   return (
-    <main className="container mx-auto p-4 max-w-6xl">
-      <h1 className="text-3xl font-bold mb-8 text-center">NepaliQuill</h1>
+    <div className="container mx-auto p-4 max-w-6xl">
+      {/* Welcome message for authenticated users */}
+      {isAuthenticated && user && (
+        <div className="mb-6 p-4 bg-blue-50 dark:bg-blue-950 rounded-lg border">
+          <h2 className="text-lg font-semibold text-blue-900 dark:text-blue-100">
+            Welcome back, {user.name}!
+          </h2>
+          <p className="text-blue-700 dark:text-blue-300">
+            Your text analysis sessions are now saved to your account.
+          </p>
+        </div>
+      )}
+
+      {/* Guest user notice */}
+      {!isAuthenticated && (
+        <div className="mb-6 p-4 bg-amber-50 dark:bg-amber-950 rounded-lg border">
+          <h2 className="text-lg font-semibold text-amber-900 dark:text-amber-100">
+            Using as Guest
+          </h2>
+          <p className="text-amber-700 dark:text-amber-300">
+            Sign up or log in to save your text analysis sessions and access additional features.
+          </p>
+        </div>
+      )}
       
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <Card>
@@ -152,6 +175,6 @@ export default function Home() {
           </CardContent>
         </Card>
       </div>
-    </main>
+    </div>
   );
 }
