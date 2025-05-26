@@ -58,21 +58,16 @@ export default function DemoPage() {
   const instructions = [
     {
       step: 1,
-      title: "Toggle Nepali Mode",
-      description: "Click the language toggle button to enable Nepali typing mode"
-    },
-    {
-      step: 2,
       title: "Type in English",
       description: "Type English words using romanized spelling (e.g., 'namaste')"
     },
     {
-      step: 3,
+      step: 2,
       title: "Press Space",
       description: "Press the spacebar to convert the word to Nepali script"
     },
     {
-      step: 4,
+      step: 3,
       title: "Choose Layout",
       description: "Switch between 'Romanized' and 'Traditional' keyboard layouts"
     }
@@ -103,7 +98,7 @@ export default function DemoPage() {
                   <span>Nepali Text Editor</span>
                 </CardTitle>
                 <CardDescription>
-                  Try typing in the editor below. Enable Nepali mode and type English words followed by space.
+                  Try typing in the editor below. Type English words followed by space to convert to Nepali.
                 </CardDescription>
               </CardHeader>
               <CardContent className="h-[500px] p-0">

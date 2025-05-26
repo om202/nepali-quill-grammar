@@ -40,6 +40,8 @@ export default function Home() {
   const [activeTab, setActiveTab] = useState("enhance");
   const [showWelcomeMessage, setShowWelcomeMessage] = useState(false);
   const [showFreeTrialMessage, setShowFreeTrialMessage] = useState(true);
+  // State for Nepali typing
+  const [isNepaliMode, setIsNepaliMode] = useState(true);
 
   // Check if welcome message should be shown
   useEffect(() => {
@@ -223,9 +225,11 @@ export default function Home() {
               {/* Text Input Section */}
               <div className="w-full lg:w-[70%] grammarly-card flex flex-col min-h-0">
                 <div className="flex items-center justify-between p-4 border-b border-gray-200 flex-shrink-0">
-                  <div className="flex items-center space-x-2">
-                    <Edit3 className="h-5 w-5 text-blue-600" />
-                    <span className="text-gray-700 font-medium">Text</span>
+                  <div className="flex items-center space-x-4">
+                    <div className="flex items-center space-x-2">
+                      <Edit3 className="h-5 w-5 text-blue-600" />
+                      <span className="text-gray-700 font-medium">Text</span>
+                    </div>
                   </div>
                   <Button
                     onClick={handleAnalyze}
@@ -249,6 +253,7 @@ export default function Home() {
                   <div className="flex-1 min-h-[300px] mb-4">
                     <NepaliTextEditor
                       onSelectSuggestion={setSelectedSuggestionId}
+                      isNepaliMode={isNepaliMode}
                     />
                   </div>
                   {error && (

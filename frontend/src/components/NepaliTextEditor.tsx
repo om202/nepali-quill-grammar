@@ -1,19 +1,19 @@
 "use client";
-import React, { useRef, useEffect, useCallback, useState } from "react";
+import React, { useRef, useEffect, useCallback } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "@/store";
 import { setText } from "@/store/textSlice";
 import { Suggestion } from "@/lib/api";
-import { Button } from "@/components/ui/button";
-import { Languages, Keyboard, ToggleLeft, ToggleRight } from "lucide-react";
 import nepalify from "nepalify";
 
 interface NepaliTextEditorProps {
   onSelectSuggestion?: (suggestionId: string) => void;
+  isNepaliMode?: boolean;
 }
 
 export const NepaliTextEditor: React.FC<NepaliTextEditorProps> = ({
   onSelectSuggestion,
+  isNepaliMode = true,
 }) => {
   const dispatch = useDispatch();
   const text = useSelector((state: RootState) => state.text.value);
@@ -28,10 +28,6 @@ export const NepaliTextEditor: React.FC<NepaliTextEditorProps> = ({
     enable(): void;
     disable(): void;
   } | null>(null);
-  
-  // State for Nepali typing
-  const [isNepaliMode, setIsNepaliMode] = useState(false);
-  const [layout, setLayout] = useState<"romanized" | "traditional">("romanized");
 
   // Unique ID for the textarea
   const textareaId = "nepali-text-editor";
@@ -64,11 +60,11 @@ export const NepaliTextEditor: React.FC<NepaliTextEditorProps> = ({
 
     if (isNepaliMode) {
       try {
-        console.log("Initializing Nepalify with layout:", layout);
+        console.log("Initializing Nepalify with romanized layout");
         
-        // Initialize nepalify on the textarea
+        // Initialize nepalify on the textarea with romanized layout
         const instance = nepalify.interceptElementById(textareaId, {
-          layout: layout,
+          layout: "romanized",
           enable: true,
         });
         
@@ -91,7 +87,7 @@ export const NepaliTextEditor: React.FC<NepaliTextEditorProps> = ({
         }
       }
     };
-  }, [isNepaliMode, layout]);
+  }, [isNepaliMode]);
 
   // Handle textarea input
   const handleTextareaChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -109,7 +105,7 @@ export const NepaliTextEditor: React.FC<NepaliTextEditorProps> = ({
   // Build highlighted text for overlay
   const getHighlightedHTML = useCallback(() => {
     if (!text && !suggestions.length) {
-      return `<span class="text-gray-500">${isNepaliMode ? 'यहाँ नेपाली पाठ लेख्नुहोस्...' : 'Type here in English or switch to Nepali mode...'}</span>`;
+      return `<span class="text-gray-500">यहाँ नेपाली पाठ लेख्नुहोस्...</span>`;
     }
     if (!suggestions.length) return escapeHTML(text);
     
@@ -155,20 +151,6 @@ export const NepaliTextEditor: React.FC<NepaliTextEditorProps> = ({
     });
   }, []);
 
-  // Toggle Nepali mode
-  const toggleNepaliMode = () => {
-    const newMode = !isNepaliMode;
-    setIsNepaliMode(newMode);
-    console.log("Nepali mode toggled to:", newMode);
-  };
-
-  // Toggle layout
-  const toggleLayout = () => {
-    const newLayout = layout === "romanized" ? "traditional" : "romanized";
-    setLayout(newLayout);
-    console.log("Layout changed to:", newLayout);
-  };
-
   // Handle click on suggestion highlight in overlay
   const handleOverlayClick = (e: React.MouseEvent<HTMLDivElement>) => {
     const target = e.target as HTMLElement;
@@ -186,55 +168,8 @@ export const NepaliTextEditor: React.FC<NepaliTextEditorProps> = ({
 
   return (
     <div className="w-full h-full flex flex-col">
-      {/* Nepali Typing Controls */}
-      <div className="flex items-center justify-between p-3 bg-gray-50 border-b border-gray-200 rounded-t-lg">
-        <div className="flex items-center space-x-4">
-          <div className="flex items-center space-x-2">
-            <Languages className="w-4 h-4 text-gray-600" />
-            <span className="text-sm font-medium text-gray-700">
-              {isNepaliMode ? "नेपाली" : "English"}
-            </span>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={toggleNepaliMode}
-              className="h-8 px-3"
-            >
-              {isNepaliMode ? (
-                <ToggleRight className="w-4 h-4 text-green-600" />
-              ) : (
-                <ToggleLeft className="w-4 h-4 text-gray-400" />
-              )}
-            </Button>
-          </div>
-          
-          {isNepaliMode && (
-            <div className="flex items-center space-x-2">
-              <Keyboard className="w-4 h-4 text-gray-600" />
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={toggleLayout}
-                className="h-8 px-3 text-xs"
-              >
-                {layout === "romanized" ? "Romanized" : "Traditional"}
-              </Button>
-            </div>
-          )}
-        </div>
-        
-        {isNepaliMode && (
-          <div className="text-xs text-gray-500">
-            {layout === "romanized" 
-              ? "Type: namaste → नमस्ते (automatic conversion)" 
-              : "Traditional layout active"
-            }
-          </div>
-        )}
-      </div>
-
       {/* Text Editor Container */}
-      <div className="flex-1 relative border-l border-r border-b border-gray-300 rounded-b-lg bg-white">
+      <div className="flex-1 relative border border-gray-300 rounded-lg bg-white">
         {/* Textarea for actual input */}
         <textarea
           ref={textareaRef}
@@ -242,13 +177,13 @@ export const NepaliTextEditor: React.FC<NepaliTextEditorProps> = ({
           className="absolute inset-0 w-full h-full p-6 bg-transparent resize-none focus:outline-none text-lg text-gray-800 leading-relaxed z-10"
           value={text}
           onChange={handleTextareaChange}
-          placeholder={isNepaliMode ? "यहाँ नेपाली पाठ लेख्नुहोस्..." : "Type here in English or switch to Nepali mode..."}
+          placeholder="यहाँ नेपाली पाठ लेख्नुहोस्..."
           spellCheck={false}
           autoComplete="off"
           autoCorrect="off"
           autoCapitalize="off"
           style={{
-            fontFamily: isNepaliMode ? "'Noto Sans Devanagari', 'Mangal', sans-serif" : "inherit",
+            fontFamily: "'Noto Sans Devanagari', 'Mangal', sans-serif",
             color: suggestions.length > 0 ? "transparent" : "inherit", // Hide text when showing suggestions
           }}
         />
@@ -260,7 +195,7 @@ export const NepaliTextEditor: React.FC<NepaliTextEditorProps> = ({
             className="absolute inset-0 w-full h-full p-6 pointer-events-none text-lg text-gray-800 leading-relaxed z-20 whitespace-pre-wrap"
             onClick={handleOverlayClick}
             style={{
-              fontFamily: isNepaliMode ? "'Noto Sans Devanagari', 'Mangal', sans-serif" : "inherit",
+              fontFamily: "'Noto Sans Devanagari', 'Mangal', sans-serif",
               pointerEvents: "auto", // Allow clicks on suggestions
             }}
           />
