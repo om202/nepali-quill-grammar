@@ -307,10 +307,7 @@ export default function Home() {
                             <Sparkles className='h-6 w-6 text-gray-400' />
                           </div>
                           <p className='text-gray-600 mb-2'>
-                            No suggestions yet
-                          </p>
-                          <p className='text-sm text-gray-500'>
-                            Enter some Nepali text to get started
+                            No suggestions
                           </p>
                         </>
                       )}
