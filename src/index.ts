@@ -2,6 +2,7 @@ import 'express-async-errors';
 import dotenv from 'dotenv';
 import { app } from './app';
 import { logger } from './utils/logger';
+import { testConnection, testAdminConnection } from './config/supabase';
 
 // Load environment variables
 dotenv.config();
@@ -21,9 +22,13 @@ if (isNaN(portNumber) || portNumber < 1 || portNumber > 65535) {
 }
 
 // Start the server
-const server = app.listen(portNumber, () => {
+const server = app.listen(portNumber, async () => {
   logger.info(`Server is running on port ${portNumber}`);
   logger.info(`Environment: ${process.env.NODE_ENV}`);
+  
+  // Test database connections
+  await testConnection();
+  await testAdminConnection();
 });
 
 // Handle port already in use error

@@ -271,13 +271,13 @@ export class AuthService {
    */
   static async changePassword(userId: string, currentPassword: string, newPassword: string): Promise<void> {
     try {
-      // First verify the current password by attempting to sign in
+      // Get user details first to verify they exist
       const user = await this.getUserById(userId);
       if (!user) {
         throw new Error('User not found');
       }
 
-      // Verify current password
+      // Verify current password by attempting to sign in
       const { error: signInError } = await supabase.auth.signInWithPassword({
         email: user.email,
         password: currentPassword,
@@ -288,8 +288,12 @@ export class AuthService {
         throw new Error('Current password is incorrect');
       }
 
-      // Update to new password
-      const { error } = await supabase.auth.updateUser({
+      // Update to new password using admin client
+      if (!supabaseAdmin) {
+        throw new Error('Admin client not available. Cannot change password.');
+      }
+
+      const { error } = await supabaseAdmin.auth.admin.updateUserById(userId, {
         password: newPassword
       });
 
@@ -299,6 +303,64 @@ export class AuthService {
       }
 
       logger.info(`Password changed successfully for user ${userId}`);
+    } catch (error) {
+      logger.error('Change password error:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Change password for authenticated user (alternative method without admin client)
+   */
+  static async changePasswordWithSession(userToken: string, currentPassword: string, newPassword: string): Promise<void> {
+    try {
+      // Get user from token to verify they're authenticated
+      const user = await this.getUserFromToken(userToken);
+      if (!user) {
+        throw new Error('Invalid session or user not found');
+      }
+
+      // Verify current password by attempting to sign in
+      const { error: signInError } = await supabase.auth.signInWithPassword({
+        email: user.email,
+        password: currentPassword,
+      });
+
+      if (signInError) {
+        logger.error('Current password verification failed:', signInError);
+        throw new Error('Current password is incorrect');
+      }
+
+      // Create a new client instance with the user's token for the password update
+      const { createClient } = require('@supabase/supabase-js');
+      const userSupabase = createClient(
+        process.env.SUPABASE_URL!,
+        process.env.SUPABASE_KEY!,
+        {
+          global: {
+            headers: {
+              Authorization: `Bearer ${userToken}`
+            }
+          },
+          auth: {
+            persistSession: false,
+            autoRefreshToken: false,
+            detectSessionInUrl: false
+          }
+        }
+      );
+
+      // Update password using the authenticated client
+      const { error } = await userSupabase.auth.updateUser({
+        password: newPassword
+      });
+
+      if (error) {
+        logger.error('Change password error:', error);
+        throw new Error(error.message);
+      }
+
+      logger.info(`Password changed successfully for user ${user.id}`);
     } catch (error) {
       logger.error('Change password error:', error);
       throw error;

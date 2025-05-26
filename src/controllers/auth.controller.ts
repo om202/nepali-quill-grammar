@@ -279,6 +279,7 @@ export class AuthController {
 
       const { currentPassword, newPassword } = req.body;
 
+      // Use the original method now that admin client is available
       await AuthService.changePassword(req.user.id, currentPassword, newPassword);
 
       res.status(200).json({
@@ -292,6 +293,14 @@ export class AuthController {
           res.status(400).json({ error: 'Current password is incorrect' });
           return;
         }
+        if (error.message.includes('User not found')) {
+          res.status(404).json({ error: 'User not found' });
+          return;
+        }
+        if (error.message.includes('Admin client not available')) {
+          res.status(500).json({ error: 'Service temporarily unavailable' });
+          return;
+        }
         if (error.message.includes('Password')) {
           res.status(400).json({ error: error.message });
           return;
@@ -299,6 +308,53 @@ export class AuthController {
       }
 
       res.status(500).json({ error: 'Internal server error' });
+    }
+  }
+
+  /**
+   * Test admin client functionality (for debugging)
+   */
+  static async testAdminClient(req: Request, res: Response): Promise<void> {
+    try {
+      const { supabaseAdmin } = require('../config/supabase');
+      
+      if (!supabaseAdmin) {
+        res.status(500).json({ 
+          error: 'Admin client not available',
+          message: 'SUPABASE_SERVICE_ROLE_KEY is not set or invalid'
+        });
+        return;
+      }
+
+      // Test admin client by trying to list users
+      const { data, error } = await supabaseAdmin.auth.admin.listUsers({
+        page: 1,
+        perPage: 5
+      });
+
+      if (error) {
+        res.status(500).json({ 
+          error: 'Admin client test failed',
+          details: error.message
+        });
+        return;
+      }
+
+      res.status(200).json({
+        message: 'Admin client is working correctly',
+        userCount: data.users.length,
+        users: data.users.map((user: any) => ({
+          id: user.id,
+          email: user.email,
+          created_at: user.created_at
+        }))
+      });
+    } catch (error) {
+      logger.error('Test admin client error:', error);
+      res.status(500).json({ 
+        error: 'Admin client test failed',
+        details: error instanceof Error ? error.message : 'Unknown error'
+      });
     }
   }
 } 

@@ -50,3 +50,30 @@ export const testConnection = async () => {
     return false;
   }
 };
+
+// Test admin client
+export const testAdminConnection = async () => {
+  try {
+    if (!supabaseAdmin) {
+      logger.error('Admin client not available');
+      return false;
+    }
+
+    // Test admin client by trying to list users (this requires service_role)
+    const { data, error } = await supabaseAdmin.auth.admin.listUsers({
+      page: 1,
+      perPage: 1
+    });
+
+    if (error) {
+      logger.error('Admin client test failed:', error);
+      return false;
+    }
+
+    logger.info('Admin client connection successful');
+    return true;
+  } catch (error) {
+    logger.error('Failed to test admin client:', error);
+    return false;
+  }
+};

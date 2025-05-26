@@ -21,6 +21,9 @@ authRouter.post('/forgot-password', validateRequest(forgotPasswordSchema), AuthC
 authRouter.post('/reset-password', validateRequest(resetPasswordSchema), AuthController.resetPassword);
 authRouter.get('/verify-reset-token', AuthController.verifyResetToken);
 
+// Test route (for debugging)
+authRouter.get('/test-admin', AuthController.testAdminClient);
+
 // Protected routes
 authRouter.get('/profile', authenticateToken, AuthController.getProfile);
 authRouter.put('/profile', authenticateToken, AuthController.updateProfile);
