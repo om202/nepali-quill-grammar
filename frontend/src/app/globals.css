@@ -351,3 +351,67 @@ body {
 .language-toggle-inactive {
   @apply bg-gray-50 border-gray-300 text-gray-600;
 }
+
+/* Feature Icon Animations */
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+@keyframes glow {
+  0%, 100% {
+    filter: drop-shadow(0 0 5px rgba(99, 102, 241, 0.3));
+  }
+  50% {
+    filter: drop-shadow(0 0 15px rgba(99, 102, 241, 0.6));
+  }
+}
+
+@keyframes sparkle {
+  0%, 100% {
+    transform: scale(1) rotate(0deg);
+    opacity: 1;
+  }
+  25% {
+    transform: scale(1.1) rotate(90deg);
+    opacity: 0.8;
+  }
+  50% {
+    transform: scale(1.2) rotate(180deg);
+    opacity: 0.6;
+  }
+  75% {
+    transform: scale(1.1) rotate(270deg);
+    opacity: 0.8;
+  }
+}
+
+@keyframes bounce-gentle {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-4px);
+  }
+}
+
+/* Feature icon specific animations */
+.feature-icon-bot {
+  animation: float 3s ease-in-out infinite;
+}
+
+.feature-icon-zap {
+  animation: sparkle 2s ease-in-out infinite;
+}
+
+.feature-icon-history {
+  animation: bounce-gentle 2.5s ease-in-out infinite;
+}
+
+.feature-icon-keyboard {
+  animation: float 3.5s ease-in-out infinite;
+}

@@ -6,7 +6,6 @@ import { toast } from 'sonner';
 import {
   CheckCircle,
   Zap,
-  Sparkles,
   History as HistoryIcon,
   Edit3,
   Bot,
@@ -17,6 +16,7 @@ import {
   ChevronDown,
   ChevronUp,
   FileText,
+  Sparkles,
 } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
@@ -36,6 +36,8 @@ import { analyzeText, updateSuggestion, APIError } from '@/lib/api';
 import { NepaliTextEditor } from '@/components/NepaliTextEditor';
 import { KeyboardGuide } from '@/components/KeyboardGuide';
 import { AuthModal } from '@/components/auth/AuthModal';
+import { TestimonialsSection } from '@/components/TestimonialsSection';
+import { FeatureShowcase } from '@/components/FeatureShowcase';
 import { RootState } from '@/store';
 import { setSuggestions, removeSuggestion } from '@/store/suggestionsSlice';
 import { setText } from '@/store/textSlice';
@@ -343,321 +345,290 @@ export default function Home() {
   }, [scrollToSuggestion]);
 
   return (
-    <div className='h-screen bg-gray-50 flex flex-col overflow-hidden'>
-      <div className='px-6 py-6 flex-shrink-0'>
-        {/* Status Messages */}
-        {isAuthenticated && user && showWelcomeMessage && (
-          <div className='grammarly-status-success mb-8 max-w-2xl mx-auto relative'>
-            <button
-              onClick={dismissWelcomeMessage}
-              className='absolute top-2 right-2 text-green-600 hover:text-green-800 cursor-pointer transition-colors-smooth'
-              aria-label='Dismiss welcome message'
-            >
-              <X className='h-4 w-4' />
-            </button>
-            <div className='flex items-center justify-center space-x-2'>
-              <CheckCircle className='h-5 w-5' />
-              <span className='font-semibold'>
-                Welcome, {user.name.split(' ')[0]}!
-              </span>
-            </div>
-          </div>
-        )}
-
-        {!isAuthenticated && showFreeTrialMessage && (
-          <div className='grammarly-status-info mb-4 w-full relative'>
-            <button
-              onClick={dismissFreeTrialMessage}
-              className='absolute top-2 right-2 text-indigo-600 hover:text-indigo-800 cursor-pointer transition-colors-smooth'
-              aria-label='Dismiss message'
-            >
-              <X className='h-4 w-4' />
-            </button>
-            
-            {/* Header */}
-            <div className='flex items-center justify-center space-x-2 mb-6'>
-              <Sparkles className='h-6 w-6' />
-              <span className='font-semibold text-lg'>Perfect Your Nepali Writing</span>
-            </div>
-            
-            {/* Feature Grid */}
-            <div className='flex justify-center items-center space-x-8 mb-6'>
-              <div className='flex flex-col items-center text-center'>
-                <Bot className='h-8 w-8 text-indigo-600 mb-2' />
-                <span className='text-sm font-medium text-gray-700'>Fix Errors</span>
-              </div>
-              <div className='flex flex-col items-center text-center'>
-                <Zap className='h-8 w-8 text-purple-600 mb-2' />
-                <span className='text-sm font-medium text-gray-700'>Improve Style</span>
-              </div>
-              <div className='flex flex-col items-center text-center'>
-                <HistoryIcon className='h-8 w-8 text-green-600 mb-2' />
-                <span className='text-sm font-medium text-gray-700'>Save Work</span>
-              </div>
-              <div className='flex flex-col items-center text-center'>
-                <Keyboard className='h-8 w-8 text-blue-600 mb-2' />
-                <span className='text-sm font-medium text-gray-700'>Type Faster</span>
+    <div className={`bg-gray-50 flex flex-col ${isAuthenticated ? 'h-screen overflow-hidden' : 'min-h-screen'}`}>
+      {/* Main App Content */}
+      <div className={`flex flex-col ${isAuthenticated ? 'flex-1 overflow-hidden' : ''}`}>
+        <div className='px-6 py-6 flex-shrink-0'>
+          {/* Status Messages */}
+          {isAuthenticated && user && showWelcomeMessage && (
+            <div className='grammarly-status-success mb-8 max-w-2xl mx-auto relative'>
+              <button
+                onClick={dismissWelcomeMessage}
+                className='absolute top-2 right-2 text-green-600 hover:text-green-800 cursor-pointer transition-colors-smooth'
+                aria-label='Dismiss welcome message'
+              >
+                <X className='h-4 w-4' />
+              </button>
+              <div className='flex items-center justify-center space-x-2'>
+                <CheckCircle className='h-5 w-5' />
+                <span className='font-semibold'>
+                  Welcome, {user.name.split(' ')[0]}!
+                </span>
               </div>
             </div>
-            
-            {/* Call to Action */}
-            <p className='text-sm text-center text-gray-600'>
-              Write better Nepali instantly. <span className='font-medium text-indigo-700'>Sign up free</span> to start using Vyakaranly.
-            </p>
-          </div>
-        )}
+          )}
 
-        {/* Main Content with Tabs */}
-        <Tabs value={activeTab} onValueChange={setActiveTab} className='w-full'>
-          <TabsList className='grid w-full grid-cols-2 gap-2 mb-0 max-w-md mx-auto'>
-            <TabsTrigger
-              value='enhance'
-              className='flex items-center space-x-2 font-medium data-[state=active]:bg-indigo-50 data-[state=active]:text-indigo-700 transition-colors-smooth'
-            >
-              <Zap className='h-4 w-4' />
-              <span>Enhance</span>
-            </TabsTrigger>
-            <TabsTrigger
-              value='history'
-              className='flex items-center space-x-2 font-medium data-[state=active]:bg-indigo-50 data-[state=active]:text-indigo-700 transition-colors-smooth'
-            >
-              <HistoryIcon className='h-4 w-4' />
-              <span>History</span>
-            </TabsTrigger>
-          </TabsList>
-        </Tabs>
-      </div>
+          {!isAuthenticated && showFreeTrialMessage && (
+            <FeatureShowcase onDismiss={dismissFreeTrialMessage} />
+          )}
 
-      {/* Full width content area - constrained to remaining viewport height */}
-      <div className='flex-1 w-full px-4 pb-8 min-h-0 overflow-hidden'>
-        <Tabs
-          value={activeTab}
-          onValueChange={setActiveTab}
-          className='w-full h-full'
-        >
-          <TabsContent value='enhance' className='h-full'>
-            <div className='flex flex-col lg:flex-row gap-6 h-full max-h-full'>
-              {/* Text Input Section */}
-              <div className='w-full lg:w-[70%] grammarly-card flex flex-col h-full max-h-full'>
-                <div className='flex items-center justify-between p-4 border-b border-gray-200 flex-shrink-0'>
-                  <div className='flex items-center space-x-6'>
-                    <div className='flex items-center space-x-2'>
-                      <Edit3 className='h-5 w-5 text-indigo-600' />
-                      <span className='text-gray-700 font-medium'>Text</span>
+          {/* Main Content with Tabs */}
+          <Tabs value={activeTab} onValueChange={setActiveTab} className='w-full'>
+            <TabsList className='grid w-full grid-cols-2 gap-2 mb-0 max-w-md mx-auto'>
+              <TabsTrigger
+                value='enhance'
+                className='flex items-center space-x-2 font-medium data-[state=active]:bg-indigo-50 data-[state=active]:text-indigo-700 transition-colors-smooth'
+              >
+                <Zap className='h-4 w-4' />
+                <span>Enhance</span>
+              </TabsTrigger>
+              <TabsTrigger
+                value='history'
+                className='flex items-center space-x-2 font-medium data-[state=active]:bg-indigo-50 data-[state=active]:text-indigo-700 transition-colors-smooth'
+              >
+                <HistoryIcon className='h-4 w-4' />
+                <span>History</span>
+              </TabsTrigger>
+            </TabsList>
+          </Tabs>
+        </div>
+
+        {/* Full width content area - constrained to remaining viewport height */}
+        <div className={`w-full px-4 pb-8 ${isAuthenticated ? 'flex-1 min-h-0 overflow-hidden' : 'min-h-96'}`}>
+          <Tabs
+            value={activeTab}
+            onValueChange={setActiveTab}
+            className='w-full h-full'
+          >
+            <TabsContent value='enhance' className='h-full'>
+              <div className={`flex flex-col lg:flex-row gap-6 ${isAuthenticated ? 'h-full max-h-full' : 'min-h-96'}`}>
+                {/* Text Input Section */}
+                <div className={`w-full lg:w-[70%] grammarly-card flex flex-col ${isAuthenticated ? 'h-full max-h-full' : 'h-96'}`}>
+                  <div className='flex items-center justify-between p-4 border-b border-gray-200 flex-shrink-0'>
+                    <div className='flex items-center space-x-6'>
+                      <div className='flex items-center space-x-2'>
+                        <Edit3 className='h-5 w-5 text-indigo-600' />
+                        <span className='text-gray-700 font-medium'>Text</span>
+                      </div>
+                      <KeyboardGuide />
                     </div>
-                    <KeyboardGuide />
-                  </div>
-                  <Button
-                    onClick={suggestions.length > 0 ? handleNewText : handleAnalyze}
-                    disabled={isLoading || !text.trim()}
-                    className={suggestions.length > 0 
-                      ? 'flex items-center font-sm bg-indigo-50 text-indigo-600 space-x-1 border-indigo-200' 
-                      : 'bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 hover:from-blue-700 hover:via-purple-700 hover:to-indigo-700 text-white font-medium px-6 py-2 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 flex-shrink-0 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:from-blue-600 disabled:hover:via-purple-600 disabled:hover:to-indigo-600'
-                    }
-                    variant={suggestions.length > 0 ? 'outline' : 'default'}
-                    size={suggestions.length > 0 ? 'sm' : 'default'}
-                  >
-                    {isLoading ? (
-                      <>
-                        <div className='animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2'></div>
-                        Analyzing...
-                      </>
-                    ) : suggestions.length > 0 ? (
-                      <>
-                        <FileText className='h-4 w-4' />
-                        <span>New Text</span>
-                      </>
-                    ) : (
-                      <>
-                        <Zap className='h-4 w-4 mr-2' />
-                        {isAuthenticated ? 'Enhance Text' : 'Sign In to Enhance'}
-                      </>
-                    )}
-                  </Button>
-                </div>
-                <div className='flex-1 flex flex-col p-4 min-h-0'>
-                  <div className='flex-1 mb-4 min-h-0'>
-                    <NepaliTextEditor
-                      onSelectSuggestion={handleSuggestionSelect}
-                      selectedSuggestionId={selectedSuggestionId}
-                      viewMode={suggestionViewMode}
-                    />
-                  </div>
-                  {error && (
-                    <div className='grammarly-status-error mb-4 flex-shrink-0'>
-                      {error}
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              {/* Suggestions Panel - 30% width, constrained height */}
-              <div className='w-full lg:w-[30%] grammarly-card flex flex-col h-full max-h-full border-2 border-transparent bg-clip-padding'>
-                <div className='flex items-center justify-between p-4 border-b border-gray-200 flex-shrink-0'>
-                  <div className='flex items-center space-x-2'>
-                    <Bot className='h-5 w-5 text-purple-600' />
-                    <span className='text-gray-700 font-medium'>Suggestions</span>
-                    {suggestions.length > 0 && (
-                      <span className='bg-gradient-to-r from-green-100 to-emerald-100 text-green-800 text-xs font-medium px-2 py-1 rounded-full border border-green-200'>
-                        {suggestions.length} suggestion
-                        {suggestions.length !== 1 ? 's' : ''}
-                      </span>
-                    )}
-                  </div>
-                  
-                  {/* View Mode Toggle */}
-                  {suggestions.length > 0 && (
-                    <div className='flex items-center space-x-1 bg-gray-100 rounded-md p-1'>
-                      <button
-                        onClick={() => setSuggestionViewMode('list')}
-                        className={`p-1.5 rounded text-xs font-medium transition-colors ${
-                          suggestionViewMode === 'list'
-                            ? 'bg-white text-gray-900 shadow-sm'
-                            : 'text-gray-600 hover:text-gray-900'
-                        }`}
-                        title='List view - Show all suggestions'
-                      >
-                        <List className='h-3.5 w-3.5' />
-                      </button>
-                      <button
-                        onClick={() => setSuggestionViewMode('navigate')}
-                        className={`p-1.5 rounded text-xs font-medium transition-colors ${
-                          suggestionViewMode === 'navigate'
-                            ? 'bg-white text-gray-900 shadow-sm'
-                            : 'text-gray-600 hover:text-gray-900'
-                        }`}
-                        title='Navigate view - Review one by one'
-                      >
-                        <Navigation className='h-3.5 w-3.5' />
-                      </button>
-                    </div>
-                  )}
-                </div>
-
-                <div className='flex-1 overflow-y-auto min-h-0 p-4'>
-                  {suggestions.length === 0 ? (
-                    <div className='flex flex-col items-center justify-center h-full text-center py-12'>
+                    <Button
+                      onClick={suggestions.length > 0 ? handleNewText : handleAnalyze}
+                      disabled={isLoading || !text.trim()}
+                      className={suggestions.length > 0 
+                        ? 'flex items-center font-sm bg-indigo-50 text-indigo-600 space-x-1 border-indigo-200' 
+                        : 'bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 hover:from-blue-700 hover:via-purple-700 hover:to-indigo-700 text-white font-medium px-6 py-2 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 flex-shrink-0 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:from-blue-600 disabled:hover:via-purple-600 disabled:hover:to-indigo-600'
+                      }
+                      variant={suggestions.length > 0 ? 'outline' : 'default'}
+                      size={suggestions.length > 0 ? 'sm' : 'default'}
+                    >
                       {isLoading ? (
                         <>
-                          <div className='animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mb-4'></div>
-                          <p className='text-gray-600'>
-                            Analyzing your text...
-                          </p>
+                          <div className='animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2'></div>
+                          Analyzing...
                         </>
-                      ) : error ? (
+                      ) : suggestions.length > 0 ? (
                         <>
-                          <div className='w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mb-4'>
-                            <span className='text-red-500 text-lg'>!</span>
-                          </div>
-                          <p className='text-gray-600'>
-                            Analysis failed. Please try again.
-                          </p>
+                          <FileText className='h-4 w-4' />
+                          <span>New Text</span>
                         </>
                       ) : (
                         <>
-                          <div className='w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mb-4'>
-                            <Sparkles className='h-6 w-6 text-gray-400' />
-                          </div>
-                          <p className='text-gray-600 mb-2'>
-                            No suggestions
-                          </p>
+                          <Zap className='h-4 w-4 mr-2' />
+                          {isAuthenticated ? 'Enhance Text' : 'Sign In to Enhance'}
                         </>
                       )}
+                    </Button>
+                  </div>
+                  <div className={`flex-1 flex flex-col p-4 ${isAuthenticated ? 'min-h-0' : 'min-h-64'}`}>
+                    <div className={`flex-1 mb-4 ${isAuthenticated ? 'min-h-0' : 'min-h-64'}`}>
+                      <NepaliTextEditor
+                        onSelectSuggestion={handleSuggestionSelect}
+                        selectedSuggestionId={selectedSuggestionId}
+                        viewMode={suggestionViewMode}
+                      />
                     </div>
-                  ) : suggestionViewMode === 'navigate' ? (
-                    <SuggestionNavigator
-                      suggestions={suggestions}
-                      sessionId={sessionId!}
-                      onUpdate={handleSuggestionUpdate}
-                      onSuggestionChange={setSelectedSuggestionId}
-                      selectedSuggestionId={selectedSuggestionId}
-                    />
-                  ) : (
-                    <div className='space-y-4'>
-                      {/* Keyboard guide toggle for list mode */}
-                      <button
-                        onClick={() => setShowListKeyboardGuide(!showListKeyboardGuide)}
-                        className='flex items-center justify-between w-full p-2 bg-gray-50 hover:bg-gray-100 border border-gray-200 rounded-lg transition-colors text-left'
-                      >
-                        <div className='flex items-center space-x-2'>
-                          <Keyboard className='h-3.5 w-3.5 text-gray-600' />
-                          <span className='text-xs font-medium text-gray-700'>Keyboard Shortcuts</span>
-                        </div>
-                        {showListKeyboardGuide ? (
-                          <ChevronUp className='h-3.5 w-3.5 text-gray-500' />
-                        ) : (
-                          <ChevronDown className='h-3.5 w-3.5 text-gray-500' />
-                        )}
-                      </button>
+                    {error && (
+                      <div className='grammarly-status-error mb-4 flex-shrink-0'>
+                        {error}
+                      </div>
+                    )}
+                  </div>
+                </div>
 
-                      {/* Collapsible keyboard guide for list mode */}
-                      {showListKeyboardGuide && (
-                        <div className='bg-white border border-gray-200 rounded-lg p-3'>
-                          <div className='space-y-1.5 text-xs text-gray-600'>
-                            <div className='flex items-center justify-between'>
-                              <span>Navigate</span>
-                              <div className='flex items-center space-x-1'>
-                                <kbd className='px-1.5 py-0.5 bg-gray-100 border border-gray-300 rounded text-xs font-mono'>↑</kbd>
-                                <kbd className='px-1.5 py-0.5 bg-gray-100 border border-gray-300 rounded text-xs font-mono'>↓</kbd>
+                {/* Suggestions Panel - 30% width, constrained height */}
+                <div className={`w-full lg:w-[30%] grammarly-card flex flex-col border-2 border-transparent bg-clip-padding ${isAuthenticated ? 'h-full max-h-full' : 'h-96'}`}>
+                  <div className='flex items-center justify-between p-4 border-b border-gray-200 flex-shrink-0'>
+                    <div className='flex items-center space-x-2'>
+                      <Bot className='h-5 w-5 text-purple-600' />
+                      <span className='text-gray-700 font-medium'>Suggestions</span>
+                      {suggestions.length > 0 && (
+                        <span className='bg-gradient-to-r from-green-100 to-emerald-100 text-green-800 text-xs font-medium px-2 py-1 rounded-full border border-green-200'>
+                          {suggestions.length} suggestion
+                          {suggestions.length !== 1 ? 's' : ''}
+                        </span>
+                      )}
+                    </div>
+                    
+                    {/* View Mode Toggle */}
+                    {suggestions.length > 0 && (
+                      <div className='flex items-center space-x-1 bg-gray-100 rounded-md p-1'>
+                        <button
+                          onClick={() => setSuggestionViewMode('list')}
+                          className={`p-1.5 rounded text-xs font-medium transition-colors ${
+                            suggestionViewMode === 'list'
+                              ? 'bg-white text-gray-900 shadow-sm'
+                              : 'text-gray-600 hover:text-gray-900'
+                          }`}
+                          title='List view - Show all suggestions'
+                        >
+                          <List className='h-3.5 w-3.5' />
+                        </button>
+                        <button
+                          onClick={() => setSuggestionViewMode('navigate')}
+                          className={`p-1.5 rounded text-xs font-medium transition-colors ${
+                            suggestionViewMode === 'navigate'
+                              ? 'bg-white text-gray-900 shadow-sm'
+                              : 'text-gray-600 hover:text-gray-900'
+                          }`}
+                          title='Navigate view - Review one by one'
+                        >
+                          <Navigation className='h-3.5 w-3.5' />
+                        </button>
+                      </div>
+                    )}
+                  </div>
+
+                  <div className='flex-1 overflow-y-auto min-h-0 p-4'>
+                    {suggestions.length === 0 ? (
+                      <div className='flex flex-col items-center justify-center h-full text-center py-12'>
+                        {isLoading ? (
+                          <>
+                            <div className='animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mb-4'></div>
+                            <p className='text-gray-600'>
+                              Analyzing your text...
+                            </p>
+                          </>
+                        ) : error ? (
+                          <>
+                            <div className='w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mb-4'>
+                              <span className='text-red-500 text-lg'>!</span>
+                            </div>
+                            <p className='text-gray-600'>
+                              Analysis failed. Please try again.
+                            </p>
+                          </>
+                        ) : (
+                          <>
+                            <div className='w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mb-4'>
+                              <Sparkles className='h-6 w-6 text-gray-400' />
+                            </div>
+                            <p className='text-gray-600 mb-2'>
+                              No suggestions
+                            </p>
+                          </>
+                        )}
+                      </div>
+                    ) : suggestionViewMode === 'navigate' ? (
+                      <SuggestionNavigator
+                        suggestions={suggestions}
+                        sessionId={sessionId!}
+                        onUpdate={handleSuggestionUpdate}
+                        onSuggestionChange={setSelectedSuggestionId}
+                        selectedSuggestionId={selectedSuggestionId}
+                      />
+                    ) : (
+                      <div className='space-y-4'>
+                        {/* Keyboard guide toggle for list mode */}
+                        <button
+                          onClick={() => setShowListKeyboardGuide(!showListKeyboardGuide)}
+                          className='flex items-center justify-between w-full p-2 bg-gray-50 hover:bg-gray-100 border border-gray-200 rounded-lg transition-colors text-left'
+                        >
+                          <div className='flex items-center space-x-2'>
+                            <Keyboard className='h-3.5 w-3.5 text-gray-600' />
+                            <span className='text-xs font-medium text-gray-700'>Keyboard Shortcuts</span>
+                          </div>
+                          {showListKeyboardGuide ? (
+                            <ChevronUp className='h-3.5 w-3.5 text-gray-500' />
+                          ) : (
+                            <ChevronDown className='h-3.5 w-3.5 text-gray-500' />
+                          )}
+                        </button>
+
+                        {/* Collapsible keyboard guide for list mode */}
+                        {showListKeyboardGuide && (
+                          <div className='bg-white border border-gray-200 rounded-lg p-3'>
+                            <div className='space-y-1.5 text-xs text-gray-600'>
+                              <div className='flex items-center justify-between'>
+                                <span>Navigate</span>
+                                <div className='flex items-center space-x-1'>
+                                  <kbd className='px-1.5 py-0.5 bg-gray-100 border border-gray-300 rounded text-xs font-mono'>↑</kbd>
+                                  <kbd className='px-1.5 py-0.5 bg-gray-100 border border-gray-300 rounded text-xs font-mono'>↓</kbd>
+                                </div>
                               </div>
-                            </div>
-                            
-                            <div className='flex items-center justify-between'>
-                              <span>Accept</span>
-                              <kbd className='px-2 py-0.5 bg-gray-100 border border-gray-300 rounded text-xs font-mono'>Enter</kbd>
-                            </div>
-                            
-                            <div className='flex items-center justify-between'>
-                              <span>Reject</span>
-                              <div className='flex items-center space-x-1'>
-                                <kbd className='px-1.5 py-0.5 bg-gray-100 border border-gray-300 rounded text-xs font-mono'>Shift</kbd>
-                                <span className='text-gray-400'>+</span>
-                                <kbd className='px-1.5 py-0.5 bg-gray-100 border border-gray-300 rounded text-xs font-mono'>Enter</kbd>
-                                <span className='text-gray-400'>or</span>
-                                <kbd className='px-1.5 py-0.5 bg-gray-100 border border-gray-300 rounded text-xs font-mono'>Esc</kbd>
+                              
+                              <div className='flex items-center justify-between'>
+                                <span>Accept</span>
+                                <kbd className='px-2 py-0.5 bg-gray-100 border border-gray-300 rounded text-xs font-mono'>Enter</kbd>
+                              </div>
+                              
+                              <div className='flex items-center justify-between'>
+                                <span>Reject</span>
+                                <div className='flex items-center space-x-1'>
+                                  <kbd className='px-1.5 py-0.5 bg-gray-100 border border-gray-300 rounded text-xs font-mono'>Shift</kbd>
+                                  <span className='text-gray-400'>+</span>
+                                  <kbd className='px-1.5 py-0.5 bg-gray-100 border border-gray-300 rounded text-xs font-mono'>Enter</kbd>
+                                  <span className='text-gray-400'>or</span>
+                                  <kbd className='px-1.5 py-0.5 bg-gray-100 border border-gray-300 rounded text-xs font-mono'>Esc</kbd>
+                                </div>
                               </div>
                             </div>
                           </div>
-                        </div>
-                      )}
+                        )}
 
-                      {suggestions.map((suggestion, index) => (
-                        <div
-                          key={suggestion.id}
-                          data-suggestion-index={index}
-                          style={{ animationDelay: `${index * 0.1}s` }}
-                        >
-                          <SuggestionCard
-                            suggestion={suggestion}
-                            sessionId={sessionId!}
-                            onUpdate={handleSuggestionUpdate}
-                            onSelect={(suggestionId) => {
-                              handleSuggestionSelect(suggestionId);
-                            }}
-                            index={index}
-                            total={suggestions.length}
-                            className={
-                              selectedSuggestionId === suggestion.id
-                                ? 'ring-2 ring-blue-500'
-                                : ''
-                            }
-                          />
-                        </div>
-                      ))}
-                    </div>
-                  )}
+                        {suggestions.map((suggestion, index) => (
+                          <div
+                            key={suggestion.id}
+                            data-suggestion-index={index}
+                            style={{ animationDelay: `${index * 0.1}s` }}
+                          >
+                            <SuggestionCard
+                              suggestion={suggestion}
+                              sessionId={sessionId!}
+                              onUpdate={handleSuggestionUpdate}
+                              onSelect={(suggestionId) => {
+                                handleSuggestionSelect(suggestionId);
+                              }}
+                              index={index}
+                              total={suggestions.length}
+                              className={
+                                selectedSuggestionId === suggestion.id
+                                  ? 'ring-2 ring-blue-500'
+                                  : ''
+                              }
+                            />
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
-            </div>
-          </TabsContent>
+            </TabsContent>
 
-          <TabsContent value='history' className='h-full'>
-            <div className='px-6 h-full'>
-              <History />
-            </div>
-          </TabsContent>
-        </Tabs>
+            <TabsContent value='history' className='h-full'>
+              <div className={`px-6 ${isAuthenticated ? 'h-full' : 'min-h-96'}`}>
+                <History />
+              </div>
+            </TabsContent>
+          </Tabs>
+        </div>
       </div>
+
+      {/* Testimonials Section - Only visible when not authenticated */}
+      {!isAuthenticated && (
+        <TestimonialsSection onSignUpClick={() => setIsAuthModalOpen(true)} />
+      )}
 
       <AuthModal
         isOpen={isAuthModalOpen}
