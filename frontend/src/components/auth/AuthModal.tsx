@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'sonner';
-import { Loader2, Mail, Lock, User, Sparkles, CheckCircle } from 'lucide-react';
+import { Loader2, Mail, Lock, User, Sparkles, CheckCircle, PenTool } from 'lucide-react';
 
 import {
   Dialog,
@@ -126,14 +126,19 @@ export function AuthModal({
         <div className='bg-gradient-to-br from-indigo-50 via-purple-50 to-blue-50 p-6'>
           <DialogHeader className='text-center'>
             <div className='flex items-center justify-center space-x-2 mb-2'>
-              <Sparkles className='h-6 w-6 text-indigo-600' />
-              <DialogTitle className='text-xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent'>
-                Welcome to Vyakaranly
+              <div className='relative text-indigo-600'>
+                <PenTool className='h-7 w-7' />
+                <Sparkles className='h-3 w-3 absolute -top-1 -right-1 text-purple-500' />
+              </div>
+              <DialogTitle className='text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent'>
+                Vyakaranly
               </DialogTitle>
             </div>
-            <p className='text-gray-600'>
-              Join thousands of users enhancing their Nepali writing with AI
-            </p>
+            {activeTab === 'signup' && (
+              <p className='text-gray-600 text-center text-[14px]'>
+                Join thousands of users enhancing their Nepali writing with AI
+              </p>
+            )}
           </DialogHeader>
         </div>
 
@@ -142,16 +147,16 @@ export function AuthModal({
             value={activeTab}
             onValueChange={value => setActiveTab(value as 'login' | 'signup')}
           >
-            <TabsList className='grid w-full grid-cols-2 mb-6 bg-gray-100 p-1 rounded-lg'>
+            <TabsList className='grid w-full grid-cols-2 mb-8 p-2 rounded-lg gap-2'>
               <TabsTrigger
                 value='login'
-                className='rounded-lg font-medium data-[state=active]:bg-white data-[state=active]:shadow-sm data-[state=active]:text-indigo-600'
+                className='rounded-lg font-medium px-6 py-3 border border-gray-200 data-[state=active]:bg-indigo-50 data-[state=active]:border-indigo-200 data-[state=active]:shadow-sm data-[state=active]:text-indigo-600'
               >
                 Log in
               </TabsTrigger>
               <TabsTrigger
                 value='signup'
-                className='rounded-lg font-medium data-[state=active]:bg-white data-[state=active]:shadow-sm data-[state=active]:text-indigo-600'
+                className='rounded-lg font-medium px-6 py-3 border border-gray-200 data-[state=active]:bg-indigo-50 data-[state=active]:border-indigo-200 data-[state=active]:shadow-sm data-[state=active]:text-indigo-600'
               >
                 Sign up
               </TabsTrigger>
@@ -159,15 +164,15 @@ export function AuthModal({
 
             <TabsContent value='login' className='space-y-4'>
               <form onSubmit={handleLogin} className='space-y-4'>
-                <div className='space-y-2'>
+                <div className='space-y-3'>
                   <Label
                     htmlFor='login-email'
-                    className='text-sm font-semibold text-gray-700'
+                    className='text-sm font-medium text-gray-700'
                   >
                     Email address
                   </Label>
                   <div className='relative'>
-                    <Mail className='absolute left-3 top-3 h-4 w-4 text-gray-400' />
+                    <Mail className='absolute left-4 top-4 h-4 w-4 text-gray-400' />
                     <Input
                       id='login-email'
                       type='email'
@@ -177,19 +182,19 @@ export function AuthModal({
                         setLoginForm({ ...loginForm, email: e.target.value })
                       }
                       disabled={isLoading}
-                      className='pl-10 border-gray-200 focus:border-indigo-500 focus:ring-indigo-500'
+                      className='pl-12 pr-4 py-4 h-12 text-base border-gray-200 focus:border-indigo-500 focus:ring-indigo-500'
                     />
                   </div>
                 </div>
-                <div className='space-y-2'>
+                <div className='space-y-3'>
                   <Label
                     htmlFor='login-password'
-                    className='text-sm font-semibold text-gray-700'
+                    className='text-sm font-medium text-gray-700'
                   >
                     Password
                   </Label>
                   <div className='relative'>
-                    <Lock className='absolute left-3 top-3 h-4 w-4 text-gray-400' />
+                    <Lock className='absolute left-4 top-4 h-4 w-4 text-gray-400' />
                     <Input
                       id='login-password'
                       type='password'
@@ -199,7 +204,7 @@ export function AuthModal({
                         setLoginForm({ ...loginForm, password: e.target.value })
                       }
                       disabled={isLoading}
-                      className='pl-10 border-gray-200 focus:border-indigo-500 focus:ring-indigo-500'
+                      className='pl-12 pr-4 py-4 h-12 text-base border-gray-200 focus:border-indigo-500 focus:ring-indigo-500'
                     />
                   </div>
                 </div>
@@ -223,7 +228,7 @@ export function AuthModal({
                 
                 <Button
                   type='submit'
-                  className='w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-medium py-2.5 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300'
+                  className='w-full h-12 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-medium text-base rounded-lg shadow-lg hover:shadow-xl transition-all duration-300'
                   disabled={isLoading}
                 >
                   {isLoading ? (
@@ -238,9 +243,9 @@ export function AuthModal({
               </form>
             </TabsContent>
 
-            <TabsContent value='signup' className='space-y-4'>
-              <form onSubmit={handleSignup} className='space-y-4'>
-                <div className='space-y-2'>
+            <TabsContent value='signup' className='space-y-5'>
+              <form onSubmit={handleSignup} className='space-y-5'>
+                <div className='space-y-3'>
                   <Label
                     htmlFor='signup-name'
                     className='text-sm font-medium text-gray-700'
@@ -248,7 +253,7 @@ export function AuthModal({
                     Full name
                   </Label>
                   <div className='relative'>
-                    <User className='absolute left-3 top-3 h-4 w-4 text-gray-400' />
+                    <User className='absolute left-4 top-4 h-4 w-4 text-gray-400' />
                     <Input
                       id='signup-name'
                       type='text'
@@ -258,11 +263,11 @@ export function AuthModal({
                         setSignupForm({ ...signupForm, name: e.target.value })
                       }
                       disabled={isLoading}
-                      className='pl-10 border-gray-200 focus:border-indigo-500 focus:ring-indigo-500'
+                      className='pl-12 pr-4 py-4 h-12 text-base border-gray-200 focus:border-indigo-500 focus:ring-indigo-500'
                     />
                   </div>
                 </div>
-                <div className='space-y-2'>
+                <div className='space-y-3'>
                   <Label
                     htmlFor='signup-email'
                     className='text-sm font-medium text-gray-700'
@@ -270,7 +275,7 @@ export function AuthModal({
                     Email address
                   </Label>
                   <div className='relative'>
-                    <Mail className='absolute left-3 top-3 h-4 w-4 text-gray-400' />
+                    <Mail className='absolute left-4 top-4 h-4 w-4 text-gray-400' />
                     <Input
                       id='signup-email'
                       type='email'
@@ -280,11 +285,11 @@ export function AuthModal({
                         setSignupForm({ ...signupForm, email: e.target.value })
                       }
                       disabled={isLoading}
-                      className='pl-10 border-gray-200 focus:border-indigo-500 focus:ring-indigo-500'
+                      className='pl-12 pr-4 py-4 h-12 text-base border-gray-200 focus:border-indigo-500 focus:ring-indigo-500'
                     />
                   </div>
                 </div>
-                <div className='space-y-2'>
+                <div className='space-y-3'>
                   <Label
                     htmlFor='signup-password'
                     className='text-sm font-medium text-gray-700'
@@ -292,7 +297,7 @@ export function AuthModal({
                     Password
                   </Label>
                   <div className='relative'>
-                    <Lock className='absolute left-3 top-3 h-4 w-4 text-gray-400' />
+                    <Lock className='absolute left-4 top-4 h-4 w-4 text-gray-400' />
                     <Input
                       id='signup-password'
                       type='password'
@@ -305,11 +310,11 @@ export function AuthModal({
                         })
                       }
                       disabled={isLoading}
-                      className='pl-10 border-gray-200 focus:border-indigo-500 focus:ring-indigo-500'
+                      className='pl-12 pr-4 py-4 h-12 text-base border-gray-200 focus:border-indigo-500 focus:ring-indigo-500'
                     />
                   </div>
                 </div>
-                <div className='space-y-2'>
+                <div className='space-y-3'>
                   <Label
                     htmlFor='signup-confirm-password'
                     className='text-sm font-medium text-gray-700'
@@ -317,7 +322,7 @@ export function AuthModal({
                     Confirm password
                   </Label>
                   <div className='relative'>
-                    <Lock className='absolute left-3 top-3 h-4 w-4 text-gray-400' />
+                    <Lock className='absolute left-4 top-4 h-4 w-4 text-gray-400' />
                     <Input
                       id='signup-confirm-password'
                       type='password'
@@ -330,7 +335,7 @@ export function AuthModal({
                         })
                       }
                       disabled={isLoading}
-                      className='pl-10 border-gray-200 focus:border-indigo-500 focus:ring-indigo-500'
+                      className='pl-12 pr-4 py-4 h-12 text-base border-gray-200 focus:border-indigo-500 focus:ring-indigo-500'
                     />
                   </div>
                 </div>
@@ -340,30 +345,9 @@ export function AuthModal({
                   </div>
                 )}
 
-                {/* Benefits */}
-                <div className='bg-gradient-to-r from-indigo-50 to-purple-50 rounded-lg p-4 space-y-2 border border-indigo-100'>
-                  <p className='text-sm font-semibold text-indigo-900 mb-2'>
-                    What you&apos;ll get:
-                  </p>
-                  <div className='space-y-1'>
-                    <div className='flex items-center space-x-2 text-sm text-indigo-800'>
-                      <CheckCircle className='h-4 w-4' />
-                      <span>Save your writing sessions</span>
-                    </div>
-                    <div className='flex items-center space-x-2 text-sm text-indigo-800'>
-                      <CheckCircle className='h-4 w-4' />
-                      <span>Advanced AI suggestions</span>
-                    </div>
-                    <div className='flex items-center space-x-2 text-sm text-indigo-800'>
-                      <CheckCircle className='h-4 w-4' />
-                      <span>Personal writing insights</span>
-                    </div>
-                  </div>
-                </div>
-
                 <Button
                   type='submit'
-                  className='w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-medium py-2.5 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300'
+                  className='w-full h-12 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-medium text-base rounded-lg shadow-lg hover:shadow-xl transition-all duration-300'
                   disabled={isLoading}
                 >
                   {isLoading ? (
