@@ -16,16 +16,26 @@ import {
   Keyboard,
   ChevronDown,
   ChevronUp,
+  FileText,
 } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from '@/components/ui/dialog';
 import { SuggestionCard } from '@/components/suggestion-card';
 import { SuggestionNavigator } from '@/components/SuggestionNavigator';
 import { History } from '@/components/History';
 import { analyzeText, updateSuggestion, APIError } from '@/lib/api';
 import { NepaliTextEditor } from '@/components/NepaliTextEditor';
 import { KeyboardGuide } from '@/components/KeyboardGuide';
+import { AuthModal } from '@/components/auth/AuthModal';
 import { RootState } from '@/store';
 import { setSuggestions, removeSuggestion } from '@/store/suggestionsSlice';
 import { setText } from '@/store/textSlice';
@@ -52,6 +62,8 @@ export default function Home() {
   const [suggestionViewMode, setSuggestionViewMode] = useState<'list' | 'navigate'>('navigate');
   const [listModeSelectedIndex, setListModeSelectedIndex] = useState(0);
   const [showListKeyboardGuide, setShowListKeyboardGuide] = useState(false);
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [showNewTextDialog, setShowNewTextDialog] = useState(false);
 
   // Use refs to prevent unnecessary re-renders
   const isScrollingRef = useRef(false);
@@ -104,6 +116,13 @@ export default function Home() {
       return;
     }
 
+    // Check if user is authenticated
+    if (!isAuthenticated) {
+      setIsAuthModalOpen(true);
+      toast.info('Please sign in to enhance your text');
+      return;
+    }
+
     setIsLoading(true);
     setError(null);
     try {
@@ -130,6 +149,19 @@ export default function Home() {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleNewText = () => {
+    setShowNewTextDialog(true);
+  };
+
+  const handleConfirmNewText = () => {
+    dispatch(setSuggestions([]));
+    dispatch(setText(''));
+    setSessionId(null);
+    setSelectedSuggestionId(null);
+    setShowNewTextDialog(false);
+    toast.success('Ready for new text! Your previous work is saved in history.');
   };
 
   const handleSuggestionUpdate = useCallback(async (
@@ -345,7 +377,7 @@ export default function Home() {
             {/* Header */}
             <div className='flex items-center justify-center space-x-2 mb-6'>
               <Sparkles className='h-6 w-6' />
-              <span className='font-semibold text-lg'>Perfect Your Nepali Writing - Free Trial</span>
+              <span className='font-semibold text-lg'>Perfect Your Nepali Writing</span>
             </div>
             
             {/* Feature Grid */}
@@ -370,7 +402,7 @@ export default function Home() {
             
             {/* Call to Action */}
             <p className='text-sm text-center text-gray-600'>
-              Write better Nepali instantly. <span className='font-medium text-indigo-700'>Sign up free</span> to save your work & get unlimited corrections
+              Write better Nepali instantly. <span className='font-medium text-indigo-700'>Sign up free</span> to start using Vyakaranly.
             </p>
           </div>
         )}
@@ -416,19 +448,29 @@ export default function Home() {
                     <KeyboardGuide />
                   </div>
                   <Button
-                    onClick={handleAnalyze}
+                    onClick={suggestions.length > 0 ? handleNewText : handleAnalyze}
                     disabled={isLoading || !text.trim()}
-                    className='bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 hover:from-blue-700 hover:via-purple-700 hover:to-indigo-700 text-white font-medium px-6 py-2 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 flex-shrink-0 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:from-blue-600 disabled:hover:via-purple-600 disabled:hover:to-indigo-600'
+                    className={suggestions.length > 0 
+                      ? 'flex items-center font-sm bg-indigo-50 text-indigo-600 space-x-1 border-indigo-200' 
+                      : 'bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 hover:from-blue-700 hover:via-purple-700 hover:to-indigo-700 text-white font-medium px-6 py-2 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 flex-shrink-0 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:from-blue-600 disabled:hover:via-purple-600 disabled:hover:to-indigo-600'
+                    }
+                    variant={suggestions.length > 0 ? 'outline' : 'default'}
+                    size={suggestions.length > 0 ? 'sm' : 'default'}
                   >
                     {isLoading ? (
                       <>
                         <div className='animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2'></div>
                         Analyzing...
                       </>
+                    ) : suggestions.length > 0 ? (
+                      <>
+                        <FileText className='h-4 w-4' />
+                        <span>New Text</span>
+                      </>
                     ) : (
                       <>
                         <Zap className='h-4 w-4 mr-2' />
-                        Enhance Text
+                        {isAuthenticated ? 'Enhance Text' : 'Sign In to Enhance'}
                       </>
                     )}
                   </Button>
@@ -616,6 +658,37 @@ export default function Home() {
           </TabsContent>
         </Tabs>
       </div>
+
+      <AuthModal
+        isOpen={isAuthModalOpen}
+        onClose={() => setIsAuthModalOpen(false)}
+        defaultTab="login"
+      />
+
+      <Dialog open={showNewTextDialog} onOpenChange={setShowNewTextDialog}>
+        <DialogContent className="sm:max-w-[425px] bg-white">
+          <DialogHeader>
+            <DialogTitle>Start New Text?</DialogTitle>
+            <DialogDescription>
+              This will clear current suggestions. Your work is saved in history.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="flex gap-2">
+            <Button
+              variant="outline"
+              onClick={() => setShowNewTextDialog(false)}
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={handleConfirmNewText}
+              className="bg-indigo-50 text-indigo-600 border-indigo-200 hover:bg-indigo-100 hover:text-indigo-700"
+            >
+              Start New Text
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
