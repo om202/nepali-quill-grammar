@@ -25,6 +25,8 @@ import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { RootState, AppDispatch } from '@/store';
 import { logoutAsync } from '@/store/authSlice';
+import { clearSuggestions } from '@/store/suggestionsSlice';
+import { setText } from '@/store/textSlice';
 
 import { ChangePasswordModal } from './ChangePasswordModal';
 
@@ -32,11 +34,16 @@ export function UserProfile() {
   const dispatch = useDispatch<AppDispatch>();
   const { t } = useLanguage();
   const { user } = useSelector((state: RootState) => state.auth);
+  const suggestions = useSelector((state: RootState) => state.suggestions.items);
   const [showLogoutDialog, setShowLogoutDialog] = useState(false);
+  const [showLogoutWithSuggestionsDialog, setShowLogoutWithSuggestionsDialog] = useState(false);
   const [showChangePassword, setShowChangePassword] = useState(false);
 
   const handleLogout = async () => {
     try {
+      // Clear suggestions and text when logging out
+      dispatch(clearSuggestions());
+      dispatch(setText(''));
       await dispatch(logoutAsync()).unwrap();
       toast.success(t.loggedOutSuccessfully);
     } catch {
@@ -45,7 +52,12 @@ export function UserProfile() {
   };
 
   const handleLogoutClick = () => {
-    setShowLogoutDialog(true);
+    // Check if there are active suggestions
+    if (suggestions.length > 0) {
+      setShowLogoutWithSuggestionsDialog(true);
+    } else {
+      setShowLogoutDialog(true);
+    }
   };
 
   const handleChangePasswordClick = () => {
@@ -54,6 +66,11 @@ export function UserProfile() {
 
   const confirmLogout = () => {
     setShowLogoutDialog(false);
+    handleLogout();
+  };
+
+  const confirmLogoutWithSuggestions = () => {
+    setShowLogoutWithSuggestionsDialog(false);
     handleLogout();
   };
 
@@ -131,6 +148,32 @@ export function UserProfile() {
             </Button>
             <Button
               onClick={confirmLogout}
+              className='bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-medium rounded-lg shadow-lg hover:shadow-xl transition-all duration-300'
+            >
+              {t.signOut}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={showLogoutWithSuggestionsDialog} onOpenChange={setShowLogoutWithSuggestionsDialog}>
+        <DialogContent className="bg-white">
+          <DialogHeader>
+            <DialogTitle>{t.signOutWithSuggestions}</DialogTitle>
+            <DialogDescription>
+              {t.signOutWithSuggestionsDescription}
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setShowLogoutWithSuggestionsDialog(false)}
+              className="border-gray-200 hover:bg-gray-50"
+            >
+              {t.cancel}
+            </Button>
+            <Button
+              onClick={confirmLogoutWithSuggestions}
               className='bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-medium rounded-lg shadow-lg hover:shadow-xl transition-all duration-300'
             >
               {t.signOut}

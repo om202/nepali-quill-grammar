@@ -16,6 +16,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { getSession, DiffModel, Suggestion } from '@/lib/api';
 import { getSuggestionContainerColor } from '@/utils/colors';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface SessionDetailProps {
   sessionId: string;
@@ -26,6 +27,7 @@ export function SessionDetail({ sessionId, onBack }: SessionDetailProps) {
   const [sessionData, setSessionData] = useState<DiffModel | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const { t } = useLanguage();
 
   const fetchSessionData = useCallback(async () => {
     setIsLoading(true);
@@ -35,13 +37,13 @@ export function SessionDetail({ sessionId, onBack }: SessionDetailProps) {
       setSessionData(data);
     } catch (err: unknown) {
       const errorMessage =
-        err instanceof Error ? err.message : 'Failed to load session details';
+        err instanceof Error ? err.message : t.failedToLoadSession;
       setError(errorMessage);
-      toast.error('Failed to load session details');
+      toast.error(t.failedToLoadSession);
     } finally {
       setIsLoading(false);
     }
-  }, [sessionId]);
+  }, [sessionId, t]);
 
   useEffect(() => {
     fetchSessionData();
@@ -50,9 +52,9 @@ export function SessionDetail({ sessionId, onBack }: SessionDetailProps) {
   const copyToClipboard = async (text: string, type: string) => {
     try {
       await navigator.clipboard.writeText(text);
-      toast.success(`${type} copied to clipboard`);
+      toast.success(`${type} ${t.copiedToClipboard}`);
     } catch {
-      toast.error('Failed to copy to clipboard');
+      toast.error(t.failedToCopyToClipboard);
     }
   };
 
@@ -66,7 +68,7 @@ export function SessionDetail({ sessionId, onBack }: SessionDetailProps) {
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
-    toast.success(`${filename} downloaded`);
+    toast.success(`${filename} ${t.downloaded}`);
   };
 
   const renderHighlightedText = (
@@ -134,8 +136,8 @@ export function SessionDetail({ sessionId, onBack }: SessionDetailProps) {
           }}
           title={
             isOriginal
-              ? `Original: "${suggestionText}" → Suggested: "${suggestion.suggestedText}" (${suggestion.action || 'pending'})`
-              : `Applied suggestion: "${suggestion.suggestedText}"`
+              ? `${t.originalTextTooltip}: "${suggestionText}" → ${t.suggestionOf}: "${suggestion.suggestedText}" (${suggestion.action || t.pending})`
+              : `${t.appliedSuggestionTooltip}: "${suggestion.suggestedText}"`
           }
         >
           {isOriginal ? suggestionText : suggestion.suggestedText}
@@ -163,13 +165,13 @@ export function SessionDetail({ sessionId, onBack }: SessionDetailProps) {
             className='flex items-center space-x-2'
           >
             <ArrowLeft className='h-4 w-4' />
-            <span>Back to History</span>
+            <span>{t.backToHistory}</span>
           </Button>
         </div>
 
         <div className='grammarly-card p-8 text-center'>
           <div className='animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mx-auto mb-4'></div>
-          <p className='text-gray-600'>Loading session details...</p>
+          <p className='text-gray-600'>{t.loadingSessionDetails}</p>
         </div>
       </div>
     );
@@ -185,21 +187,21 @@ export function SessionDetail({ sessionId, onBack }: SessionDetailProps) {
             className='flex items-center space-x-2'
           >
             <ArrowLeft className='h-4 w-4' />
-            <span>Back to History</span>
+            <span>{t.backToHistory}</span>
           </Button>
         </div>
 
         <div className='grammarly-card p-8 text-center'>
           <XCircle className='h-12 w-12 text-red-400 mx-auto mb-4' />
           <h3 className='text-base font-medium text-gray-900 mb-2'>
-            Failed to load session
+            {t.failedToLoadSession}
           </h3>
           <p className='text-gray-600 mb-4'>{error}</p>
           <Button
             onClick={fetchSessionData}
             className='grammarly-button-primary'
           >
-            Try again
+            {t.tryAgain}
           </Button>
         </div>
       </div>
@@ -228,10 +230,10 @@ export function SessionDetail({ sessionId, onBack }: SessionDetailProps) {
           className='flex items-center space-x-2'
         >
           <ArrowLeft className='h-4 w-4' />
-          <span>Back to History</span>
+          <span>{t.backToHistory}</span>
         </Button>
 
-        <div className='text-sm text-gray-500'>Session ID: {sessionId}</div>
+        <div className='text-sm text-gray-500'>{t.sessionId}: {sessionId}</div>
       </div>
 
       {/* Statistics */}
@@ -241,28 +243,28 @@ export function SessionDetail({ sessionId, onBack }: SessionDetailProps) {
           <div className='text-xl font-semibold text-gray-900'>
             {allSuggestions.length}
           </div>
-          <div className='text-sm text-gray-600'>Total Suggestions</div>
+          <div className='text-sm text-gray-600'>{t.totalSuggestions}</div>
         </div>
         <div className='grammarly-card p-4 text-center'>
           <CheckCircle className='h-8 w-8 text-green-600 mx-auto mb-2' />
           <div className='text-xl font-semibold text-gray-900'>
             {acceptedCount}
           </div>
-          <div className='text-sm text-gray-600'>Accepted</div>
+          <div className='text-sm text-gray-600'>{t.accepted}</div>
         </div>
         <div className='grammarly-card p-4 text-center'>
           <XCircle className='h-8 w-8 text-red-600 mx-auto mb-2' />
           <div className='text-xl font-semibold text-gray-900'>
             {rejectedCount}
           </div>
-          <div className='text-sm text-gray-600'>Rejected</div>
+          <div className='text-sm text-gray-600'>{t.rejected}</div>
         </div>
         <div className='grammarly-card p-4 text-center'>
           <Clock className='h-8 w-8 text-orange-600 mx-auto mb-2' />
           <div className='text-xl font-semibold text-gray-900'>
             {pendingCount}
           </div>
-          <div className='text-sm text-gray-600'>Pending</div>
+          <div className='text-sm text-gray-600'>{t.pending}</div>
         </div>
       </div>
 
@@ -273,19 +275,19 @@ export function SessionDetail({ sessionId, onBack }: SessionDetailProps) {
           <div className='flex items-center justify-between mb-4'>
             <h3 className='text-lg font-medium text-gray-900 flex items-center space-x-2'>
               <FileText className='h-5 w-5' />
-              <span>Original Text</span>
+              <span>{t.originalText}</span>
             </h3>
             <div className='flex space-x-2'>
               <Button
                 variant='outline'
                 size='sm'
                 onClick={() =>
-                  copyToClipboard(sessionData.originalText, 'Original text')
+                  copyToClipboard(sessionData.originalText, t.originalText)
                 }
                 className='flex items-center space-x-1'
               >
                 <Copy className='h-4 w-4' />
-                <span>Copy</span>
+                <span>{t.copy}</span>
               </Button>
               <Button
                 variant='outline'
@@ -296,7 +298,7 @@ export function SessionDetail({ sessionId, onBack }: SessionDetailProps) {
                 className='flex items-center space-x-1'
               >
                 <Download className='h-4 w-4' />
-                <span>Download</span>
+                <span>{t.download}</span>
               </Button>
             </div>
           </div>
@@ -316,19 +318,19 @@ export function SessionDetail({ sessionId, onBack }: SessionDetailProps) {
           <div className='flex items-center justify-between mb-4'>
             <h3 className='text-lg font-medium text-gray-900 flex items-center space-x-2'>
               <CheckCircle className='h-5 w-5 text-green-600' />
-              <span>Enhanced Text</span>
+              <span>{t.enhancedText}</span>
             </h3>
             <div className='flex space-x-2'>
               <Button
                 variant='outline'
                 size='sm'
                 onClick={() =>
-                  copyToClipboard(sessionData.enhancedText, 'Enhanced text')
+                  copyToClipboard(sessionData.enhancedText, t.enhancedText)
                 }
                 className='flex items-center space-x-1'
               >
                 <Copy className='h-4 w-4' />
-                <span>Copy</span>
+                <span>{t.copy}</span>
               </Button>
               <Button
                 variant='outline'
@@ -339,7 +341,7 @@ export function SessionDetail({ sessionId, onBack }: SessionDetailProps) {
                 className='flex items-center space-x-1'
               >
                 <Download className='h-4 w-4' />
-                <span>Download</span>
+                <span>{t.download}</span>
               </Button>
             </div>
           </div>
@@ -359,7 +361,7 @@ export function SessionDetail({ sessionId, onBack }: SessionDetailProps) {
       {allSuggestions.length > 0 && (
         <div className='grammarly-card p-6'>
           <h3 className='text-lg font-medium text-gray-900 mb-4'>
-            All Suggestions
+            {t.allSuggestions}
           </h3>
           <div className='space-y-3'>
             {allSuggestions.map((suggestion, index) => {
@@ -380,7 +382,7 @@ export function SessionDetail({ sessionId, onBack }: SessionDetailProps) {
                         className='font-medium'
                         style={{ color: colors.textColor }}
                       >
-                        "{suggestion.originalText}"
+                        &quot;{suggestion.originalText}&quot;
                       </span>
                       <ArrowRight 
                         className='h-4 w-4' 
@@ -390,7 +392,7 @@ export function SessionDetail({ sessionId, onBack }: SessionDetailProps) {
                         className='font-medium'
                         style={{ color: colors.textColor }}
                       >
-                        "{suggestion.suggestedText}"
+                        &quot;{suggestion.suggestedText}&quot;
                       </span>
                     </div>
                   </div>
@@ -399,19 +401,19 @@ export function SessionDetail({ sessionId, onBack }: SessionDetailProps) {
                     {suggestion.action === 'accept' && (
                       <div className='flex items-center space-x-1 text-green-600'>
                         <CheckCircle className='h-4 w-4' />
-                        <span className='text-sm font-medium'>Accepted</span>
+                        <span className='text-sm font-medium'>{t.accepted}</span>
                       </div>
                     )}
                     {suggestion.action === 'reject' && (
                       <div className='flex items-center space-x-1 text-red-600'>
                         <XCircle className='h-4 w-4' />
-                        <span className='text-sm font-medium'>Rejected</span>
+                        <span className='text-sm font-medium'>{t.rejected}</span>
                       </div>
                     )}
                     {!suggestion.action && (
                       <div className='flex items-center space-x-1 text-orange-600'>
                         <Clock className='h-4 w-4' />
-                        <span className='text-sm font-medium'>Pending</span>
+                        <span className='text-sm font-medium'>{t.pending}</span>
                       </div>
                     )}
                   </div>
@@ -424,28 +426,28 @@ export function SessionDetail({ sessionId, onBack }: SessionDetailProps) {
 
       {/* Legend */}
       <div className='grammarly-card p-4'>
-        <h4 className='text-sm font-medium text-gray-700 mb-3'>Legend:</h4>
+        <h4 className='text-sm font-medium text-gray-700 mb-3'>{t.legend}:</h4>
         <div className='flex flex-wrap gap-4 text-sm'>
           <div className='flex items-center space-x-2'>
             <span className='px-2 py-1 bg-green-100 text-green-800 rounded'>
-              Accepted
+              {t.accepted}
             </span>
-            <span className='text-gray-600'>Suggestions that were applied</span>
+            <span className='text-gray-600'>{t.suggestionsApplied}</span>
           </div>
           <div className='flex items-center space-x-2'>
             <span className='px-2 py-1 bg-red-100 text-red-800 rounded'>
-              Rejected
+              {t.rejected}
             </span>
             <span className='text-gray-600'>
-              Suggestions that were declined
+              {t.suggestionsDeclined}
             </span>
           </div>
           <div className='flex items-center space-x-2'>
             <span className='px-2 py-1 bg-yellow-100 text-yellow-800 rounded'>
-              Pending
+              {t.pending}
             </span>
             <span className='text-gray-600'>
-              Suggestions that were not reviewed
+              {t.suggestionsNotReviewed}
             </span>
           </div>
         </div>

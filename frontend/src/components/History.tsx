@@ -18,11 +18,13 @@ import { Button } from '@/components/ui/button';
 import { getUserHistory, UserHistoryItem } from '@/lib/api';
 import { SessionDetail } from '@/components/SessionDetail';
 import { RootState } from '@/store';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 export function History() {
   const { isAuthenticated, user } = useSelector(
     (state: RootState) => state.auth
   );
+  const { t } = useLanguage();
   const [history, setHistory] = useState<UserHistoryItem[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -44,9 +46,9 @@ export function History() {
       setHistory(response.history);
     } catch (error: unknown) {
       const errorMessage =
-        error instanceof Error ? error.message : 'Failed to load history';
+        error instanceof Error ? error.message : t.failedToLoadHistory;
       setError(errorMessage);
-      toast.error('Failed to load history');
+      toast.error(t.failedToLoadHistory);
     } finally {
       setIsLoading(false);
     }
@@ -64,8 +66,8 @@ export function History() {
 
   const truncateText = (text: string, maxLength: number = 150) => {
     if (text.length <= maxLength) {
-return text;
-}
+      return text;
+    }
     return text.substring(0, maxLength) + '...';
   };
 
@@ -93,11 +95,10 @@ return text;
         <div className='text-center py-12'>
           <FileText className='h-12 w-12 text-gray-400 mx-auto mb-4' />
           <h3 className='text-base font-medium text-gray-900 mb-2'>
-            Sign in to view history
+            {t.signInToViewHistory}
           </h3>
           <p className='text-gray-600'>
-            Your text enhancement history will appear here once you&apos;re
-            logged in.
+            {t.historyWillAppearHere}
           </p>
         </div>
       </div>
@@ -108,7 +109,7 @@ return text;
     return (
       <div className='grammarly-card p-8 text-center'>
         <div className='animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mx-auto mb-4'></div>
-        <p className='text-gray-600'>Loading your history...</p>
+        <p className='text-gray-600'>{t.loadingHistory}</p>
       </div>
     );
   }
@@ -118,11 +119,11 @@ return text;
       <div className='grammarly-card p-8 text-center'>
         <XCircle className='h-12 w-12 text-red-400 mx-auto mb-4' />
         <h3 className='text-base font-medium text-gray-900 mb-2'>
-          Failed to load history
+          {t.failedToLoadHistory}
         </h3>
         <p className='text-gray-600 mb-4'>{error}</p>
         <Button onClick={fetchHistory} className='grammarly-button-primary'>
-          Try again
+          {t.tryAgain}
         </Button>
       </div>
     );
@@ -133,10 +134,10 @@ return text;
       <div className='grammarly-card p-8 text-center'>
         <FileText className='h-12 w-12 text-gray-400 mx-auto mb-4' />
         <h3 className='text-base font-medium text-gray-900 mb-2'>
-          No history yet
+          {t.noHistoryYet}
         </h3>
         <p className='text-gray-600'>
-          Start enhancing your Nepali text to see your history here.
+          {t.startEnhancingText}
         </p>
       </div>
     );
@@ -168,7 +169,7 @@ return text;
           <div className='text-xl font-semibold text-gray-900'>
             {totalSessions}
           </div>
-          <div className='text-sm text-gray-600'>Sessions</div>
+          <div className='text-sm text-gray-600'>{t.sessions}</div>
         </div>
         <div
           className='grammarly-card p-4 text-center'
@@ -178,7 +179,7 @@ return text;
           <div className='text-xl font-semibold text-gray-900'>
             {totalSuggestions}
           </div>
-          <div className='text-sm text-gray-600'>Suggestions</div>
+          <div className='text-sm text-gray-600'>{t.suggestionsCount}</div>
         </div>
         <div
           className='grammarly-card p-4 text-center'
@@ -188,7 +189,7 @@ return text;
           <div className='text-xl font-semibold text-gray-900'>
             {totalAccepted}
           </div>
-          <div className='text-sm text-gray-600'>Accepted</div>
+          <div className='text-sm text-gray-600'>{t.accepted}</div>
         </div>
         <div
           className='grammarly-card p-4 text-center'
@@ -198,13 +199,13 @@ return text;
           <div className='text-xl font-semibold text-gray-900'>
             {acceptanceRate}%
           </div>
-          <div className='text-sm text-gray-600'>Acceptance Rate</div>
+          <div className='text-sm text-gray-600'>{t.acceptanceRate}</div>
         </div>
       </div>
 
       {/* History List */}
       <div className='space-y-4'>
-        <h3 className='text-lg font-medium text-gray-900'>Recent Sessions</h3>
+        <h3 className='text-lg font-medium text-gray-900'>{t.recentSessions}</h3>
         {history.map((item, index) => (
           <div
             key={item.id}
@@ -221,24 +222,24 @@ return text;
                 <div className='flex items-center space-x-1'>
                   <TrendingUp className='h-4 w-4 text-purple-600' />
                   <span className='text-gray-600'>
-                    {item.suggestionsCount} suggestions
+                    {item.suggestionsCount} {t.suggestionsText}
                   </span>
                 </div>
                 <div className='flex items-center space-x-1'>
                   <CheckCircle className='h-4 w-4 text-green-600' />
                   <span className='text-gray-600'>
-                    {item.acceptedCount} accepted
+                    {item.acceptedCount} {t.acceptedText}
                   </span>
                 </div>
                 <div className='flex items-center space-x-1'>
                   <XCircle className='h-4 w-4 text-red-600' />
                   <span className='text-gray-600'>
-                    {item.rejectedCount} rejected
+                    {item.rejectedCount} {t.rejectedText}
                   </span>
                 </div>
                 <div className='flex items-center space-x-1 text-indigo-600 opacity-0 group-hover:opacity-100 transition-opacity'>
                   <Eye className='h-4 w-4' />
-                  <span className='text-sm font-medium'>View Details</span>
+                  <span className='text-sm font-medium'>{t.viewDetails}</span>
                   <ChevronRight className='h-4 w-4' />
                 </div>
               </div>
@@ -246,7 +247,7 @@ return text;
 
             <div className='bg-gray-50 rounded-lg p-4'>
               <h4 className='text-sm font-medium text-gray-700 mb-2'>
-                Original Text:
+                {t.originalTextLabel}:
               </h4>
               <p className='text-gray-900 leading-relaxed'>
                 {truncateText(item.originalText)}

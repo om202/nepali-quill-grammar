@@ -76,6 +76,10 @@ export interface Translations {
   startNewTextDescription: string;
   cancel: string;
   
+  // Sign out with suggestions dialog
+  signOutWithSuggestions: string;
+  signOutWithSuggestionsDescription: string;
+  
   // Messages
   pleaseEnterText: string;
   pleaseSignIn: string;
@@ -188,6 +192,45 @@ export interface Translations {
   suggestionRejectedSuccessfully: string;
   failedToAcceptSuggestion: string;
   failedToRejectSuggestion: string;
+  
+  // History Component
+  signInToViewHistory: string;
+  historyWillAppearHere: string;
+  loadingHistory: string;
+  failedToLoadHistory: string;
+  tryAgain: string;
+  noHistoryYet: string;
+  startEnhancingText: string;
+  sessions: string;
+  suggestionsCount: string;
+  acceptanceRate: string;
+  recentSessions: string;
+  suggestionsText: string;
+  acceptedText: string;
+  rejectedText: string;
+  viewDetails: string;
+  originalTextLabel: string;
+  
+  // SessionDetail Component
+  backToHistory: string;
+  sessionId: string;
+  loadingSessionDetails: string;
+  failedToLoadSession: string;
+  totalSuggestions: string;
+  originalText: string;
+  enhancedText: string;
+  copy: string;
+  download: string;
+  allSuggestions: string;
+  legend: string;
+  suggestionsApplied: string;
+  suggestionsDeclined: string;
+  suggestionsNotReviewed: string;
+  copiedToClipboard: string;
+  failedToCopyToClipboard: string;
+  downloaded: string;
+  originalTextTooltip: string;
+  appliedSuggestionTooltip: string;
 }
 
 export const translations: Record<Language, Translations> = {
@@ -303,6 +346,10 @@ export const translations: Record<Language, Translations> = {
     startNewTextDescription: 'यसले हालका सुझावहरू हटाउनेछ। तपाईंको काम इतिहासमा सुरक्षित छ।',
     cancel: 'रद्द गर्नुहोस्',
     
+    // Sign out with suggestions dialog
+    signOutWithSuggestions: 'सुझावहरू सहित साइन आउट गर्नुहुन्छ?',
+    signOutWithSuggestionsDescription: 'यसले हालका सुझावहरू हटाउनेछ। तपाईंको काम इतिहासमा सुरक्षित छ।',
+    
     // Messages
     pleaseEnterText: 'कृपया विश्लेषण गर्न केही पाठ प्रविष्ट गर्नुहोस्',
     pleaseSignIn: 'कृपया आफ्नो पाठ सुधार गर्न साइन इन गर्नुहोस्',
@@ -415,6 +462,45 @@ export const translations: Record<Language, Translations> = {
     suggestionRejectedSuccessfully: 'सुझाव अस्वीकारित गरियो',
     failedToAcceptSuggestion: 'सुझाव स्वीकार गर्न असफल',
     failedToRejectSuggestion: 'सुझाव अस्वीकार गर्न असफल',
+    
+    // History Component
+    signInToViewHistory: 'इतिहास देखाउन साइन इन गर्नुहोस्',
+    historyWillAppearHere: 'इतिहास यहाँ देखाउनेछ',
+    loadingHistory: 'इतिहास लोड गर्दै...',
+    failedToLoadHistory: 'इतिहास लोड गर्न असफल',
+    tryAgain: 'पुनः प्रयास गर्नुहोस्',
+    noHistoryYet: 'इतिहास अघि छैन',
+    startEnhancingText: 'विश्लेषण गर्न सुरु गर्नुहोस्',
+    sessions: 'सेशनहरू',
+    suggestionsCount: 'सुझावहरू',
+    acceptanceRate: 'स्वीकार दर',
+    recentSessions: 'आजको सेशनहरू',
+    suggestionsText: 'सुझावहरू',
+    acceptedText: 'स्वीकारित',
+    rejectedText: 'अस्वीकारित',
+    viewDetails: 'विवर्तन',
+    originalTextLabel: 'मूल पाठ',
+    
+    // SessionDetail Component
+    backToHistory: 'इतिहासमा फर्कनुहोस्',
+    sessionId: 'सेशन ID',
+    loadingSessionDetails: 'सेशन विवर्तन लोड गर्दै...',
+    failedToLoadSession: 'सेशन विवर्तन लोड गर्न असफल',
+    totalSuggestions: 'कुल सुझावहरू',
+    originalText: 'मूल पाठ',
+    enhancedText: 'सुधारित पाठ',
+    copy: 'कॉपी गर्नुहोस्',
+    download: 'डाउनलोड गर्नुहोस्',
+    allSuggestions: 'सबै सुझावहरू',
+    legend: 'विवर्तन',
+    suggestionsApplied: 'सुझाव लागू गरियो',
+    suggestionsDeclined: 'सुझाव अन्तर्गत गरियो',
+    suggestionsNotReviewed: 'सुझाव समीक्षा गरिएको छैन',
+    copiedToClipboard: 'कॉपी गरियो',
+    failedToCopyToClipboard: 'कॉपी गर्न असफल',
+    downloaded: 'डाउनलोड गरियो',
+    originalTextTooltip: 'मूल पाठ',
+    appliedSuggestionTooltip: 'लागू सुझाव',
   },
   en: {
     // Header
@@ -528,6 +614,10 @@ export const translations: Record<Language, Translations> = {
     startNewTextDescription: 'This will clear current suggestions. Your work is saved in history.',
     cancel: 'Cancel',
     
+    // Sign out with suggestions dialog
+    signOutWithSuggestions: 'Sign out with suggestions?',
+    signOutWithSuggestionsDescription: 'This will clear current suggestions. Your work is saved in history.',
+    
     // Messages
     pleaseEnterText: 'Please enter some text to analyze',
     pleaseSignIn: 'Please sign in to enhance your text',
@@ -640,6 +730,45 @@ export const translations: Record<Language, Translations> = {
     suggestionRejectedSuccessfully: 'Suggestion rejected successfully',
     failedToAcceptSuggestion: 'Failed to accept suggestion',
     failedToRejectSuggestion: 'Failed to reject suggestion',
+    
+    // History Component
+    signInToViewHistory: 'Sign In to View History',
+    historyWillAppearHere: 'History will appear here',
+    loadingHistory: 'Loading history...',
+    failedToLoadHistory: 'Failed to load history',
+    tryAgain: 'Try Again',
+    noHistoryYet: 'No history yet',
+    startEnhancingText: 'Start Enhancing Text',
+    sessions: 'Sessions',
+    suggestionsCount: 'Suggestions',
+    acceptanceRate: 'Acceptance Rate',
+    recentSessions: 'Recent Sessions',
+    suggestionsText: 'Suggestions',
+    acceptedText: 'Accepted',
+    rejectedText: 'Rejected',
+    viewDetails: 'View Details',
+    originalTextLabel: 'Original Text',
+    
+    // SessionDetail Component
+    backToHistory: 'Back to History',
+    sessionId: 'Session ID',
+    loadingSessionDetails: 'Loading session details...',
+    failedToLoadSession: 'Failed to load session',
+    totalSuggestions: 'Total Suggestions',
+    originalText: 'Original Text',
+    enhancedText: 'Enhanced Text',
+    copy: 'Copy',
+    download: 'Download',
+    allSuggestions: 'All Suggestions',
+    legend: 'Legend',
+    suggestionsApplied: 'Suggestions Applied',
+    suggestionsDeclined: 'Suggestions Declined',
+    suggestionsNotReviewed: 'Suggestions Not Reviewed',
+    copiedToClipboard: 'Copied to clipboard',
+    failedToCopyToClipboard: 'Failed to copy to clipboard',
+    downloaded: 'Downloaded',
+    originalTextTooltip: 'Original Text',
+    appliedSuggestionTooltip: 'Applied Suggestion',
   },
 };
 
