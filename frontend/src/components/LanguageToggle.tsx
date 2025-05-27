@@ -14,14 +14,19 @@ export function LanguageToggle() {
     setLanguage(newLanguage);
   };
 
+  // Conditional classes for Nepali language text
+  const languageTextClass = language === 'ne'
+    ? 'hidden sm:inline text-base font-medium'
+    : 'hidden sm:inline text-sm font-medium';
+
   return (
     <button
       onClick={toggleLanguage}
-      className="flex items-center space-x-2 px-3 py-2 text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors duration-200"
+      className="flex items-center space-x-2 px-3 py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors duration-200"
       title={`${t.language}: ${language === 'ne' ? t.nepali : t.english}`}
     >
       <Globe className="h-4 w-4" />
-      <span className="hidden sm:inline">
+      <span className={languageTextClass}>
         {language === 'ne' ? 'नेपाली' : 'English'}
       </span>
     </button>

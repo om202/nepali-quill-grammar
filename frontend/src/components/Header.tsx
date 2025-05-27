@@ -14,7 +14,7 @@ export function Header() {
   const { isAuthenticated, user } = useSelector(
     (state: RootState) => state.auth
   );
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [authModalTab, setAuthModalTab] = useState<'login' | 'signup'>('login');
 
@@ -22,6 +22,11 @@ export function Header() {
     setAuthModalTab('login');
     setIsAuthModalOpen(true);
   };
+
+  // Conditional classes for Nepali app name
+  const appNameClass = language === 'ne'
+    ? 'text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent'
+    : 'text-xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent';
 
   return (
     <>
@@ -33,7 +38,7 @@ export function Header() {
                 <PenTool className='h-7 w-7' />
                 <Sparkles className='h-3 w-3 absolute -top-1 -right-1 text-purple-500' />
               </div>
-              <h1 className='text-xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent'>
+              <h1 className={appNameClass}>
                 {t.appName}
               </h1>
             </div>

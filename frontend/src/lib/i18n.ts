@@ -428,8 +428,8 @@ export const translations: Record<Language, Translations> = {
     startWritingBetter: 'आज नै राम्रो लेख्न सुरु गर्नुहोस्',
     
     // Footer
-    allRightsReserved: 'सर्व उपचार्य गरियो',
-    madeWith: 'बनाइयो',
+    allRightsReserved: 'सर्वाधिकार सुरक्षित',
+    madeWith: 'बनाइएको',
     inNepal: 'नेपालमा',
     companyName: 'नोबल स्ट्याक प्रा. लि.',
     companyLocation: 'काठमाडौं, नेपाल',
