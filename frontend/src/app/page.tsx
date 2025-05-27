@@ -637,6 +637,11 @@ export default function Home() {
         <FAQSection />
       )}
 
+      {/* Footer - Only visible when not authenticated */}
+      {!isAuthenticated && (
+        <Footer />
+      )}
+
       <AuthModal
         isOpen={isAuthModalOpen}
         onClose={() => setIsAuthModalOpen(false)}
@@ -667,8 +672,6 @@ export default function Home() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-
-      <Footer />
     </div>
   );
 }

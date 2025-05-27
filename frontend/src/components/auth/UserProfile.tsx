@@ -66,26 +66,26 @@ export function UserProfile() {
       <DropdownMenuTrigger asChild>
         <Button
           variant='ghost'
-          className='relative h-10 w-10 rounded-full hover:bg-indigo-50 transition-smooth hover:scale-105 active:scale-95'
+          className='relative h-10 w-10 rounded-full hover:bg-indigo-50 transition-all duration-200 hover:scale-105 active:scale-95'
         >
-          <Avatar className='h-10 w-10 border-2 border-blue-200 transition-colors-smooth'>
-            <AvatarFallback className='font-bold text-lg bg-gradient-to-br from-blue-500 to-purple-600 text-white transition-colors-smooth'>
+          <Avatar className='h-10 w-10 border-2 border-indigo-200 transition-colors duration-200'>
+            <AvatarFallback className='font-bold text-lg bg-gradient-to-br from-indigo-500 to-purple-600 text-white'>
               {firstName[0].toUpperCase()}
             </AvatarFallback>
           </Avatar>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent
-        className='w-64 p-2 transition-opacity-smooth bg-white'
+        className='w-64 p-2 bg-white shadow-xl border border-gray-200'
         align='end'
         forceMount
       >
-        <div className='flex bg-white items-center space-x-3 p-3 bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg mb-2 transition-colors-smooth'>
+        <div className='flex items-center space-x-3 p-3 bg-gradient-to-r from-indigo-50 to-purple-50 rounded-lg mb-2 border border-indigo-100'>
           <div className='flex-1 min-w-0'>
-            <p className='font-semibold text-gray-900 truncate transition-colors-smooth'>
+            <p className='font-semibold text-gray-900 truncate'>
               {firstName}
             </p>
-            <p className='text-sm text-gray-600 truncate transition-colors-smooth'>
+            <p className='text-sm text-gray-600 truncate'>
               {user.email}
             </p>
           </div>
@@ -94,9 +94,9 @@ export function UserProfile() {
         
         <DropdownMenuItem
           onClick={handleChangePasswordClick}
-          className='flex items-center space-x-2 p-3 rounded-lg hover:bg-indigo-50 cursor-pointer transition-smooth hover:scale-[1.02] active:scale-[0.98]'
+          className='flex items-center space-x-2 p-3 rounded-lg hover:bg-indigo-50 cursor-pointer transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]'
         >
-          <Lock className='h-4 w-4 transition-transform-smooth' />
+          <Lock className='h-4 w-4' />
           <span className='font-medium'>Change Password</span>
         </DropdownMenuItem>
         
@@ -104,9 +104,9 @@ export function UserProfile() {
         
         <DropdownMenuItem
           onClick={handleLogoutClick}
-          className='flex items-center space-x-2 p-3 rounded-lg hover:bg-red-50 cursor-pointer text-red-600 transition-smooth hover:scale-[1.02] active:scale-[0.98]'
+          className='flex items-center space-x-2 p-3 rounded-lg hover:bg-red-50 cursor-pointer text-red-600 transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]'
         >
-          <LogOut className='h-4 w-4 transition-transform-smooth' />
+          <LogOut className='h-4 w-4' />
           <span className='font-medium'>Sign out</span>
         </DropdownMenuItem>
       </DropdownMenuContent>
@@ -123,13 +123,13 @@ export function UserProfile() {
             <Button
               variant="outline"
               onClick={() => setShowLogoutDialog(false)}
+              className="border-gray-200 hover:bg-gray-50"
             >
               Cancel
             </Button>
             <Button
-              className='bg-indigo-50'
-              variant="outline"
               onClick={confirmLogout}
+              className='bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-medium rounded-lg shadow-lg hover:shadow-xl transition-all duration-300'
             >
               Sign out
             </Button>

@@ -123,11 +123,11 @@ export function AuthModal({
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
       <DialogContent className='sm:max-w-[480px] p-0 overflow-hidden bg-white'>
-        <div className='bg-gradient-to-br from-blue-50 to-purple-50 p-6'>
+        <div className='bg-gradient-to-br from-indigo-50 via-purple-50 to-blue-50 p-6'>
           <DialogHeader className='text-center'>
             <div className='flex items-center justify-center space-x-2 mb-2'>
               <Sparkles className='h-6 w-6 text-indigo-600' />
-              <DialogTitle className='text-xl font-semibold grammarly-gradient-text'>
+              <DialogTitle className='text-xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent'>
                 Welcome to Vyakaranly
               </DialogTitle>
             </div>
@@ -142,16 +142,16 @@ export function AuthModal({
             value={activeTab}
             onValueChange={value => setActiveTab(value as 'login' | 'signup')}
           >
-            <TabsList className='grid w-full grid-cols-2 mb-6 bg-gray-100 p-1 rounded-sm'>
+            <TabsList className='grid w-full grid-cols-2 mb-6 bg-gray-100 p-1 rounded-lg'>
               <TabsTrigger
                 value='login'
-                className='rounded-lg font-semibold data-[state=active]:bg-white data-[state=active]:shadow-sm'
+                className='rounded-lg font-medium data-[state=active]:bg-white data-[state=active]:shadow-sm data-[state=active]:text-indigo-600'
               >
                 Log in
               </TabsTrigger>
               <TabsTrigger
                 value='signup'
-                className='rounded-lg font-semibold data-[state=active]:bg-white data-[state=active]:shadow-sm'
+                className='rounded-lg font-medium data-[state=active]:bg-white data-[state=active]:shadow-sm data-[state=active]:text-indigo-600'
               >
                 Sign up
               </TabsTrigger>
@@ -177,7 +177,7 @@ export function AuthModal({
                         setLoginForm({ ...loginForm, email: e.target.value })
                       }
                       disabled={isLoading}
-                      className='grammarly-input-with-icon'
+                      className='pl-10 border-gray-200 focus:border-indigo-500 focus:ring-indigo-500'
                     />
                   </div>
                 </div>
@@ -199,13 +199,13 @@ export function AuthModal({
                         setLoginForm({ ...loginForm, password: e.target.value })
                       }
                       disabled={isLoading}
-                      className='grammarly-input-with-icon'
+                      className='pl-10 border-gray-200 focus:border-indigo-500 focus:ring-indigo-500'
                     />
                   </div>
                 </div>
                 {error && (
-                  <div className='grammarly-status-error'>
-                    <p className='text-sm font-medium'>{error}</p>
+                  <div className='bg-red-50 border border-red-200 rounded-lg p-3'>
+                    <p className='text-sm font-medium text-red-800'>{error}</p>
                   </div>
                 )}
                 
@@ -223,7 +223,7 @@ export function AuthModal({
                 
                 <Button
                   type='submit'
-                  className='grammarly-button-primary w-full'
+                  className='w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-medium py-2.5 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300'
                   disabled={isLoading}
                 >
                   {isLoading ? (
@@ -243,7 +243,7 @@ export function AuthModal({
                 <div className='space-y-2'>
                   <Label
                     htmlFor='signup-name'
-                    className='text-sm font-semibold text-gray-700'
+                    className='text-sm font-medium text-gray-700'
                   >
                     Full name
                   </Label>
@@ -258,14 +258,14 @@ export function AuthModal({
                         setSignupForm({ ...signupForm, name: e.target.value })
                       }
                       disabled={isLoading}
-                      className='grammarly-input-with-icon'
+                      className='pl-10 border-gray-200 focus:border-indigo-500 focus:ring-indigo-500'
                     />
                   </div>
                 </div>
                 <div className='space-y-2'>
                   <Label
                     htmlFor='signup-email'
-                    className='text-sm font-semibold text-gray-700'
+                    className='text-sm font-medium text-gray-700'
                   >
                     Email address
                   </Label>
@@ -280,14 +280,14 @@ export function AuthModal({
                         setSignupForm({ ...signupForm, email: e.target.value })
                       }
                       disabled={isLoading}
-                      className='grammarly-input-with-icon'
+                      className='pl-10 border-gray-200 focus:border-indigo-500 focus:ring-indigo-500'
                     />
                   </div>
                 </div>
                 <div className='space-y-2'>
                   <Label
                     htmlFor='signup-password'
-                    className='text-sm font-semibold text-gray-700'
+                    className='text-sm font-medium text-gray-700'
                   >
                     Password
                   </Label>
@@ -305,14 +305,14 @@ export function AuthModal({
                         })
                       }
                       disabled={isLoading}
-                      className='grammarly-input-with-icon'
+                      className='pl-10 border-gray-200 focus:border-indigo-500 focus:ring-indigo-500'
                     />
                   </div>
                 </div>
                 <div className='space-y-2'>
                   <Label
                     htmlFor='signup-confirm-password'
-                    className='text-sm font-semibold text-gray-700'
+                    className='text-sm font-medium text-gray-700'
                   >
                     Confirm password
                   </Label>
@@ -330,18 +330,18 @@ export function AuthModal({
                         })
                       }
                       disabled={isLoading}
-                      className='grammarly-input-with-icon'
+                      className='pl-10 border-gray-200 focus:border-indigo-500 focus:ring-indigo-500'
                     />
                   </div>
                 </div>
                 {error && (
-                  <div className='grammarly-status-error'>
-                    <p className='text-sm font-medium'>{error}</p>
+                  <div className='bg-red-50 border border-red-200 rounded-lg p-3'>
+                    <p className='text-sm font-medium text-red-800'>{error}</p>
                   </div>
                 )}
 
                 {/* Benefits */}
-                <div className='bg-indigo-50 rounded-sm p-4 space-y-2'>
+                <div className='bg-gradient-to-r from-indigo-50 to-purple-50 rounded-lg p-4 space-y-2 border border-indigo-100'>
                   <p className='text-sm font-semibold text-indigo-900 mb-2'>
                     What you&apos;ll get:
                   </p>
@@ -363,7 +363,7 @@ export function AuthModal({
 
                 <Button
                   type='submit'
-                  className='grammarly-button-primary w-full'
+                  className='w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-medium py-2.5 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300'
                   disabled={isLoading}
                 >
                   {isLoading ? (
