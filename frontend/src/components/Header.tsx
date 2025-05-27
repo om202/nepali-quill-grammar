@@ -6,12 +6,15 @@ import { Sparkles, PenTool, UserPlus } from 'lucide-react';
 
 import { AuthModal } from '@/components/auth/AuthModal';
 import { UserProfile } from '@/components/auth/UserProfile';
+import { LanguageToggle } from '@/components/LanguageToggle';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { RootState } from '@/store';
 
 export function Header() {
   const { isAuthenticated, user } = useSelector(
     (state: RootState) => state.auth
   );
+  const { t } = useLanguage();
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [authModalTab, setAuthModalTab] = useState<'login' | 'signup'>('login');
 
@@ -31,12 +34,13 @@ export function Header() {
                 <Sparkles className='h-3 w-3 absolute -top-1 -right-1 text-purple-500' />
               </div>
               <h1 className='text-xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent'>
-                व्याकरणली
+                {t.appName}
               </h1>
             </div>
           </div>
 
           <div className='flex items-center space-x-4'>
+            <LanguageToggle />
             {isAuthenticated && user ? (
               <UserProfile />
             ) : (
@@ -50,7 +54,7 @@ export function Header() {
                   }}
                 >
                   <UserPlus className='h-5 w-5 stroke-2' />
-                  <span>Sign In</span>
+                  <span>{t.signIn}</span>
                 </button>
               </div>
             )}

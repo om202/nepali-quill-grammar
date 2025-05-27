@@ -5,6 +5,7 @@ import { Toaster } from 'sonner';
 
 import { Header } from '@/components/Header';
 import { AuthProvider } from '@/components/auth/AuthProvider';
+import { LanguageProvider } from '@/contexts/LanguageContext';
 
 import { Providers } from './providers';
 
@@ -24,13 +25,15 @@ export default function RootLayout({
     <html lang='en'>
       <body className={inter.className}>
         <Providers>
-          <AuthProvider>
-            <div className='min-h-screen bg-background'>
-              <Header />
-              <main>{children}</main>
-            </div>
-            <Toaster />
-          </AuthProvider>
+          <LanguageProvider>
+            <AuthProvider>
+              <div className='min-h-screen bg-background'>
+                <Header />
+                <main>{children}</main>
+              </div>
+              <Toaster />
+            </AuthProvider>
+          </LanguageProvider>
         </Providers>
       </body>
     </html>

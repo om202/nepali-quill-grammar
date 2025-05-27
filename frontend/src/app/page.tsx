@@ -40,6 +40,7 @@ import { TestimonialsSection } from '@/components/TestimonialsSection';
 import { FeatureShowcase } from '@/components/FeatureShowcase';
 import { FAQSection } from '@/components/FAQSection';
 import { Footer } from '@/components/Footer';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { RootState } from '@/store';
 import { setSuggestions, removeSuggestion } from '@/store/suggestionsSlice';
 import { setText } from '@/store/textSlice';
@@ -47,6 +48,7 @@ import { setText } from '@/store/textSlice';
 
 export default function Home() {
   const dispatch = useDispatch();
+  const { t } = useLanguage();
   const suggestions = useSelector(
     (state: RootState) => state.suggestions.items
   );
@@ -116,14 +118,14 @@ export default function Home() {
 
   const handleAnalyze = async () => {
     if (!text.trim()) {
-      toast.error('Please enter some text to analyze');
+      toast.error(t.pleaseEnterText);
       return;
     }
 
     // Check if user is authenticated
     if (!isAuthenticated) {
       setIsAuthModalOpen(true);
-      toast.info('Please sign in to enhance your text');
+      toast.info(t.pleaseSignIn);
       return;
     }
 
@@ -134,9 +136,9 @@ export default function Home() {
       dispatch(setSuggestions(response.suggestions));
       setSessionId(response.sessionId);
       if (response.suggestions.length === 0) {
-        toast.info('No suggestions found for the given text');
+        toast.info(t.noSuggestionsFound);
       } else {
-        toast.success('Text analyzed successfully');
+        toast.success(t.textAnalyzedSuccessfully);
       }
     } catch (error) {
       let errorMessage = 'Failed to analyze text';
@@ -165,7 +167,7 @@ export default function Home() {
     setSessionId(null);
     setSelectedSuggestionId(null);
     setShowNewTextDialog(false);
-    toast.success('Ready for new text! Your previous work is saved in history.');
+    toast.success(t.readyForNewText);
   };
 
   const handleSuggestionUpdate = useCallback(async (
@@ -364,7 +366,7 @@ export default function Home() {
               <div className='flex items-center justify-center space-x-2'>
                 <CheckCircle className='h-5 w-5' />
                 <span className='font-semibold'>
-                  Welcome, {user.name.split(' ')[0]}!
+                  {t.welcome}, {user.name.split(' ')[0]}!
                 </span>
               </div>
             </div>
@@ -382,14 +384,14 @@ export default function Home() {
                 className='flex items-center space-x-2 font-medium data-[state=active]:bg-indigo-50 data-[state=active]:text-indigo-700 transition-colors-smooth'
               >
                 <Zap className='h-4 w-4' />
-                <span>Enhance</span>
+                <span>{t.enhance}</span>
               </TabsTrigger>
               <TabsTrigger
                 value='history'
                 className='flex items-center space-x-2 font-medium data-[state=active]:bg-indigo-50 data-[state=active]:text-indigo-700 transition-colors-smooth'
               >
                 <HistoryIcon className='h-4 w-4' />
-                <span>History</span>
+                <span>{t.history}</span>
               </TabsTrigger>
             </TabsList>
           </Tabs>
@@ -410,7 +412,7 @@ export default function Home() {
                     <div className='flex items-center space-x-6'>
                       <div className='flex items-center space-x-2'>
                         <Edit3 className='h-5 w-5 text-indigo-600' />
-                        <span className='text-gray-700 font-medium'>Text</span>
+                        <span className='text-gray-700 font-medium'>{t.text}</span>
                       </div>
                       <KeyboardGuide />
                     </div>
@@ -427,17 +429,17 @@ export default function Home() {
                       {isLoading ? (
                         <>
                           <div className='animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2'></div>
-                          Analyzing...
+                          {t.analyzing}
                         </>
                       ) : suggestions.length > 0 ? (
                         <>
                           <FileText className='h-4 w-4' />
-                          <span>New Text</span>
+                          <span>{t.newText}</span>
                         </>
                       ) : (
                         <>
                           <Zap className='h-4 w-4 mr-2' />
-                          {isAuthenticated ? 'Enhance Text' : 'Sign In to Enhance'}
+                          {isAuthenticated ? t.enhanceText : t.signInToEnhance}
                         </>
                       )}
                     </Button>
@@ -463,7 +465,7 @@ export default function Home() {
                   <div className='flex items-center justify-between p-4 border-b border-gray-200 flex-shrink-0'>
                     <div className='flex items-center space-x-2'>
                       <Bot className='h-5 w-5 text-purple-600' />
-                      <span className='text-gray-700 font-medium'>Suggestions</span>
+                      <span className='text-gray-700 font-medium'>{t.suggestions}</span>
                       {suggestions.length > 0 && (
                         <span className='bg-gradient-to-r from-green-100 to-emerald-100 text-green-800 text-xs font-medium px-2 py-1 rounded-full border border-green-200'>
                           {suggestions.length} suggestion
@@ -482,7 +484,7 @@ export default function Home() {
                               ? 'bg-white text-gray-900 shadow-sm'
                               : 'text-gray-600 hover:text-gray-900'
                           }`}
-                          title='List view - Show all suggestions'
+                          title={t.listViewTooltip}
                         >
                           <List className='h-3.5 w-3.5' />
                         </button>
@@ -493,7 +495,7 @@ export default function Home() {
                               ? 'bg-white text-gray-900 shadow-sm'
                               : 'text-gray-600 hover:text-gray-900'
                           }`}
-                          title='Navigate view - Review one by one'
+                          title={t.navigateViewTooltip}
                         >
                           <Navigation className='h-3.5 w-3.5' />
                         </button>
@@ -508,7 +510,7 @@ export default function Home() {
                           <>
                             <div className='animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mb-4'></div>
                             <p className='text-gray-600'>
-                              Analyzing your text...
+                              {t.analyzing}
                             </p>
                           </>
                         ) : error ? (
@@ -517,7 +519,7 @@ export default function Home() {
                               <span className='text-red-500 text-lg'>!</span>
                             </div>
                             <p className='text-gray-600'>
-                              Analysis failed. Please try again.
+                              {t.analysisFailed}
                             </p>
                           </>
                         ) : (
@@ -526,7 +528,7 @@ export default function Home() {
                               <Sparkles className='h-6 w-6 text-gray-400' />
                             </div>
                             <p className='text-gray-600 mb-2'>
-                              No suggestions
+                              {t.noSuggestions}
                             </p>
                           </>
                         )}
@@ -548,7 +550,7 @@ export default function Home() {
                         >
                           <div className='flex items-center space-x-2'>
                             <Keyboard className='h-3.5 w-3.5 text-gray-600' />
-                            <span className='text-xs font-medium text-gray-700'>Keyboard Shortcuts</span>
+                            <span className='text-xs font-medium text-gray-700'>{t.keyboardShortcuts}</span>
                           </div>
                           {showListKeyboardGuide ? (
                             <ChevronUp className='h-3.5 w-3.5 text-gray-500' />
@@ -562,7 +564,7 @@ export default function Home() {
                           <div className='bg-white border border-gray-200 rounded-lg p-3'>
                             <div className='space-y-1.5 text-xs text-gray-600'>
                               <div className='flex items-center justify-between'>
-                                <span>Navigate</span>
+                                <span>{t.navigate}</span>
                                 <div className='flex items-center space-x-1'>
                                   <kbd className='px-1.5 py-0.5 bg-gray-100 border border-gray-300 rounded text-xs font-mono'>↑</kbd>
                                   <kbd className='px-1.5 py-0.5 bg-gray-100 border border-gray-300 rounded text-xs font-mono'>↓</kbd>
@@ -570,12 +572,12 @@ export default function Home() {
                               </div>
                               
                               <div className='flex items-center justify-between'>
-                                <span>Accept</span>
+                                <span>{t.accept}</span>
                                 <kbd className='px-2 py-0.5 bg-gray-100 border border-gray-300 rounded text-xs font-mono'>Enter</kbd>
                               </div>
                               
                               <div className='flex items-center justify-between'>
-                                <span>Reject</span>
+                                <span>{t.reject}</span>
                                 <div className='flex items-center space-x-1'>
                                   <kbd className='px-1.5 py-0.5 bg-gray-100 border border-gray-300 rounded text-xs font-mono'>Shift</kbd>
                                   <span className='text-gray-400'>+</span>
@@ -651,9 +653,9 @@ export default function Home() {
       <Dialog open={showNewTextDialog} onOpenChange={setShowNewTextDialog}>
         <DialogContent className="sm:max-w-[425px] bg-white">
           <DialogHeader>
-            <DialogTitle>Start New Text?</DialogTitle>
+            <DialogTitle>{t.startNewText}</DialogTitle>
             <DialogDescription>
-              This will clear current suggestions. Your work is saved in history.
+              {t.startNewTextDescription}
             </DialogDescription>
           </DialogHeader>
           <DialogFooter className="flex gap-2">
@@ -661,13 +663,13 @@ export default function Home() {
               variant="outline"
               onClick={() => setShowNewTextDialog(false)}
             >
-              Cancel
+              {t.cancel}
             </Button>
             <Button
               onClick={handleConfirmNewText}
               className="bg-indigo-50 text-indigo-600 border-indigo-200 hover:bg-indigo-100 hover:text-indigo-700"
             >
-              Start New Text
+              {t.newText}
             </Button>
           </DialogFooter>
         </DialogContent>
