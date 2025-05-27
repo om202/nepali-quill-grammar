@@ -38,6 +38,8 @@ import { KeyboardGuide } from '@/components/KeyboardGuide';
 import { AuthModal } from '@/components/auth/AuthModal';
 import { TestimonialsSection } from '@/components/TestimonialsSection';
 import { FeatureShowcase } from '@/components/FeatureShowcase';
+import { FAQSection } from '@/components/FAQSection';
+import { Footer } from '@/components/Footer';
 import { RootState } from '@/store';
 import { setSuggestions, removeSuggestion } from '@/store/suggestionsSlice';
 import { setText } from '@/store/textSlice';
@@ -369,7 +371,7 @@ export default function Home() {
           )}
 
           {!isAuthenticated && showFreeTrialMessage && (
-            <FeatureShowcase onDismiss={dismissFreeTrialMessage} />
+            <FeatureShowcase />
           )}
 
           {/* Main Content with Tabs */}
@@ -630,6 +632,11 @@ export default function Home() {
         <TestimonialsSection onSignUpClick={() => setIsAuthModalOpen(true)} />
       )}
 
+      {/* FAQ Section - Only visible when not authenticated */}
+      {!isAuthenticated && (
+        <FAQSection />
+      )}
+
       <AuthModal
         isOpen={isAuthModalOpen}
         onClose={() => setIsAuthModalOpen(false)}
@@ -660,6 +667,8 @@ export default function Home() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      <Footer />
     </div>
   );
 }

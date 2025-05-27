@@ -27,7 +27,7 @@ export const TestimonialsSection: React.FC<TestimonialsSectionProps> = ({
         {/* Testimonials Grid */}
         <div className='grid md:grid-cols-3 gap-8'>
           {/* Testimonial 1 */}
-          <div className='bg-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-shadow duration-300 group'>
+          <div className='bg-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-shadow duration-300 group testimonial-card-1'>
             <div className='flex items-center mb-4'>
               <div className='flex space-x-1'>
                 {[...Array(5)].map((_, i) => (
@@ -51,7 +51,7 @@ export const TestimonialsSection: React.FC<TestimonialsSectionProps> = ({
           </div>
 
           {/* Testimonial 2 */}
-          <div className='bg-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-shadow duration-300 group'>
+          <div className='bg-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-shadow duration-300 group testimonial-card-2'>
             <div className='flex items-center mb-4'>
               <div className='flex space-x-1'>
                 {[...Array(5)].map((_, i) => (
@@ -75,7 +75,7 @@ export const TestimonialsSection: React.FC<TestimonialsSectionProps> = ({
           </div>
 
           {/* Testimonial 3 */}
-          <div className='bg-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-shadow duration-300 group'>
+          <div className='bg-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-shadow duration-300 group testimonial-card-3'>
             <div className='flex items-center mb-4'>
               <div className='flex space-x-1'>
                 {[...Array(5)].map((_, i) => (

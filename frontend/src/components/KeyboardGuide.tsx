@@ -79,13 +79,9 @@ export const KeyboardGuide: React.FC<KeyboardGuideProps> = () => {
             {/* Content */}
             <div className='flex-1 overflow-y-auto'>
               <div className='p-4 sm:p-6'>
-                <div className='text-center mb-4'>
-                  <p className='text-gray-600 mb-2'>
-                    Use this guide to understand the Nepali keyboard layout
-                    mapping
-                  </p>
-                  <p className='text-sm text-gray-500'>
-                    Type in English characters to get Nepali Devanagari script
+                <div className='text-center mb-6'>
+                  <p className='text-gray-600'>
+                    Type English characters to get Nepali Devanagari script
                   </p>
                 </div>
 
@@ -103,50 +99,20 @@ export const KeyboardGuide: React.FC<KeyboardGuideProps> = () => {
                   </div>
                 </div>
 
-                {/* Instructions */}
-                <div className='grid md:grid-cols-2 gap-4'>
-                  <div className='bg-indigo-50 rounded-lg p-4'>
-                    <div className='flex items-center space-x-2 mb-2'>
-                      <Info className='h-4 w-4 text-indigo-600' />
-                      <h3 className='font-medium text-indigo-800'>How to use:</h3>
-                    </div>
-                    <ul className='text-sm text-indigo-700 space-y-1'>
-                      <li>• Type English characters as shown in the layout</li>
-                      <li>
-                        • Text automatically converts to Nepali Devanagari
-                      </li>
-                      <li>• Use the romanized layout for intuitive typing</li>
-                      <li>• Press space or punctuation to complete words</li>
-                    </ul>
-                  </div>
-
-                  <div className='bg-green-50 rounded-lg p-4'>
-                    <div className='flex items-center space-x-2 mb-2'>
-                      <Keyboard className='h-4 w-4 text-green-600' />
-                      <h3 className='font-medium text-green-800'>Examples:</h3>
-                    </div>
-                    <ul className='text-sm text-green-700 space-y-1'>
-                      <li>
-                        • <code className='bg-white px-1 rounded'>namaste</code>{' '}
-                        → नमस्ते
-                      </li>
-                      <li>
-                        • <code className='bg-white px-1 rounded'>nepal</code> →
-                        नेपाल
-                      </li>
-                      <li>
-                        •{' '}
-                        <code className='bg-white px-1 rounded'>
-                          dhanyawaad
-                        </code>{' '}
-                        → धन्यवाद
-                      </li>
-                      <li>
-                        •{' '}
-                        <code className='bg-white px-1 rounded'>swagatam</code>{' '}
-                        → स्वागतम्
-                      </li>
-                    </ul>
+                {/* Kudos Section */}
+                <div className='bg-gradient-to-r from-purple-50 to-indigo-50 rounded-lg p-3 border border-purple-100'>
+                  <div className='text-center'>
+                    <p className='text-sm text-purple-700'>
+                      Thanks to{' '}
+                      <a 
+                        href="https://github.com/suvash/nepalify" 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className='font-semibold text-purple-800 hover:text-purple-900 underline decoration-purple-300 hover:decoration-purple-500 transition-colors'
+                      >
+                        Suvash Thapaliya's Nepalify
+                      </a>
+                    </p>
                   </div>
                 </div>
 
@@ -157,7 +123,7 @@ export const KeyboardGuide: React.FC<KeyboardGuideProps> = () => {
                     <kbd className='px-2 py-1 bg-gray-100 rounded text-xs'>
                       Esc
                     </kbd>{' '}
-                    to close this guide
+                    to close
                   </p>
                 </div>
               </div>
