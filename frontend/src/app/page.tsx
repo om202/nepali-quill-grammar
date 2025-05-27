@@ -17,6 +17,8 @@ import {
   ChevronUp,
   FileText,
   Sparkles,
+  Copy,
+  Download,
 } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
@@ -168,6 +170,34 @@ export default function Home() {
     setSelectedSuggestionId(null);
     setShowNewTextDialog(false);
     toast.success(t.readyForNewText);
+  };
+
+  // Copy text to clipboard
+  const copyToClipboard = async (textToCopy: string, type: string) => {
+    try {
+      await navigator.clipboard.writeText(textToCopy);
+      toast.success(t.copiedToClipboard);
+    } catch (error) {
+      toast.error(t.failedToCopyToClipboard);
+    }
+  };
+
+  // Download text as file
+  const downloadText = (textToDownload: string, filename: string) => {
+    try {
+      const blob = new Blob([textToDownload], { type: 'text/plain;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+      toast.success(t.downloaded);
+    } catch (error) {
+      toast.error('Failed to download file');
+    }
   };
 
   const handleSuggestionUpdate = useCallback(async (
@@ -416,33 +446,58 @@ export default function Home() {
                       </div>
                       <KeyboardGuide />
                     </div>
-                    <Button
-                      onClick={suggestions.length > 0 ? handleNewText : handleAnalyze}
-                      disabled={isLoading || !text.trim()}
-                      className={suggestions.length > 0 
-                        ? 'flex items-center font-sm bg-indigo-50 text-indigo-600 space-x-1 border-indigo-200' 
-                        : 'bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 hover:from-blue-700 hover:via-purple-700 hover:to-indigo-700 text-white font-medium px-6 py-2 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 flex-shrink-0 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:from-blue-600 disabled:hover:via-purple-600 disabled:hover:to-indigo-600'
-                      }
-                      variant={suggestions.length > 0 ? 'outline' : 'default'}
-                      size={suggestions.length > 0 ? 'sm' : 'default'}
-                    >
-                      {isLoading ? (
+                    <div className='flex items-center space-x-2'>
+                      {/* Copy and Download buttons - only show when there's text */}
+                      {text.trim() && (
                         <>
-                          <div className='animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2'></div>
-                          {t.analyzing}
-                        </>
-                      ) : suggestions.length > 0 ? (
-                        <>
-                          <FileText className='h-4 w-4' />
-                          <span>{t.newText}</span>
-                        </>
-                      ) : (
-                        <>
-                          <Zap className='h-4 w-4 mr-2' />
-                          {isAuthenticated ? t.enhanceText : t.signInToEnhance}
+                          <Button
+                            variant='outline'
+                            size='sm'
+                            onClick={() => copyToClipboard(text, t.text)}
+                            className='flex items-center font-sm text-gray-500 space-x-1'
+                          >
+                            <Copy className='h-4 w-4' />
+                            <span>{t.copy}</span>
+                          </Button>
+                          <Button
+                            variant='outline'
+                            size='sm'
+                            onClick={() => downloadText(text, 'text.txt')}
+                            className='flex items-center font-sm text-gray-500 space-x-1'
+                          >
+                            <Download className='h-4 w-4' />
+                            <span>{t.download}</span>
+                          </Button>
                         </>
                       )}
-                    </Button>
+                      <Button
+                        onClick={suggestions.length > 0 ? handleNewText : handleAnalyze}
+                        disabled={isLoading || !text.trim()}
+                        className={suggestions.length > 0 
+                          ? 'flex items-center font-sm bg-indigo-50 text-indigo-600 space-x-1 border-indigo-200' 
+                          : 'bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 hover:from-blue-700 hover:via-purple-700 hover:to-indigo-700 text-white font-medium px-6 py-2 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 flex-shrink-0 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:from-blue-600 disabled:hover:via-purple-600 disabled:hover:to-indigo-600'
+                        }
+                        variant={suggestions.length > 0 ? 'outline' : 'default'}
+                        size={suggestions.length > 0 ? 'sm' : 'default'}
+                      >
+                        {isLoading ? (
+                          <>
+                            <div className='animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2'></div>
+                            {t.analyzing}
+                          </>
+                        ) : suggestions.length > 0 ? (
+                          <>
+                            <FileText className='h-4 w-4' />
+                            <span>{t.newText}</span>
+                          </>
+                        ) : (
+                          <>
+                            <Zap className='h-4 w-4 mr-2' />
+                            {isAuthenticated ? t.enhanceText : t.signInToEnhance}
+                          </>
+                        )}
+                      </Button>
+                    </div>
                   </div>
                   <div className={`flex-1 flex flex-col p-4 ${isAuthenticated ? 'min-h-0' : 'min-h-64'}`}>
                     <div className={`flex-1 mb-4 ${isAuthenticated ? 'min-h-0' : 'min-h-64'}`}>
