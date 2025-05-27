@@ -6,6 +6,7 @@ import { Check, X, ArrowRight } from 'lucide-react';
 
 import { Suggestion } from '@/lib/api';
 import { getSuggestionContainerColor } from '@/utils/colors';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface SuggestionCardProps {
   suggestion: Suggestion;
@@ -31,15 +32,16 @@ export function SuggestionCard({
   total,
 }: SuggestionCardProps) {
   const [isLoading, setIsLoading] = useState(false);
+  const { t } = useLanguage();
   const colors = getSuggestionContainerColor(index, total);
 
   const handleAction = async (action: 'accept' | 'reject') => {
     setIsLoading(true);
     try {
       await onUpdate(sessionId, suggestion.id, action);
-      toast.success(`Suggestion ${action}ed successfully`);
+      toast.success(action === 'accept' ? t.suggestionAcceptedSuccessfully : t.suggestionRejectedSuccessfully);
     } catch (error) {
-      toast.error(`Failed to ${action} suggestion`);
+      toast.error(action === 'accept' ? t.failedToAcceptSuggestion : t.failedToRejectSuggestion);
       console.error('Action error:', error);
     } finally {
       setIsLoading(false);
@@ -89,7 +91,7 @@ export function SuggestionCard({
           className='flex items-center bg-green-600 hover:bg-green-700 text-white px-3 py-2 rounded-md text-xs font-medium transition-colors-smooth hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed'
         >
           <Check className='h-3 w-3 mr-1' />
-          Accept
+          {t.acceptButton}
         </button>
 
         <button
@@ -101,7 +103,7 @@ export function SuggestionCard({
           className='flex items-center border border-gray-300 text-gray-600 hover:bg-gray-100 px-3 py-2 rounded-md text-xs font-medium transition-colors-smooth disabled:opacity-50 disabled:cursor-not-allowed'
         >
           <X className='h-3 w-3 mr-1' />
-          Reject
+          {t.rejectButton}
         </button>
       </div>
     </div>

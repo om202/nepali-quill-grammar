@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { Bot, Zap, History as HistoryIcon, Keyboard, Sparkles } from 'lucide-react';
+
 import { useLanguage } from '@/contexts/LanguageContext';
 
 export const FeatureShowcase: React.FC = () => {

@@ -1,9 +1,10 @@
 'use client';
 import React, { useState, useEffect } from 'react';
-import { Keyboard, X, Info } from 'lucide-react';
+import { Keyboard, X } from 'lucide-react';
 import Image from 'next/image';
 
 import { Button } from '@/components/ui/button';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface KeyboardGuideProps {
   className?: string;
@@ -11,6 +12,7 @@ interface KeyboardGuideProps {
 
 export const KeyboardGuide: React.FC<KeyboardGuideProps> = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const { t } = useLanguage();
 
   const toggleGuide = () => {
     setIsOpen(!isOpen);
@@ -44,10 +46,10 @@ export const KeyboardGuide: React.FC<KeyboardGuideProps> = () => {
         variant='outline'
         size='sm'
         className={`flex items-center font-sm text-gray-500 space-x-1`}
-        title='Show Nepali Keyboard Layout (Press Esc to close)'
+        title={t.keyboardGuideTooltip}
       >
         <Keyboard className='h-4 w-4' />
-        <span className=''>Keyboard Guide</span>
+        <span className=''>{t.keyboardGuide}</span>
       </Button>
 
       {/* Modal Overlay */}
@@ -62,7 +64,7 @@ export const KeyboardGuide: React.FC<KeyboardGuideProps> = () => {
               <div className='flex items-center space-x-2'>
                 <Keyboard className='h-5 w-5 text-indigo-600' />
                 <h2 className='text-lg font-semibold text-gray-800'>
-                  Nepali Keyboard Layout Guide
+                  {t.nepaliKeyboardLayoutGuide}
                 </h2>
               </div>
               <Button
@@ -70,7 +72,7 @@ export const KeyboardGuide: React.FC<KeyboardGuideProps> = () => {
                 variant='ghost'
                 size='sm'
                 className='text-gray-500 hover:text-gray-700'
-                title='Close (Esc)'
+                title={`${t.close} (Esc)`}
               >
                 <X className='h-5 w-5' />
               </Button>
@@ -81,7 +83,7 @@ export const KeyboardGuide: React.FC<KeyboardGuideProps> = () => {
               <div className='p-4 sm:p-6'>
                 <div className='text-center mb-6'>
                   <p className='text-gray-600'>
-                    Type English characters to get Nepali Devanagari script
+                    {t.typeEnglishToNepali}
                   </p>
                 </div>
 
@@ -92,7 +94,7 @@ export const KeyboardGuide: React.FC<KeyboardGuideProps> = () => {
                       width={'100'}
                       height={'100'}
                       src='/nplkeys.svg'
-                      alt='Nepali Keyboard Layout'
+                      alt={t.nepaliKeyboardLayoutGuide}
                       className='w-full h-auto border border-gray-200 rounded-lg shadow-sm bg-white'
                       style={{ maxHeight: '50vh', objectFit: 'contain' }}
                     />
@@ -103,7 +105,7 @@ export const KeyboardGuide: React.FC<KeyboardGuideProps> = () => {
                 <div className='bg-gradient-to-r from-purple-50 to-indigo-50 rounded-lg p-3 border border-purple-100'>
                   <div className='text-center'>
                     <p className='text-sm text-purple-700'>
-                      Thanks to{' '}
+                      {t.thanksToNepalify}{' '}
                       <a 
                         href="https://github.com/suvash/nepalify" 
                         target="_blank" 
@@ -119,11 +121,11 @@ export const KeyboardGuide: React.FC<KeyboardGuideProps> = () => {
                 {/* Keyboard Shortcuts */}
                 <div className='mt-4 text-center'>
                   <p className='text-xs text-gray-500'>
-                    Press{' '}
+                    {t.pressEscToClose.replace('ESC', '')}{' '}
                     <kbd className='px-2 py-1 bg-gray-100 rounded text-xs'>
                       Esc
                     </kbd>{' '}
-                    to close
+                    {t.close.toLowerCase()}
                   </p>
                 </div>
               </div>

@@ -17,6 +17,7 @@ import {
 
 import { Suggestion } from '@/lib/api';
 import { getSuggestionContainerColor } from '@/utils/colors';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface SuggestionNavigatorProps {
   suggestions: Suggestion[];
@@ -40,6 +41,7 @@ export function SuggestionNavigator({
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [showKeyboardGuide, setShowKeyboardGuide] = useState(false);
+  const { t } = useLanguage();
   
   // Track if the index change is from external selection to prevent circular updates
   const isExternalUpdateRef = useRef(false);
@@ -106,15 +108,15 @@ export function SuggestionNavigator({
 
   const handleAction = useCallback(async (action: 'accept' | 'reject') => {
     if (suggestions.length === 0 || isLoading) {
-return;
-}
+      return;
+    }
 
     const currentSuggestion = suggestions[currentIndex];
     setIsLoading(true);
 
     try {
       await onUpdate(sessionId, currentSuggestion.id, action);
-      toast.success(`Suggestion ${action}ed successfully`);
+      toast.success(action === 'accept' ? t.suggestionAcceptedSuccessfully : t.suggestionRejectedSuccessfully);
       
       // After action, adjust index if needed
       if (currentIndex >= suggestions.length - 1) {
@@ -123,20 +125,20 @@ return;
       }
       // If not at last suggestion, stay at same index (next suggestion will slide into place)
     } catch (error) {
-      toast.error(`Failed to ${action} suggestion`);
+      toast.error(action === 'accept' ? t.failedToAcceptSuggestion : t.failedToRejectSuggestion);
       // eslint-disable-next-line no-console
       console.error('Action error:', error);
     } finally {
       setIsLoading(false);
     }
-  }, [suggestions, currentIndex, isLoading, sessionId, onUpdate]);
+  }, [suggestions, currentIndex, isLoading, sessionId, onUpdate, t]);
 
   // Keyboard navigation
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (suggestions.length === 0) {
-return;
-}
+        return;
+      }
 
       switch (event.key) {
         case 'ArrowLeft':
@@ -174,8 +176,8 @@ return;
         <div className='w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mb-4'>
           <Check className='h-6 w-6 text-gray-400' />
         </div>
-        <p className='text-gray-600 mb-2'>No suggestions</p>
-        <p className='text-sm text-gray-500'>All suggestions have been reviewed</p>
+        <p className='text-gray-600 mb-2'>{t.noSuggestions}</p>
+        <p className='text-sm text-gray-500'>{t.allSuggestionsReviewed}</p>
       </div>
     );
   }
@@ -192,7 +194,7 @@ return;
       >
         <div className='flex items-center space-x-2'>
           <Keyboard className='h-3.5 w-3.5 text-gray-600' />
-          <span className='text-xs font-medium text-gray-700'>Keyboard Shortcuts</span>
+          <span className='text-xs font-medium text-gray-700'>{t.keyboardShortcuts}</span>
         </div>
         {showKeyboardGuide ? (
           <ChevronUp className='h-3.5 w-3.5 text-gray-500' />
@@ -206,7 +208,7 @@ return;
         <div className='bg-white border border-gray-200 rounded-lg p-3 mb-3'>
           <div className='space-y-1.5 text-xs text-gray-600'>
             <div className='flex items-center justify-between'>
-              <span>Navigate</span>
+              <span>{t.navigate}</span>
               <div className='flex items-center space-x-1'>
                 <kbd className='px-1.5 py-0.5 bg-gray-100 border border-gray-300 rounded text-xs font-mono'>←</kbd>
                 <kbd className='px-1.5 py-0.5 bg-gray-100 border border-gray-300 rounded text-xs font-mono'>→</kbd>
@@ -217,12 +219,12 @@ return;
             </div>
             
             <div className='flex items-center justify-between'>
-              <span>Accept</span>
+              <span>{t.accept}</span>
               <kbd className='px-2 py-0.5 bg-gray-100 border border-gray-300 rounded text-xs font-mono'>Enter</kbd>
             </div>
             
             <div className='flex items-center justify-between'>
-              <span>Reject</span>
+              <span>{t.reject}</span>
               <div className='flex items-center space-x-1'>
                 <kbd className='px-1.5 py-0.5 bg-gray-100 border border-gray-300 rounded text-xs font-mono'>Shift</kbd>
                 <span className='text-gray-400'>+</span>
@@ -238,7 +240,7 @@ return;
       {/* Progress indicator */}
       <div className='flex items-center justify-between mb-3 text-xs text-gray-600'>
         <span>
-          Suggestion {currentIndex + 1} of {suggestions.length}
+          {t.suggestionOf} {currentIndex + 1} of {suggestions.length}
         </span>
         <div className='flex space-x-1'>
           {suggestions.map((_, index) => (
@@ -284,7 +286,7 @@ return;
             className='flex-1 flex items-center justify-center bg-green-600 hover:bg-green-700 text-white px-3 py-2 rounded-md text-sm font-medium transition-colors hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed'
           >
             <Check className='h-3.5 w-3.5 mr-1.5' />
-            Accept
+            {t.acceptButton}
           </button>
 
           <button
@@ -293,7 +295,7 @@ return;
             className='flex-1 flex items-center justify-center bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 px-3 py-2 rounded-md text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed'
           >
             <X className='h-3.5 w-3.5 mr-1.5' />
-            Reject
+            {t.rejectButton}
           </button>
         </div>
       </div>
@@ -305,7 +307,7 @@ return;
             onClick={goToFirst}
             disabled={currentIndex === 0}
             className='p-1.5 rounded-md border border-gray-300 text-gray-600 hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors'
-            title='First suggestion'
+            title={t.firstSuggestion}
           >
             <SkipBack className='h-3.5 w-3.5' />
           </button>
@@ -313,7 +315,7 @@ return;
             onClick={goToPrevious}
             disabled={currentIndex === 0}
             className='p-1.5 rounded-md border border-gray-300 text-gray-600 hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors'
-            title='Previous suggestion'
+            title={t.previousSuggestion}
           >
             <ChevronLeft className='h-3.5 w-3.5' />
           </button>
@@ -324,7 +326,7 @@ return;
             onClick={goToNext}
             disabled={currentIndex === suggestions.length - 1}
             className='p-1.5 rounded-md border border-gray-300 text-gray-600 hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors'
-            title='Next suggestion'
+            title={t.nextSuggestion}
           >
             <ChevronRight className='h-3.5 w-3.5' />
           </button>
@@ -332,7 +334,7 @@ return;
             onClick={goToLast}
             disabled={currentIndex === suggestions.length - 1}
             className='p-1.5 rounded-md border border-gray-300 text-gray-600 hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors'
-            title='Last suggestion'
+            title={t.lastSuggestion}
           >
             <SkipForward className='h-3.5 w-3.5' />
           </button>

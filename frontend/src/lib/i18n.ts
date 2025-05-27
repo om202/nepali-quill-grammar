@@ -159,6 +159,35 @@ export interface Translations {
   inNepal: string;
   companyName: string;
   companyLocation: string;
+  
+  // Keyboard Guide
+  keyboardGuide: string;
+  keyboardGuideTooltip: string;
+  nepaliKeyboardLayoutGuide: string;
+  typeEnglishToNepali: string;
+  thanksToNepalify: string;
+  pressEscToClose: string;
+  close: string;
+  
+  // Suggestion Navigation
+  suggestionOf: string;
+  noSuggestionsReviewed: string;
+  allSuggestionsReviewed: string;
+  firstSuggestion: string;
+  previousSuggestion: string;
+  nextSuggestion: string;
+  lastSuggestion: string;
+  
+  // Action buttons
+  acceptButton: string;
+  rejectButton: string;
+  accepted: string;
+  rejected: string;
+  pending: string;
+  suggestionAcceptedSuccessfully: string;
+  suggestionRejectedSuccessfully: string;
+  failedToAcceptSuggestion: string;
+  failedToRejectSuggestion: string;
 }
 
 export const translations: Record<Language, Translations> = {
@@ -357,6 +386,35 @@ export const translations: Record<Language, Translations> = {
     inNepal: 'नेपालमा',
     companyName: 'नोबल स्ट्याक प्रा. लि.',
     companyLocation: 'काठमाडौं, नेपाल',
+    
+    // Keyboard Guide
+    keyboardGuide: 'किबोर्ड गाइड',
+    keyboardGuideTooltip: 'किबोर्ड गाइड - किबोर्ड लेआउट देखाउनुहोस्',
+    nepaliKeyboardLayoutGuide: 'नेपाली किबोर्ड लेआउट गाइड',
+    typeEnglishToNepali: 'अंग्रेजी टाइप गर्न नेपाली लिपिमा रूपान्तरण',
+    thanksToNepalify: 'धन्यवाद, नेपालीली',
+    pressEscToClose: 'ESC दबाउन बन्द गर्नुहोस्',
+    close: 'बन्द गर्नुहोस्',
+    
+    // Suggestion Navigation
+    suggestionOf: 'सुझाव',
+    noSuggestionsReviewed: 'कुनै सुझाव समीक्षा गरिएको छैन',
+    allSuggestionsReviewed: 'सबै सुझावहरू समीक्षा गरिएको छ',
+    firstSuggestion: 'पहिलो सुझाव',
+    previousSuggestion: 'अघिल्लो सुझाव',
+    nextSuggestion: 'अर्को सुझाव',
+    lastSuggestion: 'अन्तिम सुझाव',
+    
+    // Action buttons
+    acceptButton: 'स्वीकार',
+    rejectButton: 'अस्वीकार',
+    accepted: 'स्वीकारित',
+    rejected: 'अस्वीकारित',
+    pending: 'विवर्तन',
+    suggestionAcceptedSuccessfully: 'सुझाव स्वीकारित गरियो',
+    suggestionRejectedSuccessfully: 'सुझाव अस्वीकारित गरियो',
+    failedToAcceptSuggestion: 'सुझाव स्वीकार गर्न असफल',
+    failedToRejectSuggestion: 'सुझाव अस्वीकार गर्न असफल',
   },
   en: {
     // Header
@@ -553,6 +611,35 @@ export const translations: Record<Language, Translations> = {
     inNepal: 'in Nepal',
     companyName: 'Noble Stack Pvt. Ltd.',
     companyLocation: 'Kathmandu, Nepal',
+    
+    // Keyboard Guide
+    keyboardGuide: 'Keyboard Guide',
+    keyboardGuideTooltip: 'Keyboard Guide - Show keyboard layout',
+    nepaliKeyboardLayoutGuide: 'Nepali Keyboard Layout Guide',
+    typeEnglishToNepali: 'Type in English to convert to Nepali Devanagari script',
+    thanksToNepalify: 'Thanks to Nepalify',
+    pressEscToClose: 'Press ESC to close',
+    close: 'Close',
+    
+    // Suggestion Navigation
+    suggestionOf: 'Suggestion',
+    noSuggestionsReviewed: 'No suggestions',
+    allSuggestionsReviewed: 'All suggestions have been reviewed',
+    firstSuggestion: 'First Suggestion',
+    previousSuggestion: 'Previous Suggestion',
+    nextSuggestion: 'Next Suggestion',
+    lastSuggestion: 'Last Suggestion',
+    
+    // Action buttons
+    acceptButton: 'Accept',
+    rejectButton: 'Reject',
+    accepted: 'Accepted',
+    rejected: 'Rejected',
+    pending: 'Pending',
+    suggestionAcceptedSuccessfully: 'Suggestion accepted successfully',
+    suggestionRejectedSuccessfully: 'Suggestion rejected successfully',
+    failedToAcceptSuggestion: 'Failed to accept suggestion',
+    failedToRejectSuggestion: 'Failed to reject suggestion',
   },
 };
 
