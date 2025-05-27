@@ -15,6 +15,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { RootState, AppDispatch } from '@/store';
 import { signupAsync, loginAsync, clearError } from '@/store/authSlice';
 
@@ -32,6 +33,7 @@ export function AuthModal({
   defaultTab = 'login',
 }: AuthModalProps) {
   const dispatch = useDispatch<AppDispatch>();
+  const { t } = useLanguage();
   const { isLoading, error } = useSelector((state: RootState) => state.auth);
 
   const [activeTab, setActiveTab] = useState(defaultTab);
@@ -51,7 +53,7 @@ export function AuthModal({
     e.preventDefault();
 
     if (!loginForm.email || !loginForm.password) {
-      toast.error('Please fill in all fields');
+      toast.error(t.pleaseFillAllFields);
       return;
     }
 
@@ -63,7 +65,7 @@ export function AuthModal({
         })
       ).unwrap();
 
-      toast.success('Welcome!');
+      toast.success(t.welcome + '!');
       onClose();
       setLoginForm({ email: '', password: '' });
     } catch (error) {
@@ -75,17 +77,17 @@ export function AuthModal({
     e.preventDefault();
 
     if (!signupForm.name || !signupForm.email || !signupForm.password) {
-      toast.error('Please fill in all fields');
+      toast.error(t.pleaseFillAllFields);
       return;
     }
 
     if (signupForm.password !== signupForm.confirmPassword) {
-      toast.error('Passwords do not match');
+      toast.error(t.passwordsDoNotMatch);
       return;
     }
 
     if (signupForm.password.length < 8) {
-      toast.error('Password must be at least 8 characters long');
+      toast.error(t.passwordMinLength);
       return;
     }
 
@@ -98,7 +100,7 @@ export function AuthModal({
         })
       ).unwrap();
 
-      toast.success('Account created successfully!');
+      toast.success(t.accountCreatedSuccessfully);
       onClose();
       setSignupForm({ name: '', email: '', password: '', confirmPassword: '' });
     } catch (error) {
@@ -131,12 +133,12 @@ export function AuthModal({
                 <Sparkles className='h-3 w-3 absolute -top-1 -right-1 text-purple-500' />
               </div>
               <DialogTitle className='text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent'>
-                व्याकरणली
+                {t.appName}
               </DialogTitle>
             </div>
             {activeTab === 'signup' && (
               <p className='text-gray-600 text-center text-[14px]'>
-                Join thousands of users enhancing their Nepali writing with AI
+                {t.joinThousands}
               </p>
             )}
           </DialogHeader>
@@ -152,13 +154,13 @@ export function AuthModal({
                 value='login'
                 className='rounded-lg font-medium px-6 py-3 border border-gray-200 data-[state=active]:bg-indigo-50 data-[state=active]:border-indigo-200 data-[state=active]:shadow-sm data-[state=active]:text-indigo-600'
               >
-                Log in
+                {t.login}
               </TabsTrigger>
               <TabsTrigger
                 value='signup'
                 className='rounded-lg font-medium px-6 py-3 border border-gray-200 data-[state=active]:bg-indigo-50 data-[state=active]:border-indigo-200 data-[state=active]:shadow-sm data-[state=active]:text-indigo-600'
               >
-                Sign up
+                {t.signup}
               </TabsTrigger>
             </TabsList>
 
@@ -169,14 +171,14 @@ export function AuthModal({
                     htmlFor='login-email'
                     className='text-sm font-medium text-gray-700'
                   >
-                    Email address
+                    {t.emailAddress}
                   </Label>
                   <div className='relative'>
                     <Mail className='absolute left-4 top-4 h-4 w-4 text-gray-400' />
                     <Input
                       id='login-email'
                       type='email'
-                      placeholder='Enter your email'
+                      placeholder={t.enterEmail}
                       value={loginForm.email}
                       onChange={e =>
                         setLoginForm({ ...loginForm, email: e.target.value })
@@ -191,14 +193,14 @@ export function AuthModal({
                     htmlFor='login-password'
                     className='text-sm font-medium text-gray-700'
                   >
-                    Password
+                    {t.password}
                   </Label>
                   <div className='relative'>
                     <Lock className='absolute left-4 top-4 h-4 w-4 text-gray-400' />
                     <Input
                       id='login-password'
                       type='password'
-                      placeholder='Enter your password'
+                      placeholder={t.enterPassword}
                       value={loginForm.password}
                       onChange={e =>
                         setLoginForm({ ...loginForm, password: e.target.value })
@@ -222,7 +224,7 @@ export function AuthModal({
                     className='text-sm text-indigo-600 hover:text-indigo-500 font-medium'
                     disabled={isLoading}
                   >
-                    Forgot password?
+                    {t.forgotPassword}
                   </button>
                 </div>
                 
@@ -234,10 +236,10 @@ export function AuthModal({
                   {isLoading ? (
                     <>
                       <Loader2 className='mr-2 h-4 w-4 animate-spin' />
-                      Signing in...
+                      {t.signingIn}
                     </>
                   ) : (
-                    'Sign in to व्याकरणली'
+                    t.signInToApp
                   )}
                 </Button>
               </form>
@@ -250,14 +252,14 @@ export function AuthModal({
                     htmlFor='signup-name'
                     className='text-sm font-medium text-gray-700'
                   >
-                    Full name
+                    {t.fullName}
                   </Label>
                   <div className='relative'>
                     <User className='absolute left-4 top-4 h-4 w-4 text-gray-400' />
                     <Input
                       id='signup-name'
                       type='text'
-                      placeholder='Enter your full name'
+                      placeholder={t.enterFullName}
                       value={signupForm.name}
                       onChange={e =>
                         setSignupForm({ ...signupForm, name: e.target.value })
@@ -272,14 +274,14 @@ export function AuthModal({
                     htmlFor='signup-email'
                     className='text-sm font-medium text-gray-700'
                   >
-                    Email address
+                    {t.emailAddress}
                   </Label>
                   <div className='relative'>
                     <Mail className='absolute left-4 top-4 h-4 w-4 text-gray-400' />
                     <Input
                       id='signup-email'
                       type='email'
-                      placeholder='Enter your email'
+                      placeholder={t.enterEmail}
                       value={signupForm.email}
                       onChange={e =>
                         setSignupForm({ ...signupForm, email: e.target.value })
@@ -294,14 +296,14 @@ export function AuthModal({
                     htmlFor='signup-password'
                     className='text-sm font-medium text-gray-700'
                   >
-                    Password
+                    {t.password}
                   </Label>
                   <div className='relative'>
                     <Lock className='absolute left-4 top-4 h-4 w-4 text-gray-400' />
                     <Input
                       id='signup-password'
                       type='password'
-                      placeholder='Create a password (min 8 characters)'
+                      placeholder={t.createPasswordPlaceholder}
                       value={signupForm.password}
                       onChange={e =>
                         setSignupForm({
@@ -319,14 +321,14 @@ export function AuthModal({
                     htmlFor='signup-confirm-password'
                     className='text-sm font-medium text-gray-700'
                   >
-                    Confirm password
+                    {t.confirmPassword}
                   </Label>
                   <div className='relative'>
                     <Lock className='absolute left-4 top-4 h-4 w-4 text-gray-400' />
                     <Input
                       id='signup-confirm-password'
                       type='password'
-                      placeholder='Confirm your password'
+                      placeholder={t.confirmPasswordPlaceholder}
                       value={signupForm.confirmPassword}
                       onChange={e =>
                         setSignupForm({
@@ -353,10 +355,10 @@ export function AuthModal({
                   {isLoading ? (
                     <>
                       <Loader2 className='mr-2 h-4 w-4 animate-spin' />
-                      Creating account...
+                      {t.creatingAccount}
                     </>
                   ) : (
-                    'Create your free account'
+                    t.createFreeAccount
                   )}
                 </Button>
               </form>
@@ -364,7 +366,7 @@ export function AuthModal({
           </Tabs>
 
           <p className='text-xs text-gray-500 text-center mt-6'>
-            By continuing, you agree to our Terms of Service and Privacy Policy
+            {t.termsAndPrivacy}
           </p>
         </div>
       </DialogContent>

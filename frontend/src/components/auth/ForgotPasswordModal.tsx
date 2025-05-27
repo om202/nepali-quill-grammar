@@ -13,6 +13,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { supabase } from '@/lib/supabase';
 
 interface ForgotPasswordModalProps {
@@ -26,6 +27,7 @@ export function ForgotPasswordModal({
   onClose,
   onBackToLogin,
 }: ForgotPasswordModalProps) {
+  const { t } = useLanguage();
   const [email, setEmail] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [isEmailSent, setIsEmailSent] = useState(false);
@@ -34,12 +36,12 @@ export function ForgotPasswordModal({
     e.preventDefault();
 
     if (!email) {
-      toast.error('Please enter your email address');
+      toast.error(t.pleaseEnterEmailAddress);
       return;
     }
 
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      toast.error('Please enter a valid email address');
+      toast.error(t.pleaseEnterValidEmail);
       return;
     }
 
@@ -55,10 +57,10 @@ export function ForgotPasswordModal({
       }
 
       setIsEmailSent(true);
-      toast.success('Password reset link sent to your email');
+      toast.success(t.passwordResetLinkSent);
     } catch (error: any) {
       console.error('Forgot password error:', error);
-      toast.error(error.message || 'Failed to send reset email');
+      toast.error(error.message || t.failedToSendResetEmail);
     } finally {
       setIsLoading(false);
     }
@@ -82,12 +84,12 @@ export function ForgotPasswordModal({
         <div className='bg-gradient-to-br from-blue-50 to-purple-50 p-6'>
           <DialogHeader className='text-center'>
             <DialogTitle className='text-xl font-semibold text-gray-900'>
-              {isEmailSent ? 'Check Your Email' : 'Reset Your Password'}
+              {isEmailSent ? t.checkYourEmail : t.resetYourPassword}
             </DialogTitle>
             <p className='text-gray-600 mt-2'>
               {isEmailSent
-                ? 'We\'ve sent a password reset link to your email address'
-                : 'Enter your email address and we\'ll send you a link to reset your password'}
+                ? t.resetLinkSentMessage
+                : t.resetPasswordInstructions}
             </p>
           </DialogHeader>
         </div>
@@ -102,10 +104,9 @@ export function ForgotPasswordModal({
               </div>
               
               <div className='space-y-2'>
-                <h3 className='font-semibold text-gray-900'>Check Your Email</h3>
+                <h3 className='font-semibold text-gray-900'>{t.checkYourEmail}</h3>
                 <p className='text-sm text-gray-600'>
-                  If an account with that email exists, we&apos;ve sent you a password reset link.
-                  Please check your email and follow the instructions to reset your password.
+                  {t.resetEmailSentMessage}
                 </p>
               </div>
 
@@ -114,7 +115,7 @@ export function ForgotPasswordModal({
                   onClick={handleBackToLogin}
                   className='w-full grammarly-button-primary'
                 >
-                  Back to Login
+                  {t.backToLogin}
                 </Button>
                 
                 <Button
@@ -125,7 +126,7 @@ export function ForgotPasswordModal({
                   variant='outline'
                   className='w-full'
                 >
-                  Send Another Email
+                  {t.sendAnotherEmail}
                 </Button>
               </div>
             </div>
@@ -136,14 +137,14 @@ export function ForgotPasswordModal({
                   htmlFor='reset-email'
                   className='text-sm font-semibold text-gray-700'
                 >
-                  Email address
+                  {t.emailAddress}
                 </Label>
                 <div className='relative'>
                   <Mail className='absolute left-3 top-3 h-4 w-4 text-gray-400' />
                   <Input
                     id='reset-email'
                     type='email'
-                    placeholder='Enter your email address'
+                    placeholder={t.enterEmailAddress}
                     value={email}
                     onChange={e => setEmail(e.target.value)}
                     disabled={isLoading}
@@ -162,10 +163,10 @@ export function ForgotPasswordModal({
                   {isLoading ? (
                     <>
                       <Loader2 className='mr-2 h-4 w-4 animate-spin' />
-                      Sending Reset Link...
+                      {t.sendingResetLink}
                     </>
                   ) : (
-                    'Send Reset Link'
+                    t.sendResetLink
                   )}
                 </Button>
 
@@ -177,19 +178,19 @@ export function ForgotPasswordModal({
                   disabled={isLoading}
                 >
                   <ArrowLeft className='mr-2 h-4 w-4' />
-                  Back to Login
+                  {t.backToLogin}
                 </Button>
               </div>
             </form>
           )}
 
           <p className='text-xs text-gray-500 text-center mt-6'>
-            Remember your password?{' '}
+            {t.rememberPassword}{' '}
             <button
               onClick={handleBackToLogin}
               className='text-indigo-600 hover:text-indigo-500 font-medium'
             >
-              Sign in here
+              {t.signInHere}
             </button>
           </p>
         </div>

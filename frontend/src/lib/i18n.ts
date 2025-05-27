@@ -56,6 +56,20 @@ export interface Translations {
   createAccount: string;
   welcomeBack: string;
   joinThousands: string;
+  signingIn: string;
+  creatingAccount: string;
+  signInToApp: string;
+  createFreeAccount: string;
+  createPasswordPlaceholder: string;
+  termsAndPrivacy: string;
+  changePassword: string;
+  signOut: string;
+  confirmSignOut: string;
+  signOutDescription: string;
+  loggedOutSuccessfully: string;
+  failedToLogout: string;
+  accountCreatedSuccessfully: string;
+  pleaseSignInToEnhance: string;
   
   // Dialog
   startNewText: string;
@@ -69,6 +83,9 @@ export interface Translations {
   noSuggestionsFound: string;
   readyForNewText: string;
   welcome: string;
+  pleaseFillAllFields: string;
+  passwordsDoNotMatch: string;
+  passwordMinLength: string;
   
   // View modes
   listView: string;
@@ -80,6 +97,46 @@ export interface Translations {
   language: string;
   nepali: string;
   english: string;
+  
+  // Change Password Modal
+  passwordChanged: string;
+  updatePasswordSecurity: string;
+  passwordUpdatedSuccessfully: string;
+  passwordUpdated: string;
+  passwordChangedSuccessMessage: string;
+  done: string;
+  currentPassword: string;
+  newPassword: string;
+  confirmNewPassword: string;
+  enterCurrentPassword: string;
+  enterNewPassword: string;
+  confirmNewPasswordPlaceholder: string;
+  passwordRequirements: string;
+  changingPassword: string;
+  newPasswordsDontMatch: string;
+  newPasswordMinLength: string;
+  passwordComplexityError: string;
+  newPasswordMustBeDifferent: string;
+  passwordChangedSuccessfully: string;
+  failedToChangePassword: string;
+  
+  // Forgot Password Modal
+  checkYourEmail: string;
+  resetYourPassword: string;
+  resetLinkSentMessage: string;
+  resetPasswordInstructions: string;
+  resetEmailSentMessage: string;
+  backToLogin: string;
+  sendAnotherEmail: string;
+  enterEmailAddress: string;
+  sendResetLink: string;
+  sendingResetLink: string;
+  rememberPassword: string;
+  signInHere: string;
+  pleaseEnterEmailAddress: string;
+  pleaseEnterValidEmail: string;
+  passwordResetLinkSent: string;
+  failedToSendResetEmail: string;
 }
 
 export const translations: Record<Language, Translations> = {
@@ -175,6 +232,20 @@ export const translations: Record<Language, Translations> = {
     createAccount: 'खाता सिर्जना गर्नुहोस्',
     welcomeBack: 'फिर्ता स्वागत छ!',
     joinThousands: 'AI सँग आफ्नो नेपाली लेखाइ सुधार गर्ने हजारौं प्रयोगकर्ताहरूमा सामेल हुनुहोस्',
+    signingIn: 'साइन इन गर्दै...',
+    creatingAccount: 'खाता सिर्जना गर्दै...',
+    signInToApp: 'व्याकरणलीमा साइन इन गर्नुहोस्',
+    createFreeAccount: 'तपाईंको निःशुल्क खाता सिर्जना गर्नुहोस्',
+    createPasswordPlaceholder: 'पासवर्ड सिर्जना गर्नुहोस् (न्यूनतम ८ अक्षर)',
+    termsAndPrivacy: 'जारी राखेर, तपाईं हाम्रो सेवाका सर्तहरू र गोपनीयता नीतिमा सहमत हुनुहुन्छ',
+    changePassword: 'पासवर्ड परिवर्तन गर्नुहोस्',
+    signOut: 'साइन आउट',
+    confirmSignOut: 'साइन आउट पुष्टि गर्नुहोस्',
+    signOutDescription: 'तपाईंले जारी राख्न फेरि लग इन गर्नुपर्नेछ।',
+    loggedOutSuccessfully: 'सफलतापूर्वक लग आउट भयो',
+    failedToLogout: 'लग आउट गर्न असफल',
+    accountCreatedSuccessfully: 'खाता सफलतापूर्वक सिर्जना गरियो!',
+    pleaseSignInToEnhance: 'कृपया आफ्नो पाठ सुधार गर्न साइन इन गर्नुहोस्',
     
     // Dialog
     startNewText: 'नयाँ पाठ सुरु गर्नुहोस्?',
@@ -188,6 +259,9 @@ export const translations: Record<Language, Translations> = {
     noSuggestionsFound: 'दिइएको पाठको लागि कुनै सुझाव फेला परेन',
     readyForNewText: 'नयाँ पाठको लागि तयार! तपाईंको अघिल्लो काम इतिहासमा सुरक्षित छ।',
     welcome: 'स्वागत छ',
+    pleaseFillAllFields: 'कृपया सबै फिल्डहरू भर्नुहोस्',
+    passwordsDoNotMatch: 'पासवर्डहरू मेल खाँदैनन्',
+    passwordMinLength: 'पासवर्ड कम्तिमा ८ अक्षरको हुनुपर्छ',
     
     // View modes
     listView: 'सूची दृश्य',
@@ -199,6 +273,46 @@ export const translations: Record<Language, Translations> = {
     language: 'भाषा',
     nepali: 'नेपाली',
     english: 'अंग्रेजी',
+    
+    // Change Password Modal
+    passwordChanged: 'पासवर्ड परिवर्तन भयो',
+    updatePasswordSecurity: 'तपाईंको खाता सुरक्षित राख्न पासवर्ड अपडेट गर्नुहोस्',
+    passwordUpdatedSuccessfully: 'तपाईंको पासवर्ड सफलतापूर्वक अपडेट गरियो',
+    passwordUpdated: 'पासवर्ड अपडेट गरियो',
+    passwordChangedSuccessMessage: 'तपाईंको पासवर्ड सफलतापूर्वक परिवर्तन गरियो। तपाईं अब आफ्नो नयाँ पासवर्ड प्रयोग गरेर साइन इन गर्न सक्नुहुन्छ।',
+    done: 'सम्पन्न',
+    currentPassword: 'हालको पासवर्ड',
+    newPassword: 'नयाँ पासवर्ड',
+    confirmNewPassword: 'नयाँ पासवर्ड पुष्टि गर्नुहोस्',
+    enterCurrentPassword: 'तपाईंको हालको पासवर्ड प्रविष्ट गर्नुहोस्',
+    enterNewPassword: 'तपाईंको नयाँ पासवर्ड प्रविष्ट गर्नुहोस्',
+    confirmNewPasswordPlaceholder: 'तपाईंको नयाँ पासवर्ड पुष्टि गर्नुहोस्',
+    passwordRequirements: 'कम्तिमा ८ अक्षर ठूलो, सानो अक्षर र संख्या सहित हुनुपर्छ',
+    changingPassword: 'पासवर्ड परिवर्तन गर्दै...',
+    newPasswordsDontMatch: 'नयाँ पासवर्डहरू मेल खाँदैनन्',
+    newPasswordMinLength: 'नयाँ पासवर्ड कम्तिमा ८ अक्षरको हुनुपर्छ',
+    passwordComplexityError: 'नयाँ पासवर्डमा कम्तिमा एक सानो अक्षर, एक ठूलो अक्षर र एक संख्या हुनुपर्छ',
+    newPasswordMustBeDifferent: 'नयाँ पासवर्ड हालको पासवर्डभन्दा फरक हुनुपर्छ',
+    passwordChangedSuccessfully: 'पासवर्ड सफलतापूर्वक परिवर्तन गरियो',
+    failedToChangePassword: 'पासवर्ड परिवर्तन गर्न असफल',
+    
+    // Forgot Password Modal
+    checkYourEmail: 'तपाईंको इमेल जाँच गर्नुहोस्',
+    resetYourPassword: 'तपाईंको पासवर्ड रिसेट गर्नुहोस्',
+    resetLinkSentMessage: 'हामीले तपाईंको इमेल ठेगानामा पासवर्ड रिसेट लिङ्क पठाएका छौं',
+    resetPasswordInstructions: 'तपाईंको इमेल ठेगाना प्रविष्ट गर्नुहोस् र हामी तपाईंलाई पासवर्ड रिसेट गर्न लिङ्क पठाउनेछौं',
+    resetEmailSentMessage: 'यदि त्यो इमेलको खाता अवस्थित छ भने, हामीले तपाईंलाई पासवर्ड रिसेट लिङ्क पठाएका छौं। कृपया तपाईंको इमेल जाँच गर्नुहोस् र पासवर्ड रिसेट गर्न निर्देशनहरू पालना गर्नुहोस्।',
+    backToLogin: 'लग इनमा फर्कनुहोस्',
+    sendAnotherEmail: 'अर्को इमेल पठाउनुहोस्',
+    enterEmailAddress: 'तपाईंको इमेल ठेगाना प्रविष्ट गर्नुहोस्',
+    sendResetLink: 'रिसेट लिङ्क पठाउनुहोस्',
+    sendingResetLink: 'रिसेट लिङ्क पठाउँदै...',
+    rememberPassword: 'तपाईंको पासवर्ड याद छ?',
+    signInHere: 'यहाँ साइन इन गर्नुहोस्',
+    pleaseEnterEmailAddress: 'कृपया तपाईंको इमेल ठेगाना प्रविष्ट गर्नुहोस्',
+    pleaseEnterValidEmail: 'कृपया मान्य इमेल ठेगाना प्रविष्ट गर्नुहोस्',
+    passwordResetLinkSent: 'पासवर्ड रिसेट लिङ्क तपाईंको इमेलमा पठाइयो',
+    failedToSendResetEmail: 'रिसेट इमेल पठाउन असफल',
   },
   en: {
     // Header
@@ -292,6 +406,20 @@ export const translations: Record<Language, Translations> = {
     createAccount: 'Create account',
     welcomeBack: 'Welcome back!',
     joinThousands: 'Join thousands of users enhancing their Nepali writing with AI',
+    signingIn: 'Signing in...',
+    creatingAccount: 'Creating account...',
+    signInToApp: 'Sign in to Vyakaranly',
+    createFreeAccount: 'Create your free account',
+    createPasswordPlaceholder: 'Create a password (min 8 characters)',
+    termsAndPrivacy: 'By continuing, you agree to our Terms of Service and Privacy Policy',
+    changePassword: 'Change Password',
+    signOut: 'Sign out',
+    confirmSignOut: 'Confirm Sign Out',
+    signOutDescription: 'You\'ll need to log back in to continue.',
+    loggedOutSuccessfully: 'Logged out successfully',
+    failedToLogout: 'Failed to logout',
+    accountCreatedSuccessfully: 'Account created successfully!',
+    pleaseSignInToEnhance: 'Please sign in to enhance your text',
     
     // Dialog
     startNewText: 'Start New Text?',
@@ -305,6 +433,9 @@ export const translations: Record<Language, Translations> = {
     noSuggestionsFound: 'No suggestions found for the given text',
     readyForNewText: 'Ready for new text! Your previous work is saved in history.',
     welcome: 'Welcome',
+    pleaseFillAllFields: 'Please fill in all fields',
+    passwordsDoNotMatch: 'Passwords do not match',
+    passwordMinLength: 'Password must be at least 8 characters long',
     
     // View modes
     listView: 'List view',
@@ -316,6 +447,46 @@ export const translations: Record<Language, Translations> = {
     language: 'Language',
     nepali: 'Nepali',
     english: 'English',
+    
+    // Change Password Modal
+    passwordChanged: 'Password Changed',
+    updatePasswordSecurity: 'Update your password to keep your account secure',
+    passwordUpdatedSuccessfully: 'Your password has been updated successfully',
+    passwordUpdated: 'Password Updated',
+    passwordChangedSuccessMessage: 'Your password has been changed successfully. You can now use your new password to sign in.',
+    done: 'Done',
+    currentPassword: 'Current Password',
+    newPassword: 'New Password',
+    confirmNewPassword: 'Confirm New Password',
+    enterCurrentPassword: 'Enter your current password',
+    enterNewPassword: 'Enter your new password',
+    confirmNewPasswordPlaceholder: 'Confirm your new password',
+    passwordRequirements: 'Must be at least 8 characters with uppercase, lowercase, and number',
+    changingPassword: 'Changing Password...',
+    newPasswordsDontMatch: 'New passwords do not match',
+    newPasswordMinLength: 'New password must be at least 8 characters long',
+    passwordComplexityError: 'New password must contain at least one lowercase letter, one uppercase letter, and one number',
+    newPasswordMustBeDifferent: 'New password must be different from current password',
+    passwordChangedSuccessfully: 'Password changed successfully',
+    failedToChangePassword: 'Failed to change password',
+    
+    // Forgot Password Modal
+    checkYourEmail: 'Check Your Email',
+    resetYourPassword: 'Reset Your Password',
+    resetLinkSentMessage: 'We\'ve sent a password reset link to your email address',
+    resetPasswordInstructions: 'Enter your email address and we\'ll send you a link to reset your password',
+    resetEmailSentMessage: 'If an account with that email exists, we\'ve sent you a password reset link. Please check your email and follow the instructions to reset your password.',
+    backToLogin: 'Back to Login',
+    sendAnotherEmail: 'Send Another Email',
+    enterEmailAddress: 'Enter your email address',
+    sendResetLink: 'Send Reset Link',
+    sendingResetLink: 'Sending Reset Link...',
+    rememberPassword: 'Remember your password?',
+    signInHere: 'Sign in here',
+    pleaseEnterEmailAddress: 'Please enter your email address',
+    pleaseEnterValidEmail: 'Please enter a valid email address',
+    passwordResetLinkSent: 'Password reset link sent to your email',
+    failedToSendResetEmail: 'Failed to send reset email',
   },
 };
 

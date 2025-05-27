@@ -13,6 +13,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { changePassword } from '@/lib/api';
 
 interface ChangePasswordModalProps {
@@ -24,6 +25,7 @@ export function ChangePasswordModal({
   isOpen,
   onClose,
 }: ChangePasswordModalProps) {
+  const { t } = useLanguage();
   const [formData, setFormData] = useState({
     currentPassword: '',
     newPassword: '',
@@ -41,27 +43,27 @@ export function ChangePasswordModal({
     e.preventDefault();
 
     if (!formData.currentPassword || !formData.newPassword || !formData.confirmPassword) {
-      toast.error('Please fill in all fields');
+      toast.error(t.pleaseFillAllFields);
       return;
     }
 
     if (formData.newPassword !== formData.confirmPassword) {
-      toast.error('New passwords do not match');
+      toast.error(t.newPasswordsDontMatch);
       return;
     }
 
     if (formData.newPassword.length < 8) {
-      toast.error('New password must be at least 8 characters long');
+      toast.error(t.newPasswordMinLength);
       return;
     }
 
     if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/.test(formData.newPassword)) {
-      toast.error('New password must contain at least one lowercase letter, one uppercase letter, and one number');
+      toast.error(t.passwordComplexityError);
       return;
     }
 
     if (formData.currentPassword === formData.newPassword) {
-      toast.error('New password must be different from current password');
+      toast.error(t.newPasswordMustBeDifferent);
       return;
     }
 
@@ -74,9 +76,9 @@ export function ChangePasswordModal({
       });
       
       setIsSuccess(true);
-      toast.success('Password changed successfully');
+      toast.success(t.passwordChangedSuccessfully);
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : 'Failed to change password');
+      toast.error(error instanceof Error ? error.message : t.failedToChangePassword);
     } finally {
       setIsLoading(false);
     }
@@ -110,12 +112,12 @@ export function ChangePasswordModal({
         <div className='bg-gradient-to-br from-blue-50 to-purple-50 p-6'>
           <DialogHeader className='text-center'>
             <DialogTitle className='text-xl font-semibold text-gray-900'>
-              {isSuccess ? 'Password Changed' : 'Change Password'}
+              {isSuccess ? t.passwordChanged : t.changePassword}
             </DialogTitle>
             <p className='text-gray-600 mt-2'>
               {isSuccess
-                ? 'Your password has been updated successfully'
-                : 'Update your password to keep your account secure'}
+                ? t.passwordUpdatedSuccessfully
+                : t.updatePasswordSecurity}
             </p>
           </DialogHeader>
         </div>
@@ -130,9 +132,9 @@ export function ChangePasswordModal({
               </div>
               
               <div className='space-y-2'>
-                <h3 className='font-semibold text-gray-900'>Password Updated</h3>
+                <h3 className='font-semibold text-gray-900'>{t.passwordUpdated}</h3>
                 <p className='text-sm text-gray-600'>
-                  Your password has been changed successfully. You can now use your new password to sign in.
+                  {t.passwordChangedSuccessMessage}
                 </p>
               </div>
 
@@ -140,7 +142,7 @@ export function ChangePasswordModal({
                 onClick={handleClose}
                 className='w-full grammarly-button-primary'
               >
-                Done
+                {t.done}
               </Button>
             </div>
           ) : (
@@ -150,14 +152,14 @@ export function ChangePasswordModal({
                   htmlFor='current-password'
                   className='text-sm font-semibold text-gray-700'
                 >
-                  Current Password
+                  {t.currentPassword}
                 </Label>
                 <div className='relative'>
                   <Lock className='absolute left-3 top-3 h-4 w-4 text-gray-400' />
                   <Input
                     id='current-password'
                     type={showPasswords.current ? 'text' : 'password'}
-                    placeholder='Enter your current password'
+                    placeholder={t.enterCurrentPassword}
                     value={formData.currentPassword}
                     onChange={e =>
                       setFormData({ ...formData, currentPassword: e.target.value })
@@ -184,14 +186,14 @@ export function ChangePasswordModal({
                   htmlFor='new-password'
                   className='text-sm font-semibold text-gray-700'
                 >
-                  New Password
+                  {t.newPassword}
                 </Label>
                 <div className='relative'>
                   <Lock className='absolute left-3 top-3 h-4 w-4 text-gray-400' />
                   <Input
                     id='new-password'
                     type={showPasswords.new ? 'text' : 'password'}
-                    placeholder='Enter your new password'
+                    placeholder={t.enterNewPassword}
                     value={formData.newPassword}
                     onChange={e =>
                       setFormData({ ...formData, newPassword: e.target.value })
@@ -212,7 +214,7 @@ export function ChangePasswordModal({
                   </button>
                 </div>
                 <p className='text-xs text-gray-500'>
-                  Must be at least 8 characters with uppercase, lowercase, and number
+                  {t.passwordRequirements}
                 </p>
               </div>
 
@@ -221,14 +223,14 @@ export function ChangePasswordModal({
                   htmlFor='confirm-password'
                   className='text-sm font-semibold text-gray-700'
                 >
-                  Confirm New Password
+                  {t.confirmNewPassword}
                 </Label>
                 <div className='relative'>
                   <Lock className='absolute left-3 top-3 h-4 w-4 text-gray-400' />
                   <Input
                     id='confirm-password'
                     type={showPasswords.confirm ? 'text' : 'password'}
-                    placeholder='Confirm your new password'
+                    placeholder={t.confirmNewPasswordPlaceholder}
                     value={formData.confirmPassword}
                     onChange={e =>
                       setFormData({ ...formData, confirmPassword: e.target.value })
@@ -259,10 +261,10 @@ export function ChangePasswordModal({
                   {isLoading ? (
                     <>
                       <Loader2 className='mr-2 h-4 w-4 animate-spin' />
-                      Changing Password...
+                      {t.changingPassword}
                     </>
                   ) : (
-                    'Change Password'
+                    t.changePassword
                   )}
                 </Button>
 
@@ -273,7 +275,7 @@ export function ChangePasswordModal({
                   className='w-full'
                   disabled={isLoading}
                 >
-                  Cancel
+                  {t.cancel}
                 </Button>
               </div>
             </form>

@@ -22,6 +22,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { RootState, AppDispatch } from '@/store';
 import { logoutAsync } from '@/store/authSlice';
 
@@ -29,6 +30,7 @@ import { ChangePasswordModal } from './ChangePasswordModal';
 
 export function UserProfile() {
   const dispatch = useDispatch<AppDispatch>();
+  const { t } = useLanguage();
   const { user } = useSelector((state: RootState) => state.auth);
   const [showLogoutDialog, setShowLogoutDialog] = useState(false);
   const [showChangePassword, setShowChangePassword] = useState(false);
@@ -36,9 +38,9 @@ export function UserProfile() {
   const handleLogout = async () => {
     try {
       await dispatch(logoutAsync()).unwrap();
-      toast.success('Logged out successfully');
+      toast.success(t.loggedOutSuccessfully);
     } catch {
-      toast.error('Failed to logout');
+      toast.error(t.failedToLogout);
     }
   };
 
@@ -97,7 +99,7 @@ export function UserProfile() {
           className='flex items-center space-x-2 p-3 rounded-lg hover:bg-indigo-50 cursor-pointer transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]'
         >
           <Lock className='h-4 w-4' />
-          <span className='font-medium'>Change Password</span>
+          <span className='font-medium'>{t.changePassword}</span>
         </DropdownMenuItem>
         
         <DropdownMenuSeparator />
@@ -107,16 +109,16 @@ export function UserProfile() {
           className='flex items-center space-x-2 p-3 rounded-lg hover:bg-red-50 cursor-pointer text-red-600 transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]'
         >
           <LogOut className='h-4 w-4' />
-          <span className='font-medium'>Sign out</span>
+          <span className='font-medium'>{t.signOut}</span>
         </DropdownMenuItem>
       </DropdownMenuContent>
 
       <Dialog open={showLogoutDialog} onOpenChange={setShowLogoutDialog}>
         <DialogContent className="bg-white">
           <DialogHeader>
-            <DialogTitle>Confirm Sign Out</DialogTitle>
+            <DialogTitle>{t.confirmSignOut}</DialogTitle>
             <DialogDescription>
-                You&apos;ll need to log back in to continue.
+              {t.signOutDescription}
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
@@ -125,13 +127,13 @@ export function UserProfile() {
               onClick={() => setShowLogoutDialog(false)}
               className="border-gray-200 hover:bg-gray-50"
             >
-              Cancel
+              {t.cancel}
             </Button>
             <Button
               onClick={confirmLogout}
               className='bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-medium rounded-lg shadow-lg hover:shadow-xl transition-all duration-300'
             >
-              Sign out
+              {t.signOut}
             </Button>
           </DialogFooter>
         </DialogContent>
