@@ -3,11 +3,7 @@
 import React from 'react';
 import { Bot, Zap, History as HistoryIcon, Keyboard, Sparkles } from 'lucide-react';
 
-interface FeatureShowcaseProps {
-  // Remove onDismiss since we're removing the close button
-}
-
-export const FeatureShowcase: React.FC<FeatureShowcaseProps> = () => {
+export const FeatureShowcase: React.FC = () => {
   return (
     <div className='w-full bg-gradient-to-br from-indigo-50 via-purple-50 to-blue-50 py-12 px-4 mb-8'>
       <div className='max-w-6xl mx-auto'>
@@ -15,7 +11,7 @@ export const FeatureShowcase: React.FC<FeatureShowcaseProps> = () => {
         <div className='text-center mb-8'>
           <div className='flex items-center justify-center space-x-2 mb-3'>
             <Sparkles className='h-6 w-6 text-indigo-600' />
-            <h2 className='text-2xl font-bold text-gray-900'>Perfect Your Nepali Writing</h2>
+            <h2 className='text-3xl font-bold text-gray-900'>सजिलै सुधार्नुहोस् नेपाली लेखाइ</h2>
           </div>
         </div>
         

@@ -31,7 +31,7 @@ export function Header() {
                 <Sparkles className='h-3 w-3 absolute -top-1 -right-1 text-purple-500' />
               </div>
               <h1 className='text-xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent'>
-                Vyakaranly
+                व्याकरणली
               </h1>
             </div>
           </div>

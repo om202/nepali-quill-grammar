@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'sonner';
-import { Loader2, Mail, Lock, User, Sparkles, CheckCircle, PenTool } from 'lucide-react';
+import { Loader2, Mail, Lock, User, Sparkles, PenTool } from 'lucide-react';
 
 import {
   Dialog,
@@ -131,7 +131,7 @@ export function AuthModal({
                 <Sparkles className='h-3 w-3 absolute -top-1 -right-1 text-purple-500' />
               </div>
               <DialogTitle className='text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent'>
-                Vyakaranly
+                व्याकरणली
               </DialogTitle>
             </div>
             {activeTab === 'signup' && (
@@ -237,7 +237,7 @@ export function AuthModal({
                       Signing in...
                     </>
                   ) : (
-                    'Sign in to Vyakaranly'
+                    'Sign in to व्याकरणली'
                   )}
                 </Button>
               </form>
