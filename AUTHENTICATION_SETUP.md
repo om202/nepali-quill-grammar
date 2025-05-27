@@ -36,6 +36,7 @@ supabase db push
 ### 3. Supabase Dashboard Configuration
 
 1. **Enable Email Authentication**:
+
    - Go to Authentication > Settings
    - Enable "Enable email confirmations" if you want email verification
    - Configure email templates if needed
@@ -50,11 +51,13 @@ supabase db push
 ### Authentication Flow
 
 1. **Signup**: Uses `supabase.auth.signUp()`
+
    - Creates user in `auth.users` table
    - Automatically creates profile in `public.profiles` via trigger
    - Returns Supabase session with access/refresh tokens
 
 2. **Login**: Uses `supabase.auth.signInWithPassword()`
+
    - Validates credentials against `auth.users`
    - Returns Supabase session
 
@@ -89,6 +92,7 @@ public.profiles (
 ### Row Level Security (RLS)
 
 All tables have RLS enabled with policies that:
+
 - Allow users to access their own data
 - Allow anonymous access for sessions (for non-logged-in users)
 - Inherit permissions through foreign key relationships
@@ -170,7 +174,9 @@ Authorization: Bearer <supabase_access_token>
     "refresh_token": "...",
     "expires_at": 1234567890,
     "token_type": "bearer",
-    "user": { /* Supabase user object */ }
+    "user": {
+      /* Supabase user object */
+    }
   }
 }
 ```
@@ -200,10 +206,12 @@ Authorization: Bearer <supabase_access_token>
 ### Changes Made
 
 1. **Removed Dependencies**:
+
    - `bcryptjs` (Supabase handles password hashing)
    - `jsonwebtoken` (Supabase handles JWT)
 
 2. **Updated Database**:
+
    - Removed custom `users` table
    - Added `profiles` table referencing `auth.users`
    - Added RLS policies
@@ -218,28 +226,30 @@ Authorization: Bearer <supabase_access_token>
 Use the Supabase JavaScript client:
 
 ```javascript
-import { createClient } from '@supabase/supabase-js'
+import { createClient } from "@supabase/supabase-js";
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-)
+);
 
 // Login
 const { data, error } = await supabase.auth.signInWithPassword({
-  email: 'user@example.com',
-  password: 'password'
-})
+  email: "user@example.com",
+  password: "password",
+});
 
 // Get session
-const { data: { session } } = await supabase.auth.getSession()
+const {
+  data: { session },
+} = await supabase.auth.getSession();
 
 // Use session token for API calls
-fetch('/api/v1/auth/profile', {
+fetch("/api/v1/auth/profile", {
   headers: {
-    'Authorization': `Bearer ${session.access_token}`
-  }
-})
+    Authorization: `Bearer ${session.access_token}`,
+  },
+});
 ```
 
 ## 🚀 Benefits of This Approach
@@ -269,4 +279,4 @@ curl -X GET http://localhost:3001/api/v1/auth/profile \
   -H "Authorization: Bearer YOUR_ACCESS_TOKEN"
 ```
 
-This implementation now follows Supabase best practices and provides a robust, secure authentication system! 
+This implementation now follows Supabase best practices and provides a robust, secure authentication system!
