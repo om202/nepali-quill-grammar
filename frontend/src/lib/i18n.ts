@@ -137,6 +137,28 @@ export interface Translations {
   pleaseEnterValidEmail: string;
   passwordResetLinkSent: string;
   failedToSendResetEmail: string;
+  
+  // Testimonials Section
+  whatUsersAreSaying: string;
+  testimonialsSubtitle: string;
+  testimonial1Text: string;
+  testimonial1Name: string;
+  testimonial1Title: string;
+  testimonial2Text: string;
+  testimonial2Name: string;
+  testimonial2Title: string;
+  testimonial3Text: string;
+  testimonial3Name: string;
+  testimonial3Title: string;
+  readyToImprove: string;
+  startWritingBetter: string;
+  
+  // Footer
+  allRightsReserved: string;
+  madeWith: string;
+  inNepal: string;
+  companyName: string;
+  companyLocation: string;
 }
 
 export const translations: Record<Language, Translations> = {
@@ -313,6 +335,28 @@ export const translations: Record<Language, Translations> = {
     pleaseEnterValidEmail: 'कृपया मान्य इमेल ठेगाना प्रविष्ट गर्नुहोस्',
     passwordResetLinkSent: 'पासवर्ड रिसेट लिङ्क तपाईंको इमेलमा पठाइयो',
     failedToSendResetEmail: 'रिसेट इमेल पठाउन असफल',
+    
+    // Testimonials Section
+    whatUsersAreSaying: 'हाम्रा प्रयोगकर्ताहरूले के भन्छन्',
+    testimonialsSubtitle: 'व्याकरणलीमा भरोसा गरेर आफ्नो नेपाली लेखाइ सुधार्ने हजारौं लेखकहरूमा सामेल हुनुहोस्',
+    testimonial1Text: 'व्याकरणलीले मेरो नेपाली लेखनलाई एकदमै सुधार गर्यो। अब म आत्मविश्वासका साथ लेख्न सक्छु।',
+    testimonial1Name: 'प्रमिला शर्मा',
+    testimonial1Title: 'लेखिका, काठमाडौं',
+    testimonial2Text: 'विद्यार्थीको रूपमा, यो उपकरण मेरो नेपाली असाइनमेन्टहरूका लागि अमूल्य छ। सुझावहरू एकदम सटीक छन् र मलाई उचित व्याकरण सिक्न मद्दत गर्छन्।',
+    testimonial2Name: 'अनिश तामाङ',
+    testimonial2Title: 'विद्यार्थी, पोखरा',
+    testimonial3Text: 'मैले धेरै नेपाली टूलहरू प्रयोग गरेको छु, तर व्याकरणली सबैभन्दा राम्रो छ। यसले मेरो समय बचाउँछ।',
+    testimonial3Name: 'राजेश गुरुङ',
+    testimonial3Title: 'पत्रकार, भक्तपुर',
+    readyToImprove: 'तपाईंको नेपाली लेखाइ सुधार गर्न तयार हुनुहुन्छ?',
+    startWritingBetter: 'आज नै राम्रो लेख्न सुरु गर्नुहोस्',
+    
+    // Footer
+    allRightsReserved: 'सर्व उपचार्य गरियो',
+    madeWith: 'बनाइयो',
+    inNepal: 'नेपालमा',
+    companyName: 'नोबल स्ट्याक प्रा. लि.',
+    companyLocation: 'काठमाडौं, नेपाल',
   },
   en: {
     // Header
@@ -487,6 +531,28 @@ export const translations: Record<Language, Translations> = {
     pleaseEnterValidEmail: 'Please enter a valid email address',
     passwordResetLinkSent: 'Password reset link sent to your email',
     failedToSendResetEmail: 'Failed to send reset email',
+    
+    // Testimonials Section
+    whatUsersAreSaying: 'What Our Users Are Saying',
+    testimonialsSubtitle: 'Join thousands of writers who trust Vyakaranly to perfect their Nepali writing',
+    testimonial1Text: 'Vyakaranly has significantly improved my Nepali writing. Now I can write with confidence.',
+    testimonial1Name: 'Pramila Sharma',
+    testimonial1Title: 'Writer, Kathmandu',
+    testimonial2Text: 'As a student, this tool has been invaluable for my assignments. The suggestions are spot-on and help me learn proper grammar.',
+    testimonial2Name: 'Anish Tamang',
+    testimonial2Title: 'Student, Pokhara',
+    testimonial3Text: 'I have used many Nepali tools, but Vyakaranly is the best. It saves me time.',
+    testimonial3Name: 'Rajesh Gurung',
+    testimonial3Title: 'Journalist, Bhaktapur',
+    readyToImprove: 'Ready to improve your Nepali writing?',
+    startWritingBetter: 'Start Writing Better Today',
+    
+    // Footer
+    allRightsReserved: 'All Rights Reserved',
+    madeWith: 'Made with',
+    inNepal: 'in Nepal',
+    companyName: 'Noble Stack Pvt. Ltd.',
+    companyLocation: 'Kathmandu, Nepal',
   },
 };
 

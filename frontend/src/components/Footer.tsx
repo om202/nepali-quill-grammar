@@ -4,7 +4,11 @@ import React from 'react';
 import Image from 'next/image';
 import { Heart } from 'lucide-react';
 
+import { useLanguage } from '@/contexts/LanguageContext';
+
 export const Footer: React.FC = () => {
+  const { t } = useLanguage();
+
   return (
     <footer className='w-full bg-gradient-to-br from-indigo-50 via-purple-50 to-blue-50 py-20 px-4'>
       <div className='max-w-6xl mx-auto'>
@@ -19,20 +23,20 @@ export const Footer: React.FC = () => {
               className='mb-6'
             />
             <div className='text-center md:text-left'>
-              <h3 className='font-bold text-2xl text-gray-900 mb-2'>Noble Stack Pvt. Ltd.</h3>
-              <p className='text-gray-600 text-lg'>Kathmandu, Nepal</p>
+              <h3 className='font-bold text-2xl text-gray-900 mb-2'>{t.companyName}</h3>
+              <p className='text-gray-600 text-lg'>{t.companyLocation}</p>
             </div>
           </div>
 
           {/* Rights and Love */}
           <div className='text-center md:text-right'>
             <p className='text-gray-700 text-lg mb-4 font-medium'>
-              © {new Date().getFullYear()} Noble Stack Pvt. Ltd. All rights reserved.
+              © {new Date().getFullYear()} {t.companyName} {t.allRightsReserved}.
             </p>
             <p className='text-gray-600 text-base flex items-center justify-center md:justify-end space-x-2'>
-              <span>Made with</span>
+              <span>{t.madeWith}</span>
               <Heart className='h-5 w-5 text-red-500 fill-current' />
-              <span>in Nepal</span>
+              <span>{t.inNepal}</span>
             </p>
           </div>
         </div>
