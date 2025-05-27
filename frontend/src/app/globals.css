@@ -343,6 +343,103 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* Nepali Hero Section - Larger fonts for better readability */
+.nepali-hero-title {
+  font-family: 'Noto Sans Devanagari', 'Mangal', 'Devanagari MT', sans-serif;
+  font-size: 2.5rem; /* Larger than the default text-3xl (1.875rem) */
+  line-height: 1.2;
+  font-weight: 700;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.nepali-hero-subtitle {
+  font-family: 'Noto Sans Devanagari', 'Mangal', 'Devanagari MT', sans-serif;
+  font-size: 1.25rem; /* Larger than the default text-base (1rem) */
+  line-height: 1.6;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.nepali-feature-text {
+  font-family: 'Noto Sans Devanagari', 'Mangal', 'Devanagari MT', sans-serif;
+  font-size: 1rem; /* Larger than the default text-sm (0.875rem) */
+  line-height: 1.5;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Responsive adjustments for Nepali hero text */
+@media (min-width: 768px) {
+  .nepali-hero-title {
+    font-size: 3rem; /* Even larger on medium screens and up */
+  }
+  
+  .nepali-hero-subtitle {
+    font-size: 1.375rem; /* Larger on medium screens and up */
+  }
+}
+
+@media (min-width: 1024px) {
+  .nepali-hero-title {
+    font-size: 3.5rem; /* Largest on large screens */
+  }
+  
+  .nepali-hero-subtitle {
+    font-size: 1.5rem; /* Largest on large screens */
+  }
+}
+
+/* Nepali Section Headers - For testimonials, FAQ, etc. */
+.nepali-section-title {
+  font-family: 'Noto Sans Devanagari', 'Mangal', 'Devanagari MT', sans-serif;
+  font-size: 2.25rem; /* Larger than text-3xl */
+  line-height: 1.2;
+  font-weight: 700;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.nepali-section-subtitle {
+  font-family: 'Noto Sans Devanagari', 'Mangal', 'Devanagari MT', sans-serif;
+  font-size: 1.25rem; /* Larger than text-lg */
+  line-height: 1.6;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.nepali-testimonial-text {
+  font-family: 'Noto Sans Devanagari', 'Mangal', 'Devanagari MT', sans-serif;
+  font-size: 1.125rem; /* Larger than default text */
+  line-height: 1.7;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.nepali-body-text {
+  font-family: 'Noto Sans Devanagari', 'Mangal', 'Devanagari MT', sans-serif;
+  font-size: 1.125rem; /* Larger than default text */
+  line-height: 1.6;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.nepali-button-text {
+  font-family: 'Noto Sans Devanagari', 'Mangal', 'Devanagari MT', sans-serif;
+  font-size: 1rem; /* Slightly larger for buttons */
+  font-weight: 600;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
 /* Language toggle button styles */
 .language-toggle-active {
   @apply bg-green-50 border-green-300 text-green-700;

@@ -6,8 +6,37 @@ import { ChevronDown, ChevronUp } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 
 export const FAQSection: React.FC = () => {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const [openItems, setOpenItems] = useState<number[]>([]);
+
+  // Conditional classes for Nepali text
+  const sectionTitleClass = language === 'ne'
+    ? 'nepali-section-title text-gray-900 mb-4'
+    : 'text-3xl font-bold text-gray-900 mb-4';
+    
+  const sectionSubtitleClass = language === 'ne'
+    ? 'nepali-section-subtitle text-gray-600 max-w-2xl mx-auto'
+    : 'text-lg text-gray-600 max-w-2xl mx-auto';
+    
+  const questionTextClass = language === 'ne'
+    ? 'nepali-body-text font-semibold text-gray-900 pr-4'
+    : 'font-semibold text-gray-900 pr-4';
+    
+  const answerTextClass = language === 'ne'
+    ? 'nepali-body-text text-gray-700 leading-relaxed'
+    : 'text-gray-700 leading-relaxed';
+    
+  const ctaTitleClass = language === 'ne'
+    ? 'nepali-body-text text-xl font-semibold text-gray-900 mb-2'
+    : 'text-xl font-semibold text-gray-900 mb-2';
+    
+  const ctaTextClass = language === 'ne'
+    ? 'nepali-body-text text-gray-600 mb-4'
+    : 'text-gray-600 mb-4';
+    
+  const buttonTextClass = language === 'ne'
+    ? 'nepali-button-text bg-indigo-600 hover:bg-indigo-700 text-white font-medium px-6 py-2 rounded-lg transition-colors duration-200'
+    : 'bg-indigo-600 hover:bg-indigo-700 text-white font-medium px-6 py-2 rounded-lg transition-colors duration-200';
 
   const toggleItem = (index: number) => {
     setOpenItems(prev => 
@@ -22,10 +51,10 @@ export const FAQSection: React.FC = () => {
       <div className='max-w-4xl mx-auto'>
         {/* Section Header */}
         <div className='text-center mb-12'>
-          <h2 className='text-3xl font-bold text-gray-900 mb-4'>
+          <h2 className={sectionTitleClass}>
             {t.faqTitle}
           </h2>
-          <p className='text-lg text-gray-600 max-w-2xl mx-auto'>
+          <p className={sectionSubtitleClass}>
             {t.faqSubtitle}
           </p>
         </div>
@@ -41,7 +70,7 @@ export const FAQSection: React.FC = () => {
                 onClick={() => toggleItem(index)}
                 className='w-full px-6 py-4 text-left flex items-center justify-between hover:bg-gray-50 transition-colors duration-200 focus:outline-none focus:bg-gray-50'
               >
-                <span className='font-semibold text-gray-900 pr-4'>
+                <span className={questionTextClass}>
                   {item.question}
                 </span>
                 {openItems.includes(index) ? (
@@ -53,7 +82,7 @@ export const FAQSection: React.FC = () => {
               
               {openItems.includes(index) && (
                 <div className='px-6 pb-4 pt-2 border-t border-gray-100 bg-gray-50'>
-                  <p className='text-gray-700 leading-relaxed'>
+                  <p className={answerTextClass}>
                     {item.answer}
                   </p>
                 </div>
@@ -64,13 +93,13 @@ export const FAQSection: React.FC = () => {
 
         {/* Contact CTA */}
         <div className='text-center mt-12 p-6 bg-gradient-to-r from-indigo-50 to-purple-50 rounded-lg'>
-          <h3 className='text-xl font-semibold text-gray-900 mb-2'>
+          <h3 className={ctaTitleClass}>
             {t.stillHaveQuestions}
           </h3>
-          <p className='text-gray-600 mb-4'>
+          <p className={ctaTextClass}>
             {t.faqSubtitle}
           </p>
-          <button className='bg-indigo-600 hover:bg-indigo-700 text-white font-medium px-6 py-2 rounded-lg transition-colors duration-200'>
+          <button className={buttonTextClass}>
             {t.contactSupport}
           </button>
         </div>
